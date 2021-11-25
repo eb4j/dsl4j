@@ -18,23 +18,26 @@
 
 package io.github.eb4j.dsl;
 
+import org.apache.commons.io.input.BOMInputStream;
+
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 
 public class DslDictionary {
-    private final FileInputStream fileInputStream;
     private final DictionaryData<Object> dictionaryData;
 
-    public DslDictionary(final DictionaryData<Object> index, final FileInputStream fileInputStream) {
-        dictionaryData = index;
-        this.fileInputStream = fileInputStream;
+    public DslDictionary(final DictionaryData<Object> data) {
+        dictionaryData = data;
     }
 
     public List<Map.Entry<String, Object>> getEntries(final String word) {
@@ -45,16 +48,45 @@ public class DslDictionary {
         return dictionaryData.lookUpPredictive(word);
     }
 
-    public String getText(final Long offset) {
-        return null;
+    private static boolean testLine(final String line) {
+        return !line.isEmpty() && !line.startsWith("#");
     }
 
-    public static DslDictionary loadDicitonary(final String path) throws IOException {
-        File file = new File(mdxFile);
+    public static DslDictionary loadDicitonary(final File file) throws IOException {
         if (!file.isFile()) {
-            throw new IOException("Target file is not DSL file.");
+            throw new IOException("Target file is not a file.");
         }
-	return null;
+        DictionaryDataBuilder<Object> builder = new DictionaryDataBuilder<>();
+        StringBuilder word = new StringBuilder();
+        StringBuilder trans = new StringBuilder();
+        try (FileInputStream fis = new FileInputStream(file)) {
+            // Un-gzip if necessary
+            InputStream is = file.getName().endsWith(".dz") ? new GZIPInputStream(fis, 8192) : fis;
+            try (BOMInputStream bis = new BOMInputStream(is)) {
+                // Detect charset
+                Charset charset = bis.hasBOM() ? StandardCharsets.UTF_8 : StandardCharsets.UTF_16;
+                try (InputStreamReader isr = new InputStreamReader(bis, charset);
+                     BufferedReader reader = new BufferedReader(isr)) {
+                     reader.lines().filter(DslDictionary::testLine)
+                            .forEach(line -> {
+                                if (Character.isWhitespace(line.codePointAt(0))) {
+                                    trans.append(line.trim()).append('\n');
+                                } else {
+                                    if (word.length() > 0) {
+                                        builder.add(word.toString(), trans.toString());
+                                        word.setLength(0);
+                                        trans.setLength(0);
+                                    }
+                                    word.append(line);
+                                }
+                            });
+                    if (word.length() > 0) {
+                        builder.add(word.toString(), trans.toString());
+                    }
+                }
+            }
+        }
+        DictionaryData<Object> data = builder.build();
+        return new DslDictionary(data);
     }
-
 }

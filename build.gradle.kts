@@ -9,6 +9,7 @@ plugins {
     `java-library`
     `java-library-distribution`
     `maven-publish`
+    id("com.intershop.gradle.javacc") version "4.0.1"
     kotlin("jvm") version "1.6.0"
     id("com.github.spotbugs") version "4.7.10"
     id("com.diffplug.spotless") version "6.0.0"
@@ -26,6 +27,7 @@ repositories {
 dependencies {
     implementation("org.jetbrains:annotations:23.0.0")
     implementation("com.github.takawitter:trie4j:0.9.8")
+    implementation("commons-io:commons-io:2.11.0")
     testImplementation("org.codehaus.groovy:groovy-all:3.0.9")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.8.1")
@@ -65,6 +67,15 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
     withSourcesJar()
     withJavadocJar()
+}
+
+javacc {
+    javaCCVersion = "7.0.10"
+    configs.create("dsl") {
+        inputFile = File("src/main/java/io/github/eb4j/dsl/DslParser.jj")
+        outputDir = File("build/generated/javacc")
+        packageName = "io.github.eb4j.dsl"
+    }
 }
 
 // we handle cases without .git directory

@@ -1,0 +1,192 @@
+/*
+ * DSL4J, a parser library for LingoDSL format.
+ * Copyright (C) 2021 Hiroshi Miura.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+options {
+    JDK_VERSION = "1.8";
+    STATIC = false;
+    LOOKAHEAD = 1;
+    UNICODE_INPUT = true;
+    JAVA_UNICODE_ESCAPE = true;
+}
+
+PARSER_BEGIN(DslParser)
+package io.github.eb4j.dsl;
+
+public class DslParser {
+
+  private static String getTokenText(Token first, Token cur) {
+    Token t;
+    StringBuffer sb = new StringBuffer();
+
+    for (t=first; t != cur.next; t = t.next) {
+      if (t.specialToken != null) {
+        Token tt=t.specialToken;
+        while (tt.specialToken != null)
+          tt = tt.specialToken;
+        for (; tt != null; tt = tt.next)
+          sb.append(tt.image);
+      };
+      sb.append(t.image);
+    };
+    return sb.toString();
+  }
+
+  public static DslParser createParser(java.io.Reader reader) {
+    return new DslParser(reader);
+  }
+
+  public static DslParser createParser(String text) {
+    return new DslParser(new java.io.StringReader(text));
+  }
+}
+
+PARSER_END(DslParser)
+
+/**
+ * Token definitions
+ *
+ * Lexical states for the preprocessor: <PREPROCESSOR>
+ * Lexical states for the main parser: <DEFAULT>
+ */
+
+<*> TOKEN : {
+  <#QUOTE: "\"" >
+  | <#QUOTED_STRING: <QUOTE> ( ~["\""] )* <QUOTE> >
+  | <#WHITESPACE: ( " " | "\t" | "\n" | "\r" ) >
+  | <#NEWLINE:    ( "\r\n" | "\r" | "\n" ) >
+  | <MEAN: "m" |"m1" | "m2" | "m3" | "m4" >
+  | <COLOR_NAME: "green" | "gray" | "blue" | "red" >
+}
+
+<DEFAULT> TOKEN : {
+  <EOL: ( " " | "\t" )* <NEWLINE> >
+  | <TAG_START:     "[" >     : LexStartTag
+  | <ENDTAG_START:  "[/" > : LexStartTag
+  | <PCDATA:        ( ~["[", "\r", "\n"] )+ >
+}
+
+<LexStartTag> TOKEN: {
+   <TAG_NAME: (<MEAN> | "c" | "lang" | "b" | "com" | "ex" | "p" | "preview" | "ref"
+               | "s" | "sub" | "sup" | "t" | "trn" | "trn1" | "trs" | "!trs" | "u" | "video") > : LexInTag
+  | <LST_ERROR: ~[]> : DEFAULT
+}
+
+<LexInTag> SPECIAL_TOKEN : {
+    < (<WHITESPACE>)+ >
+}
+
+<LexInTag> TOKEN : {
+  <TAG_END: "]" >        : DEFAULT
+  | <ATTR_EQ: "=" > : LexInTag
+  | <NEWALIAS: <COLOR_NAME> >     : LexInTag
+  | <LANG_ATTR: ("name" |"id") >  : LexAttrVal
+}
+
+<LexAttrVal> SPECIAL_TOKEN : {
+  < <WHITESPACE> >
+}
+
+<LexAttrVal> TOKEN : {
+  <ATTR_VAL: <QUOTED_STRING> >  : LexInTag
+}
+
+/** Constructor. */
+DslArticle DslArticle() :
+{
+   DslArticle.ElementSequence s;
+}
+{
+  s=ElementSequence() <EOF>
+  { return new DslArticle(s); }
+}
+
+
+/** @return a sequence of elements */
+DslArticle.ElementSequence ElementSequence() :
+{
+  DslArticle.ElementSequence s = new DslArticle.ElementSequence();
+  DslArticle.DslElement h;
+}
+{
+  ( h=Element() { s.addElement(h); } ) *
+  { return s; }
+}
+
+/** @return an element */
+DslArticle.DslElement Element() :
+{
+  DslArticle.DslElement e;
+  Token text;
+}
+{
+LOOKAHEAD(2)
+    e = Tag()          { return e; }
+  | e = EndTag()       { return e; }
+  | LOOKAHEAD(2)
+         <TAG_START> text=<LST_ERROR>
+                      { return new DslArticle.Text("[" + text.image); }
+  |   text = <PCDATA> { return new DslArticle.Text(text.image); }
+  |          <EOL>    { return new DslArticle.Newline(); }
+}
+
+/** @return an attribute */
+DslArticle.Attribute Attribute() :
+{
+  Token t1, t2=null;
+}
+{
+  t1=<LANG_ATTR> <ATTR_EQ> t2=<ATTR_VAL>
+  { return new DslArticle.LangAttribute(t1.image, t2.image); }
+  | t1=<COLOR_NAME>
+  { return new DslArticle.ColorAttribute(t1.image); }
+}
+
+/** @return a tag */
+DslArticle.DslElement Tag() :
+{
+   Token t, et;
+   Token firstToken = getToken(1);
+   DslArticle.Attribute attr = null;
+}
+{
+    try {
+      <TAG_START> t=<TAG_NAME> [ attr=Attribute() ] et=<TAG_END>
+      { return new DslArticle.Tag(t.image, attr); }
+    } catch (ParseException ex) {
+      token_source.SwitchTo(DEFAULT);
+      String s = getTokenText(firstToken, getNextToken());
+      return new DslArticle.Text(s);
+    }
+}
+
+/** @return the end of a tag */
+DslArticle.DslElement EndTag() :
+{
+    Token t;
+    Token firstToken = getToken(1);
+}
+{
+  try {
+    <ENDTAG_START> t=<TAG_NAME> <TAG_END>
+    { return new DslArticle.EndTag(t.image); }
+  } catch (ParseException ex) {
+    token_source.SwitchTo(DEFAULT);
+    String s = getTokenText(firstToken, getNextToken());
+    return new DslArticle.Text(s);
+  }
+}
