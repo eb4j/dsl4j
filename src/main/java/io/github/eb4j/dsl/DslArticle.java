@@ -121,21 +121,25 @@ public class DslArticle implements Visitable {
     }
 
     public static abstract class Attribute extends DslElement {
+        public String name;
+        /** @return the value with quotes removed */
+        public String getValue() {
+            return dequote(name);
+        }
+
+        @Override
+        public void accept(DslVisitor v) {
+            v.visit(this);
+        }
     }
 
     public static class ColorAttribute extends Attribute {
-        public String name;
         public ColorAttribute(String v) {
             name = v;
         }
 
         public String get() {
             return name;
-        }
-
-        @Override
-        public void accept(DslVisitor v) {
-            v.visit(this);
         }
 
         public int getLength() {
@@ -153,7 +157,6 @@ public class DslArticle implements Visitable {
     }
 
     public static class LangAttribute extends Attribute {
-        public String name;
         public LangAttribute(String k, String v) {
             if (k.equals("name")) {
                 name = v;
@@ -168,16 +171,10 @@ public class DslArticle implements Visitable {
         }
 
         @Override
-        public void accept(DslVisitor v) {
-            v.visit(this);
-        }
-
-        @Override
         public String toString() {
             StringBuffer s = new StringBuffer();
-            s.append("name=\"");
+            s.append("name=");
             s.append(name);
-            s.append("\"");
             return s.toString();
         }
 

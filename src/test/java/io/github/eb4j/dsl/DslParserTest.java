@@ -50,7 +50,7 @@ public class DslParserTest {
         DslDumper dumper = new DslDumper(baos, StandardCharsets.UTF_8);
         article.accept(dumper);
         dumper.finish();
-        assertEquals("[trn][c color=\"green\"]abc[/c][/trn]", baos.toString());
+        assertEquals("[trn][lang name=\"Russian\"]abc[/lang][/trn]", baos.toString());
     }
 
 

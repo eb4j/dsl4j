@@ -26,13 +26,14 @@ options {
 }
 
 PARSER_BEGIN(DslParser)
+
 package io.github.eb4j.dsl;
 
 public class DslParser {
 
   private static String getTokenText(Token first, Token cur) {
     Token t;
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
 
     for (t=first; t != cur.next; t = t.next) {
       if (t.specialToken != null) {
@@ -92,10 +93,11 @@ PARSER_END(DslParser)
 }
 
 <LexInTag> TOKEN : {
-  <TAG_END: "]" >        : DEFAULT
-  | <ATTR_EQ: "=" > : LexInTag
-  | <NEWALIAS: <COLOR_NAME> >     : LexInTag
-  | <LANG_ATTR: ("name" |"id") >  : LexAttrVal
+  <ATTR_NAME: ("name" | "id") >
+  | <TAG_END: "]" >        : DEFAULT
+  | <NEWALIAS: <COLOR_NAME> >  : LexInTag
+  | <ATTR_EQ: "=" >        : LexAttrVal
+  | <LIT_ERROR: ~[]>
 }
 
 <LexAttrVal> SPECIAL_TOKEN : {
@@ -151,7 +153,7 @@ DslArticle.Attribute Attribute() :
   Token t1, t2=null;
 }
 {
-  t1=<LANG_ATTR> <ATTR_EQ> t2=<ATTR_VAL>
+  t1=<ATTR_NAME> <ATTR_EQ> t2=<ATTR_VAL>
   { return new DslArticle.LangAttribute(t1.image, t2.image); }
   | t1=<COLOR_NAME>
   { return new DslArticle.ColorAttribute(t1.image); }
