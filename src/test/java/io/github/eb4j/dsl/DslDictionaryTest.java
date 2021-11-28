@@ -54,7 +54,7 @@ class DslDictionaryTest {
                                 "[m2]to [ref]abandon attempts[/ref][/m]\n" +
                                 "[m2]to [ref]abandon a claim[/ref][/m]\n" +
                                 "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
-                                "[m2]to [ref]abandon the [gold] standard[/ref][/m]\n" +
+                                "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
                                 "[m2]to [ref]abandon price control[/ref][/m]\n" +
                                 "[m2]to [ref]abandon a right[/ref][/m]\n",
                         baos.toString("UTF-8"));

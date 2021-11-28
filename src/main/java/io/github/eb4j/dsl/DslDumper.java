@@ -43,7 +43,7 @@ public class DslDumper extends DslVisitor {
     }
 
     /**
-     * Visit a tag
+     * Visit a Tag.
      *
      * @param tag
      */
@@ -53,23 +53,24 @@ public class DslDumper extends DslVisitor {
     }
 
     /**
-     * Visit a text
+     * Visit a Text.
      *
      * @param t
      */
     @Override
-    public void visit(DslArticle.Text t) {
-        if (t.equals("[")) {
-            out.print("\\[");
-        } else if (t.equals("]")) {
-            out.print("\\]");
-        } else {
-            out.print(t);
+    public void visit(final DslArticle.Text t) {
+        String result = t.text;
+        if (t.text.equals("[")) {
+            result = "\\[";
         }
+        if (t.text.equals("]")) {
+            result = "\\]";
+        }
+        out.print(result);
     }
 
     /**
-     * Visit an Attribute
+     * Visit an Attribute.
      *
      * @param a
      */
@@ -79,7 +80,7 @@ public class DslDumper extends DslVisitor {
     }
 
     /**
-     * Visit a NewLine
+     * Visit a NewLine.
      *
      * @param n
      */
@@ -89,7 +90,7 @@ public class DslDumper extends DslVisitor {
     }
 
     /**
-     * Visit an EndTag
+     * Visit an EndTag.
      *
      * @param endTag
      */
