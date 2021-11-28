@@ -1,25 +1,50 @@
+/*
+ * DSL4J, a parser library for LingoDSL format.
+ * Copyright (C) 2021 Hiroshi Miura.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package io.github.eb4j.dsl;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-
+/**
+ * Simple HTML filter for LingvoDSL parser.
+ * <p>
+ *     A sample of visitor converting to HTML.
+ * </p>
+ * @author Hiroshi Miura
+ */
 public class DslHtmlFilter extends DslVisitor {
 
     private static StringBuilder sb = new StringBuilder();
-    private String lastTag;
 
+    /**
+     * Constructor.
+     */
     public DslHtmlFilter() {
-        lastTag = "";
     }
 
+    /**
+     * Get HTML as String.
+     * @return partial HTML.
+     */
     public String toString() {
         return sb.toString();
     }
 
     /**
-     * Visit a tag
+     * Visit a tag.
      *
      * @param tag
      */
@@ -66,11 +91,10 @@ public class DslHtmlFilter extends DslVisitor {
         } else if (tag.tagName.equals("url")) {
             sb.append("<a href=\"");
         }
-        lastTag = tag.tagName;
     }
 
     /**
-     * Visit an EndTag
+     * Visit an EndTag.
      *
      * @param endTag
      */
@@ -99,7 +123,7 @@ public class DslHtmlFilter extends DslVisitor {
     }
 
     /**
-     * Visit a text
+     * Visit a text.
      *
      * @param t
      */
@@ -109,7 +133,7 @@ public class DslHtmlFilter extends DslVisitor {
     }
 
     /**
-     * Visit an Attribute
+     * Visit an Attribute.
      *
      * @param a
      */
@@ -118,7 +142,7 @@ public class DslHtmlFilter extends DslVisitor {
     }
 
     /**
-     * Visit a NewLine
+     * Visit a NewLine.
      *
      * @param n
      */
