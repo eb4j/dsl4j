@@ -59,7 +59,13 @@ public class DslDumper extends DslVisitor {
      */
     @Override
     public void visit(DslArticle.Text t) {
-        out.print(t);
+        if (t.equals("[")) {
+            out.print("\\[");
+        } else if (t.equals("]")) {
+            out.print("\\]");
+        } else {
+            out.print(t);
+        }
     }
 
     /**
