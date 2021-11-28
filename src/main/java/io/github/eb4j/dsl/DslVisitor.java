@@ -31,18 +31,15 @@ public abstract class DslVisitor {
     /**
      * Visit an Attribute
      */
-    public void visit(DslArticle.Attribute a) {
-    }
+    public abstract void visit(DslArticle.Attribute a);
 
     /**
      * Visit a NewLine
      */
-    public void visit(DslArticle.Newline n) {
-    }
+    public abstract void visit(DslArticle.Newline n);
 
     /** Visit an EndTag */
-    public void visit(DslArticle.EndTag endTag){
-    }
+    public abstract void visit(DslArticle.EndTag endTag);
 
     /** Visit an ElementSequence. */
     public void visit(DslArticle.ElementSequence s) {

@@ -134,10 +134,6 @@ public class DslArticle implements Visitable {
             name = v;
         }
 
-        public String get() {
-            return name;
-        }
-
         public int getLength() {
             return name.length() + 2;
         }
@@ -160,10 +156,6 @@ public class DslArticle implements Visitable {
                 // FIXME
                 name = "";
             }
-        }
-
-        public String get() {
-            return name;
         }
 
         @Override
