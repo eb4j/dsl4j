@@ -71,8 +71,8 @@ PARSER_END(DslParser)
   | <#QUOTED_STRING: <QUOTE> ( ~["\""] )* <QUOTE> >
   | <#WHITESPACE: ( " " | "\t" | "\n" | "\r" ) >
   | <#NEWLINE:    ( "\r\n" | "\r" | "\n" ) >
-  | <MEAN: "m" |"m1" | "m2" | "m3" | "m4" >
-  | <COLOR_NAME: "green" | "gray" | "blue" | "red" >
+  | <#MEAN: ("m" |"m1" | "m2" | "m3" | "m4") >
+  | <#COLOR_NAMES: "green" | "gray" | "blue" | "red" >
 }
 
 <DEFAULT> TOKEN : {
@@ -95,7 +95,7 @@ PARSER_END(DslParser)
 <LexInTag> TOKEN : {
   <ATTR_NAME: ("name" | "id") >
   | <TAG_END: "]" >        : DEFAULT
-  | <NEWALIAS: <COLOR_NAME> >  : LexInTag
+  | <COLOR_NAME: <COLOR_NAMES> > : LexInTag
   | <ATTR_EQ: "=" >        : LexAttrVal
   | <LIT_ERROR: ~[]>
 }
