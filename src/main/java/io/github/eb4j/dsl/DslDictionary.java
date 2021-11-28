@@ -52,7 +52,7 @@ public class DslDictionary {
         return !line.isEmpty() && !line.startsWith("#");
     }
 
-    public static DslDictionary loadDicitonary(final File file) throws IOException {
+    public static DslDictionary loadDictionary(final File file) throws IOException {
         if (!file.isFile()) {
             throw new IOException("Target file is not a file.");
         }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <Source name="~.*/generated/.*\.java" />
+  </Match>
+  <Match>
+    <Class name="io.github.eb4j.dsl.DslArticle"/>
+    <Bug code="EI2"/>
+  </Match>
+</FindBugsFilter>

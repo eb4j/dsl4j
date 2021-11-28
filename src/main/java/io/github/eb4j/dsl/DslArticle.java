@@ -45,10 +45,6 @@ public class DslArticle implements Visitable {
             return s;
     }
 
-    public String toString() {
-        return null;
-    }
-
     /**
      * Abstract class for elements.  Enforces support for Visitors.
      */
@@ -203,16 +199,11 @@ public class DslArticle implements Visitable {
     }
 
     public static class ElementSequence {
-        private List elements;
-
-        /** Constructor. */
-        public ElementSequence(int n) {
-            elements = new ArrayList(n);
-        }
+        private final List<DslElement> elements;
 
         /** Constructor. */
         public ElementSequence() {
-            elements = new ArrayList();
+            elements = new ArrayList<>();
         }
 
         /** Add element to list. */
@@ -238,7 +229,7 @@ public class DslArticle implements Visitable {
          *
          * @param collection to replace elements with
          */
-        public void setElements(List collection) {
+        public void setElements(List<DslElement> collection) {
             elements.clear();
             elements.addAll(collection);
         }

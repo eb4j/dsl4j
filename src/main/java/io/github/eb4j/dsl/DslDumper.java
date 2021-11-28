@@ -23,13 +23,14 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 public class DslDumper extends DslVisitor {
     protected PrintWriter out;
 
     /** Constructor. */
     public DslDumper(OutputStream os) {
-        out = new PrintWriter(os);
+        this(os, StandardCharsets.UTF_8);
     }
 
     /** Constructor. */
