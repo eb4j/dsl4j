@@ -27,7 +27,7 @@ package io.github.eb4j.dsl;
  */
 public class DslHtmlFilter extends DslVisitor {
 
-    private static StringBuilder sb;
+    private StringBuilder sb;
 
     /**
      * Constructor.
