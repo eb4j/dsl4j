@@ -2,6 +2,7 @@ package io.github.eb4j.dsl;
 
 import io.github.eb4j.dsl.visitor.DumpDslVisitor;
 import io.github.eb4j.dsl.visitor.HtmlDslVisitor;
+import io.github.eb4j.dsl.visitor.PlainDslVisitor;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -33,8 +34,23 @@ class DslDictionaryTest {
     @Test
     void loadDicitonaryMulti() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
-        DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult res = dictionary.lookup("abandon");
+
+        PlainDslVisitor plainFilter = new PlainDslVisitor();
+        for (Map.Entry<String, String> entry: res.getEntries(plainFilter)) {
+            assertEquals("1. отказываться (от чего-л.)," +
+                    " прекращать (попытки и т. п.)\n" +
+                    "2. покидать, оставлять\n" +
+                    "to abandon attempts\n" +
+                    "to abandon a claim\n" +
+                    "to abandon convertibility\n" +
+                    "to abandon the [gold] standard\n" +
+                    "to abandon price control\n" +
+                    "to abandon a right\n", entry.getValue());
+            break;
+        }
+
+        DumpDslVisitor dumper = new DumpDslVisitor();
         for (Map.Entry<String, String> entry: res.getEntries(dumper)) {
             assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
                             " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
@@ -47,14 +63,9 @@ class DslDictionaryTest {
                             "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
             break;
         }
-    }
 
-    @Test
-    void loadDictionaryComplexHtml() throws URISyntaxException, IOException {
-        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         HtmlDslVisitor filter = new HtmlDslVisitor();
-        DslResult result = dictionary.lookup("abandon");
-        for (Map.Entry entry: result.getEntries(filter)) {
+        for (Map.Entry entry: res.getEntries(filter)) {
             assertEquals("<p style=\"text-indent: 30px\"><strong>1.</strong>" +
                     " \u043E\u0442\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C\u0441\u044F" +
                     " (<span style='font-style: italic'>\u043E\u0442 \u0447\u0435\u0433\u043E-\u043B.</span>)," +
