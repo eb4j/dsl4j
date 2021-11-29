@@ -1,4 +1,6 @@
-package io.github.eb4j.dsl;
+package io.github.eb4j.dsl.visitor;
+
+import io.github.eb4j.dsl.DslArticle;
 
 public interface IDslVisitor<T> {
     /**

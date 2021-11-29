@@ -16,7 +16,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.eb4j.dsl;
+package io.github.eb4j.dsl.visitor;
+
+import io.github.eb4j.dsl.DslArticle;
 
 /**
  * Simple HTML filter for LingvoDSL parser.

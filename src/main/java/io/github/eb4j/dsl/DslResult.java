@@ -1,5 +1,7 @@
 package io.github.eb4j.dsl;
 
+import io.github.eb4j.dsl.visitor.AbstractDslVisitor;
+
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,5 +1,6 @@
 package io.github.eb4j.dsl;
 
+import io.github.eb4j.dsl.visitor.DslDumpAdapter;
 import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
