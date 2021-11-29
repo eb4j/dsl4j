@@ -19,30 +19,27 @@
 
 package io.github.eb4j.dsl;
 
-import java.io.OutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-public class DslDumper extends DslVisitor {
+/**
+ * Dump visitor adapter.
+ */
+public class DslDumpAdapter extends AbstractDslVisitor<String> {
     protected PrintWriter out;
+    protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    protected Charset charset;
 
     /**
      * Constructor.
-     * @param os OutputStream to dump.
      */
-    public DslDumper(final OutputStream os) {
-        this(os, StandardCharsets.UTF_8);
-    }
-
-    /**
-     * Constructor.
-     * @param os OutputStream to dump.
-     * @param encoding character set when write to os.
-     */
-    public DslDumper(final OutputStream os, final Charset encoding) {
-        out = new PrintWriter(new OutputStreamWriter(os, encoding));
+    public DslDumpAdapter() {
+        charset = StandardCharsets.UTF_8;
+        out = new PrintWriter(new OutputStreamWriter(baos, charset));
     }
 
     /**
@@ -116,5 +113,19 @@ public class DslDumper extends DslVisitor {
     @Override
     public void visit(final DslArticle.EndTag endTag) {
         out.print(endTag);
+    }
+
+    /**
+     * Return result.
+     *
+     * @return result.
+     */
+    @Override
+    public String getObject() {
+        try {
+            return baos.toString(charset.name());
+        } catch (UnsupportedEncodingException ignored) {
+        }
+        return null;
     }
 }

@@ -19,6 +19,6 @@
 
 package io.github.eb4j.dsl;
 
-public interface Visitable {
-    void accept(DslVisitor v);
+public interface IVisitable {
+    void accept(AbstractDslVisitor v);
 }

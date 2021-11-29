@@ -10,4 +10,11 @@
       <Bug code="EI2"/>
     </Or>
   </Match>
+  <Match>
+    <Class name="io.github.eb4j.dsl.DslResult"/>
+    <Or>
+      <Bug code="EI"/>
+      <Bug code="EI2"/>
+    </Or>
+  </Match>
 </FindBugsFilter>

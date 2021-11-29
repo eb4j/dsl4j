@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class DslArticle implements Visitable {
+public class DslArticle implements IVisitable {
     private ElementSequence elements;
 
     public DslArticle(final ElementSequence elements) {
@@ -31,7 +31,7 @@ public class DslArticle implements Visitable {
     }
 
     @Override
-    public void accept(final DslVisitor v) {
+    public void accept(final AbstractDslVisitor v) {
         v.visit(this);
     }
 
@@ -57,8 +57,8 @@ public class DslArticle implements Visitable {
     /**
      * Abstract class for elements.  Enforces support for Visitors.
      */
-    public abstract static class DslElement implements Visitable {
-        public abstract void accept(DslVisitor v);
+    public abstract static class DslElement implements IVisitable {
+        public abstract void accept(AbstractDslVisitor v);
         public abstract int getLength();
         public abstract String toString();
     }
@@ -124,7 +124,7 @@ public class DslArticle implements Visitable {
          * @param v visitor.
          */
         @Override
-        public void accept(final DslVisitor v) {
+        public void accept(final AbstractDslVisitor v) {
             v.visit(this);
         }
 
@@ -191,7 +191,7 @@ public class DslArticle implements Visitable {
          * @param v visitor.
          */
         @Override
-        public void accept(final DslVisitor v) {
+        public void accept(final AbstractDslVisitor v) {
             v.visit(this);
         }
 
@@ -229,7 +229,7 @@ public class DslArticle implements Visitable {
          * @param v visitor.
          */
         @Override
-        public void accept(final DslVisitor v) {
+        public void accept(final AbstractDslVisitor v) {
             v.visit(this);
         }
     }
@@ -291,7 +291,7 @@ public class DslArticle implements Visitable {
          * Acceptor for text visitor.
          * @param v visitor.
          */
-        public void accept(final DslVisitor v) {
+        public void accept(final AbstractDslVisitor v) {
             v.visit(this);
         }
 
@@ -360,7 +360,7 @@ public class DslArticle implements Visitable {
          * @param v visitor.
          */
         @Override
-        public void accept(final DslVisitor v) {
+        public void accept(final AbstractDslVisitor v) {
             v.visit(this);
         }
 

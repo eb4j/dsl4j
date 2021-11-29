@@ -25,14 +25,14 @@ package io.github.eb4j.dsl;
  * </p>
  * @author Hiroshi Miura
  */
-public class DslHtmlFilter extends DslVisitor {
+public class DslHtmlAdapter extends AbstractDslVisitor<String> {
 
     private StringBuilder sb;
 
     /**
      * Constructor.
      */
-    public DslHtmlFilter() {
+    public DslHtmlAdapter() {
     }
 
     @Override
@@ -42,17 +42,6 @@ public class DslHtmlFilter extends DslVisitor {
 
     @Override
     public void finish() {
-    }
-
-    /**
-     * Get HTML as String.
-     * @return partial HTML.
-     */
-    public String toString() {
-        if (sb == null) {
-            return "";
-        }
-        return sb.toString();
     }
 
     /**
@@ -131,6 +120,19 @@ public class DslHtmlFilter extends DslVisitor {
         } else if (endTag.isTagName("url")) {
             sb.append("\">LINK</a>");
         }
+    }
+
+    /**
+     * Return result.
+     *
+     * @return result.
+     */
+    @Override
+    public String getObject() {
+        if (sb == null) {
+            return "";
+        }
+        return sb.toString();
     }
 
     /**

@@ -28,8 +28,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 
@@ -40,12 +38,12 @@ public class DslDictionary {
         dictionaryData = data;
     }
 
-    public List<Map.Entry<String, Object>> getEntries(final String word) {
-        return dictionaryData.lookUp(word);
+    public DslResult getEntries(final String word) {
+        return new DslResult(dictionaryData.lookUp(word));
     }
 
-    public List<Map.Entry<String, Object>> getEntriesPredictive(final String word) {
-        return dictionaryData.lookUpPredictive(word);
+    public DslResult getEntriesPredictive(final String word) {
+         return new DslResult(dictionaryData.lookUpPredictive(word));
     }
 
     private static boolean testLine(final String line) {

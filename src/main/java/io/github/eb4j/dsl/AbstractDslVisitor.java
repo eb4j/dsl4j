@@ -21,7 +21,15 @@ package io.github.eb4j.dsl;
 
 import java.util.Iterator;
 
-public abstract class DslVisitor {
+/**
+ * Abstract visitor.
+ * @param <T> object to get from visitor.
+ */
+public abstract class AbstractDslVisitor<T> implements IDslVisitor<T> {
+
+    public AbstractDslVisitor() {
+    }
+
     /**
      * Visit a tag.
      * @param tag to visit.
@@ -53,6 +61,13 @@ public abstract class DslVisitor {
     public abstract void visit(DslArticle.EndTag endTag);
 
     /**
+     * Return result.
+     * @param <T> Type.
+     * @return result.
+     */
+    public abstract T getObject();
+
+    /**
      * Visit an ElementSequence.
      * @param s ElementSequence Object to visit.
      */
@@ -80,4 +95,5 @@ public abstract class DslVisitor {
     /** Finish. */
     public void finish() {
     }
+
 }
