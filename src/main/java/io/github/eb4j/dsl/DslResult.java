@@ -15,7 +15,7 @@ public class DslResult {
         result = res;
     }
 
-    public <T> List<Map.Entry<String, T>> getText(final DslVisitor<T> filter) {
+    public <T> List<Map.Entry<String, T>> getEntries(final DslVisitor<T> filter) {
         List<Map.Entry<String, T>> res = new ArrayList<>();
         for (Map.Entry<String, Object> entry: result) {
             try {

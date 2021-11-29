@@ -40,11 +40,11 @@ public class DslDictionary {
         dictionaryData = data;
     }
 
-    public DslResult getEntries(final String word) {
+    public DslResult lookup(final String word) {
         return new DslResult(dictionaryData.lookUp(word));
     }
 
-    public DslResult getEntriesPredictive(final String word) {
+    public DslResult lookupPredictive(final String word) {
          return new DslResult(dictionaryData.lookUpPredictive(word));
     }
 

@@ -21,8 +21,8 @@ class DslDictionaryTest {
     void loadDicitonarySingle() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         DumpDslVisitor dumper = new DumpDslVisitor();
-        DslResult results = dictionary.getEntries("space");
-        for (Map.Entry<String, String> entry: results.getText(dumper)) {
+        DslResult results = dictionary.lookup("space");
+        for (Map.Entry<String, String> entry: results.getEntries(dumper)) {
             assertEquals("space", entry.getKey());
             assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
                     entry.getValue());
@@ -34,8 +34,8 @@ class DslDictionaryTest {
     void loadDicitonaryMulti() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         DumpDslVisitor dumper = new DumpDslVisitor();
-        DslResult res = dictionary.getEntries("abandon");
-        for (Map.Entry<String, String> entry: res.getText(dumper)) {
+        DslResult res = dictionary.lookup("abandon");
+        for (Map.Entry<String, String> entry: res.getEntries(dumper)) {
             assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
                             " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
                             "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
@@ -53,9 +53,8 @@ class DslDictionaryTest {
     void loadDictionaryComplexHtml() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         HtmlDslVisitor filter = new HtmlDslVisitor();
-        DslResult result = dictionary.getEntries("abandon");
-        List<Map.Entry<String, String>> out = result.getText(filter);
-        for (Map.Entry entry: out) {
+        DslResult result = dictionary.lookup("abandon");
+        for (Map.Entry entry: result.getEntries(filter)) {
             assertEquals("<p style=\"text-indent: 30px\"><strong>1.</strong>" +
                     " \u043E\u0442\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C\u0441\u044F" +
                     " (<span style='font-style: italic'>\u043E\u0442 \u0447\u0435\u0433\u043E-\u043B.</span>)," +
