@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class DslArticle implements IVisitable {
+public class DslArticle implements Visitable {
     private ElementSequence elements;
 
     public DslArticle(final ElementSequence elements) {
@@ -59,7 +59,7 @@ public class DslArticle implements IVisitable {
     /**
      * Abstract class for elements.  Enforces support for Visitors.
      */
-    public abstract static class DslElement implements IVisitable {
+    public abstract static class DslElement implements Visitable {
         public abstract void accept(DslVisitor v);
         public abstract int getLength();
         public abstract String toString();

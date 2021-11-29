@@ -21,6 +21,6 @@ package io.github.eb4j.dsl;
 
 import io.github.eb4j.dsl.visitor.DslVisitor;
 
-public interface IVisitable {
+public interface Visitable {
     void accept(DslVisitor v);
 }
