@@ -82,7 +82,12 @@
         <property name="max" value="120"/>
     </module>
 
-    <module name="SuppressWarningsFilter" />
+    <module name="SuppressWarningsFilter"/>
+
+    <module name="SuppressionFilter">
+        <property name="file" value="${config_loc}/suppressions.xml"/>
+    </module>
+
     <module name="TreeWalker">
 
         <module name="SuppressWarningsHolder" />

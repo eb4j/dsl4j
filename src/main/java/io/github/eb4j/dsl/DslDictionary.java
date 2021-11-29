@@ -61,10 +61,20 @@ public class DslDictionary {
         StringBuilder trans = new StringBuilder();
         try (FileInputStream fis = new FileInputStream(file)) {
             // Un-gzip if necessary
-            InputStream is = file.getName().endsWith(".dz") ? new GZIPInputStream(fis, 8192) : fis;
+            InputStream is;
+            if (file.getName().endsWith(".dz")) {
+                is = new GZIPInputStream(fis, 8192);
+            } else {
+                is = fis;
+            }
             try (BOMInputStream bis = new BOMInputStream(is)) {
                 // Detect charset
-                Charset charset = bis.hasBOM() ? StandardCharsets.UTF_8 : StandardCharsets.UTF_16;
+                Charset charset;
+                if (bis.hasBOM()) {
+                    charset = StandardCharsets.UTF_8;
+                } else {
+                    charset = StandardCharsets.UTF_16;
+                }
                 try (InputStreamReader isr = new InputStreamReader(bis, charset);
                      BufferedReader reader = new BufferedReader(isr)) {
                      reader.lines().filter(DslDictionary::testLine)

@@ -28,16 +28,26 @@ import java.nio.charset.StandardCharsets;
 public class DslDumper extends DslVisitor {
     protected PrintWriter out;
 
-    /** Constructor. */
-    public DslDumper(OutputStream os) {
+    /**
+     * Constructor.
+     * @param os OutputStream to dump.
+     */
+    public DslDumper(final OutputStream os) {
         this(os, StandardCharsets.UTF_8);
     }
 
-    /** Constructor. */
-    public DslDumper(OutputStream os, Charset encoding) {
+    /**
+     * Constructor.
+     * @param os OutputStream to dump.
+     * @param encoding character set when write to os.
+     */
+    public DslDumper(final OutputStream os, final Charset encoding) {
         out = new PrintWriter(new OutputStreamWriter(os, encoding));
     }
 
+    /**
+     * Finish dumping.
+     */
     public void finish() {
         out.flush();
     }
@@ -48,7 +58,7 @@ public class DslDumper extends DslVisitor {
      * @param tag
      */
     @Override
-    public void visit(DslArticle.Tag tag) {
+    public void visit(final DslArticle.Tag tag) {
         out.print(tag);
     }
 
@@ -59,11 +69,11 @@ public class DslDumper extends DslVisitor {
      */
     @Override
     public void visit(final DslArticle.Text t) {
-        String result = t.text;
-        if (t.text.equals("[")) {
+        String result = t.getText();
+        if (result.equals("[")) {
             result = "\\[";
         }
-        if (t.text.equals("]")) {
+        if (result.equals("]")) {
             result = "\\]";
         }
         out.print(result);
@@ -75,7 +85,7 @@ public class DslDumper extends DslVisitor {
      * @param a
      */
     @Override
-    public void visit(DslArticle.Attribute a) {
+    public void visit(final DslArticle.Attribute a) {
         out.print(a);
     }
 
@@ -85,7 +95,7 @@ public class DslDumper extends DslVisitor {
      * @param n
      */
     @Override
-    public void visit(DslArticle.Newline n) {
+    public void visit(final DslArticle.Newline n) {
         out.println();
     }
 
@@ -95,7 +105,7 @@ public class DslDumper extends DslVisitor {
      * @param endTag
      */
     @Override
-    public void visit(DslArticle.EndTag endTag) {
+    public void visit(final DslArticle.EndTag endTag) {
         out.print(endTag);
     }
 }

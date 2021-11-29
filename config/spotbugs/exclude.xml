@@ -5,6 +5,9 @@
   </Match>
   <Match>
     <Class name="io.github.eb4j.dsl.DslArticle"/>
-    <Bug code="EI2"/>
+    <Or>
+      <Bug code="EI"/>
+      <Bug code="EI2"/>
+    </Or>
   </Match>
 </FindBugsFilter>

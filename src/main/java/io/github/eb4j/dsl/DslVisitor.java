@@ -22,37 +22,54 @@ package io.github.eb4j.dsl;
 import java.util.Iterator;
 
 public abstract class DslVisitor {
-    /** Visit a tag */
+    /**
+     * Visit a tag.
+     * @param tag to visit.
+     */
     public abstract void visit(DslArticle.Tag tag);
 
-    /** Visit a text */
+    /**
+     * Visit a text.
+     * @param t Text object to visit.
+     */
     public abstract void visit(DslArticle.Text t);
 
     /**
-     * Visit an Attribute
+     * Visit an Attribute.
+     * @param a Attribute object to visit.
      */
     public abstract void visit(DslArticle.Attribute a);
 
     /**
-     * Visit a NewLine
+     * Visit a NewLine.
+     * @param n newline object to visit.
      */
     public abstract void visit(DslArticle.Newline n);
 
-    /** Visit an EndTag */
+    /**
+     * Visit an EndTag.
+     * @param endTag to visit.
+     */
     public abstract void visit(DslArticle.EndTag endTag);
 
-    /** Visit an ElementSequence. */
-    public void visit(DslArticle.ElementSequence s) {
+    /**
+     * Visit an ElementSequence.
+     * @param s ElementSequence Object to visit.
+     */
+    public void visit(final DslArticle.ElementSequence s) {
         for (Iterator<DslArticle.DslElement> iterator = s.iterator(); iterator.hasNext();) {
             DslArticle.DslElement dslElement = iterator.next();
             dslElement.accept(this);
         }
     }
 
-    /** Visit a DslDocument. */
-    public void visit(DslArticle d) {
+    /**
+     * Visit a DslArticle..
+     * @param d Root Article to visit.
+     */
+    public void visit(final DslArticle d) {
         start();
-        visit(d.elements);
+        visit(d.getElements());
         finish();
     }
 

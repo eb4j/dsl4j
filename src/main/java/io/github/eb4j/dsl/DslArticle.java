@@ -24,49 +24,114 @@ import java.util.Iterator;
 import java.util.List;
 
 public class DslArticle implements Visitable {
-     ElementSequence elements;
+    private ElementSequence elements;
 
-    public DslArticle(ElementSequence elements) {
+    public DslArticle(final ElementSequence elements) {
         this.elements = elements;
     }
 
     @Override
-    public void accept(DslVisitor v) {
+    public void accept(final DslVisitor v) {
         v.visit(this);
     }
 
-    private static String dequote(String s) {
-        if (s == null)
+    private static String dequote(final String s) {
+        if (s == null) {
             return "";
+        }
         if ((s.startsWith("\"") && s.endsWith("\"")) ||
-                (s.startsWith("'") && s.endsWith("'")))
-            return s.substring(1, s.length()-1);
-        else
-            return s;
+                (s.startsWith("'") && s.endsWith("'"))) {
+            return s.substring(1, s.length() - 1);
+        }
+        return s;
+    }
+
+    /**
+     * Getter for ElementSequence.
+     * @return elements.
+     */
+    public ElementSequence getElements() {
+        return elements;
     }
 
     /**
      * Abstract class for elements.  Enforces support for Visitors.
      */
-    public static abstract class DslElement implements Visitable {
+    public abstract static class DslElement implements Visitable {
         public abstract void accept(DslVisitor v);
         public abstract int getLength();
         public abstract String toString();
     }
 
+    /**
+     * Class to express Tag [...].
+     */
     public static class Tag extends DslElement {
-        public String tagName;
-        public Attribute attribute;
-        public Tag(String t, Attribute a) {
+        /**
+         * Name of tag.
+         */
+        private String tagName;
+        /**
+         * Attribute when exist. Otherwise it is null.
+         */
+        private Attribute attribute;
+
+        /**
+         * constructor.
+         * @param t tagName
+         * @param a attribute
+         */
+        public Tag(final String t, final Attribute a) {
             tagName = t;
             attribute = a;
         }
 
+        /**
+         * Getter of tagName.
+         * @return tag name.
+         */
+        public String getTagName() {
+            return tagName;
+        }
+
+        /**
+         * Is Tag name?
+         * @param name of tag to be checked.
+         * @return true if tag is a specified name, otherwise false.
+         */
+        public boolean isTagName(final String name) {
+            return tagName.equals(name);
+        }
+
+        /**
+         * Getter of attribute.
+         * @return Attribute if tag has, otherwise null;
+         */
+        public Attribute getAttribute() {
+            return attribute;
+        }
+
+        /**
+         * Does tag has attribute?
+         * @return true when tag has attribute, otherwise false.
+         */
+        public boolean hasAttribute() {
+            return attribute != null;
+        }
+
+        /**
+         * Acceptor for visitor.
+         * @param v visitor.
+         */
         @Override
-        public void accept(DslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
 
+        /**
+         * Size of original strings.
+         * @return size of tag include start and end mark[].
+         */
         @Override
         public int getLength() {
             if (attribute != null) {
@@ -76,6 +141,10 @@ public class DslArticle implements Visitable {
             }
         }
 
+        /**
+         * Default string expression.
+         * @return string mostly as same as original expression.
+         */
         @Override
         public String toString() {
             StringBuffer s = new StringBuffer();
@@ -90,17 +159,46 @@ public class DslArticle implements Visitable {
         }
     }
 
+    /**
+     * EndTag class to express [/...].
+     */
     public static class EndTag extends DslElement {
-        public String tagName;
-        public EndTag(String t) {
+        private String tagName;
+
+        public EndTag(final String t) {
             tagName = t;
         }
 
+        /**
+         * Getter of tag name.
+         * @return tag name.
+         */
+        public String getTagName() {
+            return tagName;
+        }
+
+        /**
+         * Is Tag name?
+         * @param name of tag to be checked.
+         * @return true if tag is a specified name, otherwise false.
+         */
+        public boolean isTagName(final String name) {
+            return tagName.equals(name);
+        }
+
+        /**
+         * Visitor accepter.
+         * @param v visitor.
+         */
         @Override
-        public void accept(DslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
 
+        /**
+         * Length of original strings.
+         * @return size.
+         */
         @Override
         public int getLength() {
             return tagName.length() + 2;
@@ -117,20 +215,27 @@ public class DslArticle implements Visitable {
     }
 
     public static abstract class Attribute extends DslElement {
-        public String name;
-        /** @return the value with quotes removed */
+        protected String name;
+
+        /**
+         *  @return the value with quotes removed.
+         */
         public String getValue() {
             return dequote(name);
         }
 
+        /**
+         * Acceptor for Attribute visitor.
+         * @param v visitor.
+         */
         @Override
-        public void accept(DslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
     }
 
     public static class ColorAttribute extends Attribute {
-        public ColorAttribute(String v) {
+        public ColorAttribute(final String v) {
             name = v;
         }
 
@@ -149,7 +254,7 @@ public class DslArticle implements Visitable {
     }
 
     public static class LangAttribute extends Attribute {
-        public LangAttribute(String k, String v) {
+        public LangAttribute(final String k, final String v) {
             if (k.equals("name")) {
                 name = v;
             } else {
@@ -172,12 +277,21 @@ public class DslArticle implements Visitable {
     }
 
     public static class Text extends DslElement {
-        public String text;
-        public Text(String t) {
+        private String text;
+
+        public Text(final String t) {
             text = t;
         }
 
-        public void accept(DslVisitor v) {
+        public String getText() {
+            return text;
+        }
+
+        /**
+         * Acceptor for text visitor.
+         * @param v visitor.
+         */
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
 
@@ -190,6 +304,9 @@ public class DslArticle implements Visitable {
         }
     }
 
+    /**
+     * Element sequence class for holding all elements.
+     */
     public static class ElementSequence {
         private final List<DslElement> elements;
 
@@ -198,10 +315,14 @@ public class DslArticle implements Visitable {
             elements = new ArrayList<>();
         }
 
-        /** Add element to list. */
-        public void addElement(DslElement o) {
+        /**
+         * Add element to list.
+         * @param o DslElement to add.
+         */
+        public void addElement(final DslElement o) {
             elements.add(o);
         }
+
         /**
          * @return the number of elements in this list.
          */
@@ -221,24 +342,40 @@ public class DslArticle implements Visitable {
          *
          * @param collection to replace elements with
          */
-        public void setElements(List<DslElement> collection) {
+        public void setElements(final List<DslElement> collection) {
             elements.clear();
             elements.addAll(collection);
         }
     }
 
+    /**
+     * NewLine expressing class.
+     */
     public static class Newline extends DslElement {
-        public static final String NL = System.getProperty("line.separator");
 
+        private static final String NL = System.getProperty("line.separator");
+
+        /**
+         * Acceptor for NL visitor.
+         * @param v visitor.
+         */
         @Override
-        public void accept(DslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
 
+        /**
+         * Source text length.
+         * @return size of new line character.
+         */
         public int getLength() {
             return NL.length();
         }
 
+        /**
+         * Return NL.
+         * @return new line character.
+         */
         public String toString() {
             return NL;
         }

@@ -46,49 +46,49 @@ public class DslHtmlFilter extends DslVisitor {
     /**
      * Visit a tag.
      *
-     * @param tag
+     * @param tag to visit.
      */
     @Override
-    public void visit(DslArticle.Tag tag) {
-        if (tag.tagName.equals("b")) {
+    public void visit(final DslArticle.Tag tag) {
+        if (tag.isTagName("b")) {
             sb.append("<strong>");
-        } else if (tag.tagName.equals("u")) {
+        } else if (tag.isTagName("u")) {
             sb.append("<span style='text-decoration:underline'>");
-        } else if (tag.tagName.equals("i")) {
+        } else if (tag.isTagName("i")) {
             sb.append("<span style='font-style: italic'>");
-        } else if (tag.tagName.equals("t")) {
+        } else if (tag.isTagName("t")) {
             sb.append("<span>");
-        } else if (tag.tagName.equals("sup")) {
+        } else if (tag.isTagName("sup")) {
             sb.append("<sup>");
-        } else if (tag.tagName.equals("sub")) {
+        } else if (tag.isTagName("sub")) {
             sb.append("<sub>");
-        } else if (tag.tagName.equals("m")) {
+        } else if (tag.isTagName("m")) {
             sb.append("<p style=\"text-indent: 30px\">");
-        } else if (tag.tagName.equals("m1")) {
+        } else if (tag.isTagName("m1")) {
             sb.append("<p style=\"text-indent: 30px\">");
-        } else if (tag.tagName.equals("m2")) {
+        } else if (tag.isTagName("m2")) {
             sb.append("<p style=\"text-indent: 60px\">");
-        } else if (tag.tagName.equals("m3")) {
+        } else if (tag.isTagName("m3")) {
             sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.tagName.equals("m4")) {
+        } else if (tag.isTagName("m4")) {
             sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.tagName.equals("m5")) {
+        } else if (tag.isTagName("m5")) {
             sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.tagName.equals("m6")) {
+        } else if (tag.isTagName("m6")) {
             sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.tagName.equals("m7")) {
+        } else if (tag.isTagName("m7")) {
             sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.tagName.equals("m8")) {
+        } else if (tag.isTagName("m8")) {
             sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.tagName.equals("m9")) {
+        } else if (tag.isTagName("m9")) {
             sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.tagName.equals("c")) {
-            if (tag.attribute != null) {
-                sb.append("<span style=\"color: ").append(tag.attribute.name).append("\">");
+        } else if (tag.isTagName("c")) {
+            if (tag.hasAttribute()) {
+                sb.append("<span style=\"color: ").append(tag.getAttribute().getValue()).append("\">");
             } else {
                 sb.append("<span style=\"color: green\">");
             }
-        } else if (tag.tagName.equals("url")) {
+        } else if (tag.isTagName("url")) {
             sb.append("<a href=\"");
         }
     }
@@ -96,28 +96,27 @@ public class DslHtmlFilter extends DslVisitor {
     /**
      * Visit an EndTag.
      *
-     * @param endTag
+     * @param endTag to visit.
      */
     @Override
-    public void visit(DslArticle.EndTag endTag) {
-
-        if (endTag.tagName.equals("b")) {
+    public void visit(final DslArticle.EndTag endTag) {
+        if (endTag.isTagName("b")) {
             sb.append("</strong>");
-        } else if (endTag.tagName.equals("u")) {
+        } else if (endTag.isTagName("u")) {
             sb.append("</span>");
-        } else if (endTag.tagName.equals("i")) {
+        } else if (endTag.isTagName("i")) {
             sb.append("</span>");
-        } else if (endTag.tagName.equals("t")) {
+        } else if (endTag.isTagName("t")) {
             sb.append("&nbsp;</span>");
-        } else if (endTag.tagName.equals("sup")) {
+        } else if (endTag.isTagName("sup")) {
             sb.append("</sup>");
-        } else if (endTag.tagName.equals("sub")) {
+        } else if (endTag.isTagName("sub")) {
             sb.append("</sub>");
-        } else if (endTag.tagName.equals("m")) {
+        } else if (endTag.isTagName("m")) {
             sb.append("</p>");
-        } else if (endTag.tagName.equals("c")) {
+        } else if (endTag.isTagName("c")) {
             sb.append("</span>");
-        } else if (endTag.tagName.equals("url")) {
+        } else if (endTag.isTagName("url")) {
             sb.append("\">LINK</a>");
         }
     }
@@ -125,29 +124,29 @@ public class DslHtmlFilter extends DslVisitor {
     /**
      * Visit a text.
      *
-     * @param t
+     * @param t Text object to process.
      */
     @Override
-    public void visit(DslArticle.Text t) {
+    public void visit(final DslArticle.Text t) {
         sb.append(t);
     }
 
     /**
      * Visit an Attribute.
      *
-     * @param a
+     * @param a Attribute object to visit.
      */
     @Override
-    public void visit(DslArticle.Attribute a) {
+    public void visit(final DslArticle.Attribute a) {
     }
 
     /**
      * Visit a NewLine.
      *
-     * @param n
+     * @param n NewLine object to visit.
      */
     @Override
-    public void visit(DslArticle.Newline n) {
+    public void visit(final DslArticle.Newline n) {
         sb.append("\n");
     }
 }

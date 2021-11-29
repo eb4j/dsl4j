@@ -37,10 +37,6 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
-tasks.withType<Checkstyle> {
-    exclude("**/generated/*")
-}
-
 spotbugs {
     excludeFilter.set(file("config/spotbugs/exclude.xml"))
 }
