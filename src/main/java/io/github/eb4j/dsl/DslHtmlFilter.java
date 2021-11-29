@@ -42,7 +42,6 @@ public class DslHtmlFilter extends DslVisitor {
 
     @Override
     public void finish() {
-        sb = null;
     }
 
     /**
@@ -50,6 +49,9 @@ public class DslHtmlFilter extends DslVisitor {
      * @return partial HTML.
      */
     public String toString() {
+        if (sb == null) {
+            return "";
+        }
         return sb.toString();
     }
 

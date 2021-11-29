@@ -47,7 +47,6 @@ class DslDictionaryTest {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 DslDumper dumper = new DslDumper(baos, StandardCharsets.UTF_8);
                 article.accept(dumper);
-                dumper.finish();
                 assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
                                 " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
                                 "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
