@@ -19,7 +19,7 @@
 
 package io.github.eb4j.dsl;
 
-import io.github.eb4j.dsl.visitor.AbstractDslVisitor;
+import io.github.eb4j.dsl.visitor.DslVisitor;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,7 +33,7 @@ public class DslArticle implements IVisitable {
     }
 
     @Override
-    public void accept(final AbstractDslVisitor v) {
+    public void accept(final DslVisitor v) {
         v.visit(this);
     }
 
@@ -60,7 +60,7 @@ public class DslArticle implements IVisitable {
      * Abstract class for elements.  Enforces support for Visitors.
      */
     public abstract static class DslElement implements IVisitable {
-        public abstract void accept(AbstractDslVisitor v);
+        public abstract void accept(DslVisitor v);
         public abstract int getLength();
         public abstract String toString();
     }
@@ -126,7 +126,7 @@ public class DslArticle implements IVisitable {
          * @param v visitor.
          */
         @Override
-        public void accept(final AbstractDslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
 
@@ -193,7 +193,7 @@ public class DslArticle implements IVisitable {
          * @param v visitor.
          */
         @Override
-        public void accept(final AbstractDslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
 
@@ -231,7 +231,7 @@ public class DslArticle implements IVisitable {
          * @param v visitor.
          */
         @Override
-        public void accept(final AbstractDslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
     }
@@ -293,7 +293,7 @@ public class DslArticle implements IVisitable {
          * Acceptor for text visitor.
          * @param v visitor.
          */
-        public void accept(final AbstractDslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
 
@@ -362,7 +362,7 @@ public class DslArticle implements IVisitable {
          * @param v visitor.
          */
         @Override
-        public void accept(final AbstractDslVisitor v) {
+        public void accept(final DslVisitor v) {
             v.visit(this);
         }
 

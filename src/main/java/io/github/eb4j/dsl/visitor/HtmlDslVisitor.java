@@ -27,14 +27,14 @@ import io.github.eb4j.dsl.DslArticle;
  * </p>
  * @author Hiroshi Miura
  */
-public class DslHtmlAdapter extends AbstractDslVisitor<String> {
+public class HtmlDslVisitor extends DslVisitor<String> {
 
     private StringBuilder sb;
 
     /**
      * Constructor.
      */
-    public DslHtmlAdapter() {
+    public HtmlDslVisitor() {
     }
 
     @Override

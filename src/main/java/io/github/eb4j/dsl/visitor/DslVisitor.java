@@ -27,9 +27,9 @@ import java.util.Iterator;
  * Abstract visitor.
  * @param <T> object to get from visitor.
  */
-public abstract class AbstractDslVisitor<T> implements IDslVisitor<T> {
+public abstract class DslVisitor<T> {
 
-    public AbstractDslVisitor() {
+    public DslVisitor() {
     }
 
     /**

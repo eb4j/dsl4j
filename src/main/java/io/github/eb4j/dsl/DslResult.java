@@ -1,6 +1,6 @@
 package io.github.eb4j.dsl;
 
-import io.github.eb4j.dsl.visitor.AbstractDslVisitor;
+import io.github.eb4j.dsl.visitor.DslVisitor;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ public class DslResult {
         result = res;
     }
 
-    public <T> List<Map.Entry<String, T>> getText(final AbstractDslVisitor<T> filter) {
+    public <T> List<Map.Entry<String, T>> getText(final DslVisitor<T> filter) {
         List<Map.Entry<String, T>> res = new ArrayList<>();
         for (Map.Entry<String, Object> entry: result) {
             try {

@@ -1,7 +1,7 @@
 package io.github.eb4j.dsl;
 
-import io.github.eb4j.dsl.visitor.DslDumpAdapter;
-import io.github.eb4j.dsl.visitor.DslHtmlAdapter;
+import io.github.eb4j.dsl.visitor.DumpDslVisitor;
+import io.github.eb4j.dsl.visitor.HtmlDslVisitor;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -20,7 +20,7 @@ class DslDictionaryTest {
     @Test
     void loadDicitonarySingle() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
-        DslDumpAdapter dumper = new DslDumpAdapter();
+        DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.getEntries("space");
         for (Map.Entry<String, String> entry: results.getText(dumper)) {
             assertEquals("space", entry.getKey());
@@ -33,7 +33,7 @@ class DslDictionaryTest {
     @Test
     void loadDicitonaryMulti() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
-        DslDumpAdapter dumper = new DslDumpAdapter();
+        DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult res = dictionary.getEntries("abandon");
         for (Map.Entry<String, String> entry: res.getText(dumper)) {
             assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
@@ -52,7 +52,7 @@ class DslDictionaryTest {
     @Test
     void loadDictionaryComplexHtml() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
-        DslHtmlAdapter filter = new DslHtmlAdapter();
+        HtmlDslVisitor filter = new HtmlDslVisitor();
         DslResult result = dictionary.getEntries("abandon");
         List<Map.Entry<String, String>> out = result.getText(filter);
         for (Map.Entry entry: out) {

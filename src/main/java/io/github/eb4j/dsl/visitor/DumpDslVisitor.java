@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Dump visitor adapter.
  */
-public class DslDumpAdapter extends AbstractDslVisitor<String> {
+public class DumpDslVisitor extends DslVisitor<String> {
     protected PrintWriter out;
     protected ByteArrayOutputStream baos = new ByteArrayOutputStream();
     protected Charset charset;
@@ -39,7 +39,7 @@ public class DslDumpAdapter extends AbstractDslVisitor<String> {
     /**
      * Constructor.
      */
-    public DslDumpAdapter() {
+    public DumpDslVisitor() {
         charset = StandardCharsets.UTF_8;
         out = new PrintWriter(new OutputStreamWriter(baos, charset));
     }
