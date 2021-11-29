@@ -55,7 +55,7 @@ public class DslDumper extends DslVisitor {
     /**
      * Visit a Tag.
      *
-     * @param tag
+     * @param tag to visit.
      */
     @Override
     public void visit(final DslArticle.Tag tag) {
@@ -65,7 +65,7 @@ public class DslDumper extends DslVisitor {
     /**
      * Visit a Text.
      *
-     * @param t
+     * @param t Text object to visit.
      */
     @Override
     public void visit(final DslArticle.Text t) {
@@ -82,7 +82,7 @@ public class DslDumper extends DslVisitor {
     /**
      * Visit an Attribute.
      *
-     * @param a
+     * @param a Attribute object to visit.
      */
     @Override
     public void visit(final DslArticle.Attribute a) {
@@ -92,7 +92,7 @@ public class DslDumper extends DslVisitor {
     /**
      * Visit a NewLine.
      *
-     * @param n
+     * @param n NewLine object to visit.
      */
     @Override
     public void visit(final DslArticle.Newline n) {
@@ -102,7 +102,7 @@ public class DslDumper extends DslVisitor {
     /**
      * Visit an EndTag.
      *
-     * @param endTag
+     * @param endTag to visit.
      */
     @Override
     public void visit(final DslArticle.EndTag endTag) {

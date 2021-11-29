@@ -72,6 +72,13 @@ java {
     withJavadocJar()
 }
 
+tasks.withType<Javadoc> {
+    exclude("io/github/eb4j/dsl/DslParser*",
+            "io/github/eb4j/dsl/Token*",
+            "io/github/eb4j/dsl/JavaCharStream.java",
+            "io/github/eb4j/dsl/ParseException.java")
+}
+
 javacc {
     javaCCVersion = "7.0.10"
     configs.create("dsl") {
