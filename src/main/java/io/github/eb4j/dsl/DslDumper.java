@@ -46,8 +46,17 @@ public class DslDumper extends DslVisitor {
     }
 
     /**
+     * Start dumping.
+     */
+    @Override
+    public void start() {
+        // Do nothing.
+    }
+
+    /**
      * Finish dumping.
      */
+    @Override
     public void finish() {
         out.flush();
     }
