@@ -64,7 +64,6 @@ public abstract class DslVisitor<T> {
 
     /**
      * Return result.
-     * @param <T> Type.
      * @return result.
      */
     public abstract T getObject();
