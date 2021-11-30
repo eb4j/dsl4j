@@ -35,7 +35,6 @@ public class HtmlDslVisitor extends DslVisitor<String> {
     private static final String[] IMAGE_EXTS = new String[] {
             ".png", ".jpg", ".PNG", ".JPG", ".jpeg", ".tif", ".TIF", ".BMP", ".bmp", ".tiff", ".TIFF"
     };
-    private static final String[] SOUND_EXTS = new String[] {".WAV", ".wav", ".MP3", ".mp3"};
 
     private StringBuilder sb;
     private boolean mediaTag = false;
@@ -127,15 +126,6 @@ public class HtmlDslVisitor extends DslVisitor<String> {
         return new File(basePath, mediaFile).toURI().toString();
     }
 
-    private boolean isSoundFile(final String filename) {
-        for (String ext: SOUND_EXTS) {
-            if (filename.endsWith(ext)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private boolean isImageFile(final String filename) {
         for (String ext: IMAGE_EXTS) {
             if (filename.endsWith(ext)) {
@@ -161,9 +151,7 @@ public class HtmlDslVisitor extends DslVisitor<String> {
             } else if (endTag.isTagName("s")) {
                 if (isImageFile(mediaFile)) {
                     sb.append("<img src=\"").append(getMediaUrl(mediaFile)).append("\" />");
-                } else if (isSoundFile(mediaFile)) {
-                    sb.append("<a href=\"").append(getMediaUrl(mediaFile)).append("\" >").append(mediaFile).append("</a>");
-                } else {  // unknown files
+                } else {  // sound and unknown files
                     sb.append("<a href=\"").append(getMediaUrl(mediaFile)).append("\" >").append(mediaFile).append("</a>");
                 }
             }
