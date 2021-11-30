@@ -19,9 +19,12 @@
 package io.github.eb4j.dsl.visitor;
 
 import io.github.eb4j.dsl.DslArticle;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Simple HTML filter for LingvoDSL parser.
@@ -32,18 +35,18 @@ import java.io.IOException;
  */
 public class HtmlDslVisitor extends DslVisitor<String> {
 
-    private static final String[] IMAGE_EXTS = new String[] {
-            ".png", ".jpg", ".PNG", ".JPG", ".jpeg"
-            // , ".tif", ".TIF", ".BMP", ".bmp", ".tiff", ".TIFF"
-    };
+    private static final String[] IMAGE_EXTS = new String[] {"png", "jpg", "PNG", "JPG", "jpeg"};
+    private static final Map<String, String> TAGMAP = new HashMap<>();
+    private static final Map<String, String> ENDTAGMAP = new HashMap<>();
+
+    private final File basePath;
 
     private StringBuilder sb;
     private boolean specialTag;
     private String current;
-    private final File basePath;
 
     /**
-     * Constructor.
+     * Default constructor.
      */
     public HtmlDslVisitor() {
         basePath = new File(".");
@@ -80,52 +83,24 @@ public class HtmlDslVisitor extends DslVisitor<String> {
      */
     @Override
     public void visit(final DslArticle.Tag tag) {
-        if (tag.isTagName("b")) {
-            sb.append("<strong>");
-        } else if (tag.isTagName("u")) {
-            sb.append("<span style='text-decoration:underline'>");
-        } else if (tag.isTagName("i")) {
-            sb.append("<span style='font-style: italic'>");
-        } else if (tag.isTagName("t")) {
-            sb.append("<span class=\"term\">");
-        } else if (tag.isTagName("sup")) {
-            sb.append("<sup>");
-        } else if (tag.isTagName("sub")) {
-            sb.append("<sub>");
-        } else if (tag.isTagName("br")) {
-            sb.append("<br/>");
-        } else if (tag.isTagName("m")) {
-            sb.append("<p>");
-        } else if (tag.isTagName("m1")) {
-            sb.append("<p style=\"text-indent: 30px\">");
-        } else if (tag.isTagName("m2")) {
-            sb.append("<p style=\"text-indent: 60px\">");
-        } else if (tag.isTagName("m3")) {
-            sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.isTagName("m4")) {
-            sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.isTagName("m5")) {
-            sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.isTagName("m6")) {
-            sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.isTagName("m7")) {
-            sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.isTagName("m8")) {
-            sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.isTagName("m9")) {
-            sb.append("<p style=\"text-indent: 90px\">");
-        } else if (tag.isTagName("c")) {
+        if (TAGMAP.containsKey(tag.getTagName())) {
+            sb.append(TAGMAP.get(tag.getTagName()));
+            return;
+        }
+        // Handle URL and media tags
+        if (tag.isTagName("url") || tag.isTagName("s") || tag.isTagName("video")) {
+            specialTag = true;
+            return;
+        }
+        // Handle color tags
+        if (tag.isTagName("c")) {
             if (tag.hasAttribute()) {
                 sb.append("<span style=\"color: ").append(tag.getAttribute().getValue()).append("\">");
             } else {
                 sb.append("<span style=\"color: green\">");
             }
-        } else if (tag.isTagName("url")) {
-            sb.append("<a href=\"");
         } else if (tag.isTagName("'")) {
             sb.append("<span style=\"color: red\">");
-        } else if (tag.isTagName("s") || tag.isTagName("video")) {
-            specialTag = true;
         }
     }
 
@@ -134,8 +109,9 @@ public class HtmlDslVisitor extends DslVisitor<String> {
     }
 
     private boolean isMediaImage() {
-        for (String ext: IMAGE_EXTS) {
-            if (current.endsWith(ext)) {
+        String ext = FilenameUtils.getExtension(current);
+        for (String e : IMAGE_EXTS) {
+            if (e.equals(ext)) {
                 return true;
             }
         }
@@ -151,34 +127,23 @@ public class HtmlDslVisitor extends DslVisitor<String> {
     public void visit(final DslArticle.EndTag endTag) {
         if (specialTag) {
             if (current == null) {
+                // ignore tag when no content such as [url][/url], [s][/s]
                 return;
             }
-            if (endTag.isTagName("video")) {
+            if (endTag.isTagName("url")) {
+                sb.append("<a href=\"").append(current).append("\">").append(current).append("</a>");
+            } else if (endTag.isTagName("video") || (endTag.isTagName("s") && !isMediaImage())) {
+                // hyperlink when video or sound
                 sb.append("<a href=\"").append(getMediaUrl()).append("\">").append(current).append("</a>");
             } else if (endTag.isTagName("s")) {
-                if (isMediaImage()) {
-                    sb.append("<img src=\"").append(getMediaUrl()).append("\" />");
-                } else {  // sound and unknown files
-                    sb.append("<a href=\"").append(getMediaUrl()).append("\" >").append(current).append("</a>");
-                }
+                // img tag when image file
+                sb.append("<img src=\"").append(getMediaUrl()).append("\" />");
             }
             specialTag = false;
             current = null;
         }
-        if (endTag.isTagName("b")) {
-            sb.append("</strong>");
-        } else if (endTag.isTagName("c") || endTag.isTagName("'") || endTag.isTagName("u") || endTag.isTagName("i")) {
-            sb.append("</span>");
-        } else if (endTag.isTagName("t")) {
-            sb.append("&nbsp;</span>");
-        } else if (endTag.isTagName("sup")) {
-            sb.append("</sup>");
-        } else if (endTag.isTagName("sub")) {
-            sb.append("</sub>");
-        } else if (endTag.isTagName("m")) {
-            sb.append("</p>");
-        } else if (endTag.isTagName("url")) {
-            sb.append("<a href=\"").append(current).append("\">").append(current).append("</a>");
+        if (ENDTAGMAP.containsKey(endTag.getTagName())) {
+            sb.append(ENDTAGMAP.get(endTag.getTagName()));
         }
     }
 
@@ -225,5 +190,34 @@ public class HtmlDslVisitor extends DslVisitor<String> {
     @Override
     public void visit(final DslArticle.Newline n) {
         sb.append("\n");
+    }
+
+    static {
+        TAGMAP.put("b", "<strong>");
+        ENDTAGMAP.put("b", "</strong>");
+        TAGMAP.put("br", "<br/>");
+        TAGMAP.put("i", "<span style='font-style: italic'>");
+        ENDTAGMAP.put("i", "</span>");
+        TAGMAP.put("t", "<span class=\"term\">");
+        ENDTAGMAP.put("t", "&nbsp;</span>");
+        TAGMAP.put("u", "<span style='text-decoration:underline'>");
+        ENDTAGMAP.put("u", "</span>");
+        TAGMAP.put("sup", "<sup>");
+        ENDTAGMAP.put("sup", "</sup>");
+        TAGMAP.put("sub", "</sub>");
+        ENDTAGMAP.put("sub", "</sub>");
+        ENDTAGMAP.put("c", "</span>");
+        ENDTAGMAP.put("'", "</span>");
+        TAGMAP.put("m", "<p>");
+        TAGMAP.put("m1", "<p style=\"text-indent: 30px\">");
+        TAGMAP.put("m2", "<p style=\"text-indent: 60px\">");
+        TAGMAP.put("m3", "<p style=\"text-indent: 90px\">");
+        TAGMAP.put("m4", "<p style=\"text-indent: 90px\">");
+        TAGMAP.put("m5", "<p style=\"text-indent: 90px\">");
+        TAGMAP.put("m6", "<p style=\"text-indent: 90px\">");
+        TAGMAP.put("m7", "<p style=\"text-indent: 90px\">");
+        TAGMAP.put("m8", "<p style=\"text-indent: 90px\">");
+        TAGMAP.put("m9", "<p style=\"text-indent: 90px\">");
+        ENDTAGMAP.put("m", "</p>");
     }
 }
