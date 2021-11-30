@@ -91,7 +91,7 @@ class DslDictionaryTest {
         File current = new File(".");
         HtmlDslVisitor filter = new HtmlDslVisitor(current.getPath());
         for (Map.Entry entry : res.getEntries(filter)) {
-            assertEquals("<p style=\"text-indent: 30px\">this is media <img src=\"file:"
+            assertEquals("<p>this is media <img src=\"file:"
                     + new File(current, "image.jpg").getAbsolutePath()
                     + "\" />  image and <a href=\"file:"
                     + new File(current, "video.ogv").getAbsolutePath()
