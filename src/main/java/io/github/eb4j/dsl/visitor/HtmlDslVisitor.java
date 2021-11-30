@@ -33,12 +33,13 @@ import java.io.IOException;
 public class HtmlDslVisitor extends DslVisitor<String> {
 
     private static final String[] IMAGE_EXTS = new String[] {
-            ".png", ".jpg", ".PNG", ".JPG", ".jpeg", ".tif", ".TIF", ".BMP", ".bmp", ".tiff", ".TIFF"
+            ".png", ".jpg", ".PNG", ".JPG", ".jpeg"
+            // , ".tif", ".TIF", ".BMP", ".bmp", ".tiff", ".TIFF"
     };
 
     private StringBuilder sb;
-    private boolean mediaTag = false;
-    private String mediaFile;
+    private boolean specialTag;
+    private String current;
     private final File basePath;
 
     /**
@@ -46,6 +47,7 @@ public class HtmlDslVisitor extends DslVisitor<String> {
      */
     public HtmlDslVisitor() {
         basePath = new File(".");
+        specialTag = false;
     }
 
     /**
@@ -59,6 +61,7 @@ public class HtmlDslVisitor extends DslVisitor<String> {
             throw new IOException("Directory not found!");
         }
         basePath = dir;
+        specialTag = false;
     }
 
     @Override
@@ -84,13 +87,15 @@ public class HtmlDslVisitor extends DslVisitor<String> {
         } else if (tag.isTagName("i")) {
             sb.append("<span style='font-style: italic'>");
         } else if (tag.isTagName("t")) {
-            sb.append("<span>");
+            sb.append("<span class=\"term\">");
         } else if (tag.isTagName("sup")) {
             sb.append("<sup>");
         } else if (tag.isTagName("sub")) {
             sb.append("<sub>");
+        } else if (tag.isTagName("br")) {
+            sb.append("<br/>");
         } else if (tag.isTagName("m")) {
-            sb.append("<p style=\"text-indent: 30px\">");
+            sb.append("<p>");
         } else if (tag.isTagName("m1")) {
             sb.append("<p style=\"text-indent: 30px\">");
         } else if (tag.isTagName("m2")) {
@@ -117,18 +122,20 @@ public class HtmlDslVisitor extends DslVisitor<String> {
             }
         } else if (tag.isTagName("url")) {
             sb.append("<a href=\"");
+        } else if (tag.isTagName("'")) {
+            sb.append("<span style=\"color: red\">");
         } else if (tag.isTagName("s") || tag.isTagName("video")) {
-            mediaTag = true;
+            specialTag = true;
         }
     }
 
     private String getMediaUrl() {
-        return new File(basePath, mediaFile).toURI().toString();
+        return new File(basePath, current).toURI().toString();
     }
 
     private boolean isMediaImage() {
         for (String ext: IMAGE_EXTS) {
-            if (mediaFile.endsWith(ext)) {
+            if (current.endsWith(ext)) {
                 return true;
             }
         }
@@ -142,27 +149,25 @@ public class HtmlDslVisitor extends DslVisitor<String> {
      */
     @Override
     public void visit(final DslArticle.EndTag endTag) {
-        if (mediaTag) {
-            if (mediaFile == null) {
+        if (specialTag) {
+            if (current == null) {
                 return;
             }
             if (endTag.isTagName("video")) {
-                sb.append("<a href=\"").append(getMediaUrl()).append("\">").append(mediaFile).append("</a>");
+                sb.append("<a href=\"").append(getMediaUrl()).append("\">").append(current).append("</a>");
             } else if (endTag.isTagName("s")) {
                 if (isMediaImage()) {
                     sb.append("<img src=\"").append(getMediaUrl()).append("\" />");
                 } else {  // sound and unknown files
-                    sb.append("<a href=\"").append(getMediaUrl()).append("\" >").append(mediaFile).append("</a>");
+                    sb.append("<a href=\"").append(getMediaUrl()).append("\" >").append(current).append("</a>");
                 }
             }
-            mediaTag = false;
-            mediaFile = null;
+            specialTag = false;
+            current = null;
         }
         if (endTag.isTagName("b")) {
             sb.append("</strong>");
-        } else if (endTag.isTagName("u")) {
-            sb.append("</span>");
-        } else if (endTag.isTagName("i")) {
+        } else if (endTag.isTagName("c") || endTag.isTagName("'") || endTag.isTagName("u") || endTag.isTagName("i")) {
             sb.append("</span>");
         } else if (endTag.isTagName("t")) {
             sb.append("&nbsp;</span>");
@@ -172,10 +177,8 @@ public class HtmlDslVisitor extends DslVisitor<String> {
             sb.append("</sub>");
         } else if (endTag.isTagName("m")) {
             sb.append("</p>");
-        } else if (endTag.isTagName("c")) {
-            sb.append("</span>");
         } else if (endTag.isTagName("url")) {
-            sb.append("\">LINK</a>");
+            sb.append("<a href=\"").append(current).append("\">").append(current).append("</a>");
         }
     }
 
@@ -199,9 +202,8 @@ public class HtmlDslVisitor extends DslVisitor<String> {
      */
     @Override
     public void visit(final DslArticle.Text t) {
-        if (mediaTag) {
-            mediaFile = t.getText();
-        } else {
+        current = t.getText();
+        if (!specialTag) {
             sb.append(t);
         }
     }
