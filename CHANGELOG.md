@@ -2,6 +2,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+* Fix parsing "]]" bracket
 
 ## [0.2.2]
 * Fix checkstyle warnings and firebugs error

@@ -94,8 +94,8 @@ PARSER_END(DslParser)
   | <TAG_START:     "[" >     : LexStartTag
   | <ENDTAG_START:  "[/" > : LexStartTag
   | <LBRACKET:      ("\\[" | "[[") >
-  | <RBRACKET:      ("\\]" | "]]") >
-  | <PCDATA:        ( ~["[", "\r", "\n", "\\"])+ >
+  | <RBRACKET:      ("\\]" | "]]" | "]") >
+  | <PCDATA:        ( ~["[", "]", "\r", "\n", "\\"])+ >
 }
 
 <LexStartTag> TOKEN: {
@@ -159,9 +159,9 @@ LOOKAHEAD(2)
   | LOOKAHEAD(2)
          <TAG_START> text=<LST_ERROR>
                       { return new DslArticle.Text("[" + text.image); }
-  |   text = <PCDATA> { return new DslArticle.Text(text.image); }
   |   text = <LBRACKET> {return new DslArticle.Text("["); }
   |   text = <RBRACKET> {return new DslArticle.Text("]"); }
+  |   text = <PCDATA> { return new DslArticle.Text(text.image); }
   |          <EOL>    { return new DslArticle.Newline(); }
 }
 

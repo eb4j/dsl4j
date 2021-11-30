@@ -44,7 +44,7 @@ class DslDictionaryTest {
                     "to abandon a claim\n" +
                     "to abandon convertibility\n" +
                     "to abandon the [gold] standard\n" +
-                    "to abandon price control\n" +
+                    "to abandon [price] control\n" +
                     "to abandon a right\n", entry.getValue());
             break;
         }
@@ -58,7 +58,7 @@ class DslDictionaryTest {
                     "[m2]to [ref]abandon a claim[/ref][/m]\n" +
                     "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
                     "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
-                    "[m2]to [ref]abandon price control[/ref][/m]\n" +
+                    "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
                     "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
             break;
         }
@@ -78,7 +78,7 @@ class DslDictionaryTest {
                     "<p style=\"text-indent: 60px\">to abandon a claim</p>\n" +
                     "<p style=\"text-indent: 60px\">to abandon convertibility</p>\n" +
                     "<p style=\"text-indent: 60px\">to abandon the [gold] standard</p>\n" +
-                    "<p style=\"text-indent: 60px\">to abandon price control</p>\n" +
+                    "<p style=\"text-indent: 60px\">to abandon [price] control</p>\n" +
                     "<p style=\"text-indent: 60px\">to abandon a right</p>\n", entry.getValue());
             break;
         }
