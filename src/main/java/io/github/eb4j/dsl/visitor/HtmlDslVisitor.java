@@ -19,6 +19,8 @@
 package io.github.eb4j.dsl.visitor;
 
 import io.github.eb4j.dsl.DslArticle;
+import io.github.eb4j.dsl.data.LanguageCode;
+import io.github.eb4j.dsl.data.LanguageName;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -38,6 +40,8 @@ public class HtmlDslVisitor extends DslVisitor<String> {
     private static final String[] IMAGE_EXTS = new String[] {"png", "jpg", "PNG", "JPG", "jpeg"};
     private static final Map<String, String> TAGMAP = new HashMap<>();
     private static final Map<String, String> ENDTAGMAP = new HashMap<>();
+    private final LanguageCode langCode = new LanguageCode();
+    private final LanguageName langName = new LanguageName();
 
     private final File basePath;
 
@@ -101,6 +105,20 @@ public class HtmlDslVisitor extends DslVisitor<String> {
             }
         } else if (tag.isTagName("'")) {
             sb.append("<span style=\"color: red\">");
+        } else if (tag.isTagName("lang")) {
+            if (tag.hasAttribute() && tag.getAttribute().getKey().equals("id")) {
+                int i = Integer.parseInt(tag.getAttribute().getValue());
+                if (langCode.containsKey(i)) {
+                    sb.append("<span class=\"lang_").append(langCode.get(i)).append("\">");
+                    return;
+                }
+            } else if (tag.hasAttribute() && tag.getAttribute().getKey().equals("id")) {
+                if (langName.containsKey(tag.getAttribute().getValue())) {
+                    sb.append("<span class=\"lang_").append(langName.get(tag.getAttribute().getValue())).append("\">");
+                    return;
+                }
+            }
+            sb.append("<span>");
         }
     }
 
@@ -219,5 +237,6 @@ public class HtmlDslVisitor extends DslVisitor<String> {
         TAGMAP.put("m8", "<p style=\"text-indent: 90px\">");
         TAGMAP.put("m9", "<p style=\"text-indent: 90px\">");
         ENDTAGMAP.put("m", "</p>");
+        ENDTAGMAP.put("lang", "</span>");
     }
 }

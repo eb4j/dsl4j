@@ -46,7 +46,7 @@ public class DslParserTest {
         DslArticle article = parser.DslArticle();
         DumpDslVisitor dumper = new DumpDslVisitor();
         article.accept(dumper);
-        assertEquals("[trn][c color=\"green\"]abc[/c][/trn]", dumper.getObject());
+        assertEquals("[trn][c green]abc[/c][/trn]", dumper.getObject());
     }
 
     @Test
@@ -55,7 +55,16 @@ public class DslParserTest {
         DslArticle article = parser.DslArticle();
         DumpDslVisitor dumper = new DumpDslVisitor();
         article.accept(dumper);
-        assertEquals("[trn][lang name=\"Russian\"]abc[/lang][/trn]",dumper.getObject());
+        assertEquals("[trn][lang name=\"Russian\"]abc[/lang][/trn]", dumper.getObject());
+    }
+
+    @Test
+    void langId() throws ParseException, IOException {
+        DslParser parser = DslParser.createParser("[trn][lang id=1]abc[/lang][/trn]");
+        DslArticle article = parser.DslArticle();
+        DumpDslVisitor visitor = new DumpDslVisitor();
+        article.accept(visitor);
+        assertEquals("[trn][lang id=1]abc[/lang][/trn]", visitor.getObject());
     }
 
     @Test

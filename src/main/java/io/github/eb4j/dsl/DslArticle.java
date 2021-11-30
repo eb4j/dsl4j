@@ -256,21 +256,19 @@ public class DslArticle implements Visitable {
     }
 
     public static class LangAttribute extends Attribute {
+        private String key;
         public LangAttribute(final String k, final String v) {
-            if (k.equals("name")) {
-                name = v;
-            } else {
-                // FIXME
-                name = "";
-            }
+            key = k;
+            name = v;
         }
 
         @Override
         public String toString() {
-            StringBuffer s = new StringBuffer();
-            s.append("name=");
-            s.append(name);
-            return s.toString();
+            if (key.equals("name")) {
+                return "name=" + name;
+            } else {
+                return "id=" + name;
+            }
         }
 
         public int getLength() {

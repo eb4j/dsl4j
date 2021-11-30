@@ -66,9 +66,11 @@ PARSER_END(DslParser)
 <*> TOKEN : {
   <#QUOTE: "\"" >
   | <#QUOTED_STRING: <QUOTE> ( ~["\""] )* <QUOTE> >
+  | <#NUMBER: ["0" - "9"] >
+  | <#PNUMBER: ["1" - "9"] >
   | <#WHITESPACE: ( " " | "\t" | "\n" | "\r" ) >
   | <#NEWLINE:    ( "\r\n" | "\r" | "\n" ) >
-  | <#MEAN: ("m" |"m1" | "m2" | "m3" | "m4") >
+  | <#MEAN: ("m" | "m" <PNUMBER> ) >
   | <#COLOR_NAMES: "aliceblue" | "antiquewhite" | "aqua" | "aquamarine" | "azure" | "beige" | "bisque" | "black" |
         "blanchedalmond" | "blue" | "blueviolet" | "brown" | "burlywood" | "cadetblue" | "chartreuse" | "chocolate" |
         "coral" | "cornflowerblue" | "cornsilk" | "crimson" | "cyan" | "darkblue" | "darkcyan" | "darkgoldenrod" |
@@ -121,7 +123,7 @@ PARSER_END(DslParser)
 }
 
 <LexAttrVal> TOKEN : {
-  <ATTR_VAL: <QUOTED_STRING> >  : LexInTag
+  <ATTR_VAL: (<QUOTED_STRING> | <NUMBER>) >  : LexInTag
 }
 
 /** Constructor. */
