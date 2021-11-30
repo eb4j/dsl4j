@@ -11,7 +11,7 @@ public class DslResult {
 
     private final List<Map.Entry<String, Object>> result;
 
-    public DslResult(List<Map.Entry<String, Object>> res) {
+    public DslResult(final List<Map.Entry<String, Object>> res) {
         result = res;
     }
 

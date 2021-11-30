@@ -32,7 +32,7 @@ public class PlainDslVisitor extends DslVisitor<String> {
      * @param tag to visit.
      */
     @Override
-    public void visit(DslArticle.Tag tag) {
+    public void visit(final DslArticle.Tag tag) {
     }
 
     /**
@@ -41,7 +41,7 @@ public class PlainDslVisitor extends DslVisitor<String> {
      * @param t Text object to visit.
      */
     @Override
-    public void visit(DslArticle.Text t) {
+    public void visit(final DslArticle.Text t) {
         out.print(t.getText());
     }
 
@@ -51,7 +51,7 @@ public class PlainDslVisitor extends DslVisitor<String> {
      * @param a Attribute object to visit.
      */
     @Override
-    public void visit(DslArticle.Attribute a) {
+    public void visit(final DslArticle.Attribute a) {
     }
 
     /**
@@ -60,7 +60,7 @@ public class PlainDslVisitor extends DslVisitor<String> {
      * @param n newline object to visit.
      */
     @Override
-    public void visit(DslArticle.Newline n) {
+    public void visit(final DslArticle.Newline n) {
         out.println();
     }
 
@@ -70,7 +70,7 @@ public class PlainDslVisitor extends DslVisitor<String> {
      * @param endTag to visit.
      */
     @Override
-    public void visit(DslArticle.EndTag endTag) {
+    public void visit(final DslArticle.EndTag endTag) {
     }
 
     @Override

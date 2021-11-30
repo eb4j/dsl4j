@@ -122,13 +122,13 @@ public class HtmlDslVisitor extends DslVisitor<String> {
         }
     }
 
-    private String getMediaUrl(final String mediaFile) {
+    private String getMediaUrl() {
         return new File(basePath, mediaFile).toURI().toString();
     }
 
-    private boolean isImageFile(final String filename) {
+    private boolean isMediaImage() {
         for (String ext: IMAGE_EXTS) {
-            if (filename.endsWith(ext)) {
+            if (mediaFile.endsWith(ext)) {
                 return true;
             }
         }
@@ -147,12 +147,12 @@ public class HtmlDslVisitor extends DslVisitor<String> {
                 return;
             }
             if (endTag.isTagName("video")) {
-                sb.append("<a href=\"").append(getMediaUrl(mediaFile)).append("\">").append(mediaFile).append("</a>");
+                sb.append("<a href=\"").append(getMediaUrl()).append("\">").append(mediaFile).append("</a>");
             } else if (endTag.isTagName("s")) {
-                if (isImageFile(mediaFile)) {
-                    sb.append("<img src=\"").append(getMediaUrl(mediaFile)).append("\" />");
+                if (isMediaImage()) {
+                    sb.append("<img src=\"").append(getMediaUrl()).append("\" />");
                 } else {  // sound and unknown files
-                    sb.append("<a href=\"").append(getMediaUrl(mediaFile)).append("\" >").append(mediaFile).append("</a>");
+                    sb.append("<a href=\"").append(getMediaUrl()).append("\" >").append(mediaFile).append("</a>");
                 }
             }
             mediaTag = false;
