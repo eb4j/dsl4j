@@ -32,24 +32,26 @@ where `T` is decided by visitor.
 
 ### Example
 
+Here is a simple example how to use it.
+
 ```java
 DslDictionary dslDictionary = DslDictionary.loadData(file);
+PlainDslVisitor plainDslVisitor = new PlainDslVisitor();
 DslResult dslResult = dslDictionary.lookup(word);
-for (Entry<String,String> entry: dslResult.getEntries(htmlDslVisitor)) {
+for (Entry<String,String> entry: dslResult.getEntries(plainDslVisitor)) {
     String key = entry.getKey();
     String article = entry.getValue();
 }
 ```
 
-or with java8 stream;
+Here is pragmatic one with java8 streams, predictive search method and HTML converter;
 
 ```java
 DslDictionary dslDictionary = DslDictionary.loadData(file);
+HtmlDslVisitor htmlDslVisitor = new HtmlDslVisitor(file.getParent());
 List<String> result =
     dslDictionary.lookupPredictive(word).getEntries(htmlDslVisitor).stream()
-            .map(e -> {"<strong>" + e.getKey() + "</strong><br/>" + e.getValue() + "</brPredictive(word).getEntries(htmlDslVisitor).stream()
-        .map(e -> e.getKey() + e.getValue())
-        .collect(Coll>"})
+            .map(e -> {"<p><strong>" + e.getKey() + "</strong>" + e.getValue() + "</p>"})
             .collect(Collectors.toList());
 ```
 
