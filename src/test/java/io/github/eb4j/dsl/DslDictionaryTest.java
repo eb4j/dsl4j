@@ -22,7 +22,7 @@ class DslDictionaryTest {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("space");
-        for (Map.Entry<String, String> entry: results.getEntries(dumper)) {
+        for (Map.Entry<String, String> entry : results.getEntries(dumper)) {
             assertEquals("space", entry.getKey());
             assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
                     entry.getValue());
@@ -36,7 +36,7 @@ class DslDictionaryTest {
         DslResult res = dictionary.lookup("abandon");
 
         PlainDslVisitor plainFilter = new PlainDslVisitor();
-        for (Map.Entry<String, String> entry: res.getEntries(plainFilter)) {
+        for (Map.Entry<String, String> entry : res.getEntries(plainFilter)) {
             assertEquals("1. отказываться (от чего-л.)," +
                     " прекращать (попытки и т. п.)\n" +
                     "2. покидать, оставлять\n" +
@@ -50,21 +50,21 @@ class DslDictionaryTest {
         }
 
         DumpDslVisitor dumper = new DumpDslVisitor();
-        for (Map.Entry<String, String> entry: res.getEntries(dumper)) {
+        for (Map.Entry<String, String> entry : res.getEntries(dumper)) {
             assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
-                            " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
-                            "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
-                            "[m2]to [ref]abandon attempts[/ref][/m]\n" +
-                            "[m2]to [ref]abandon a claim[/ref][/m]\n" +
-                            "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
-                            "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
-                            "[m2]to [ref]abandon price control[/ref][/m]\n" +
-                            "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
+                    " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
+                    "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
+                    "[m2]to [ref]abandon attempts[/ref][/m]\n" +
+                    "[m2]to [ref]abandon a claim[/ref][/m]\n" +
+                    "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
+                    "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
+                    "[m2]to [ref]abandon price control[/ref][/m]\n" +
+                    "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
             break;
         }
 
         HtmlDslVisitor filter = new HtmlDslVisitor();
-        for (Map.Entry entry: res.getEntries(filter)) {
+        for (Map.Entry entry : res.getEntries(filter)) {
             assertEquals("<p style=\"text-indent: 30px\"><strong>1.</strong>" +
                     " \u043E\u0442\u043A\u0430\u0437\u044B\u0432\u0430\u0442\u044C\u0441\u044F" +
                     " (<span style='font-style: italic'>\u043E\u0442 \u0447\u0435\u0433\u043E-\u043B.</span>)," +
@@ -81,6 +81,21 @@ class DslDictionaryTest {
                     "<p style=\"text-indent: 60px\">to abandon price control</p>\n" +
                     "<p style=\"text-indent: 60px\">to abandon a right</p>\n", entry.getValue());
             break;
+        }
+    }
+
+    @Test
+    void loadDicitonaryMedia() throws URISyntaxException, IOException {
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        DslResult res = dictionary.lookup("media");
+        File current = new File(".");
+        HtmlDslVisitor filter = new HtmlDslVisitor(current.getPath());
+        for (Map.Entry entry : res.getEntries(filter)) {
+            assertEquals("<p style=\"text-indent: 30px\">this is media <img src=\"file:"
+                    + new File(current, "image.jpg").getAbsolutePath()
+                    + "\" />  image and <a href=\"file:"
+                    + new File(current, "video.ogv").getAbsolutePath()
+                    + "\">video.ogv</a></p>\n", entry.getValue());
         }
     }
 }

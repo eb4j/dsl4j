@@ -20,6 +20,9 @@ package io.github.eb4j.dsl.visitor;
 
 import io.github.eb4j.dsl.DslArticle;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * Simple HTML filter for LingvoDSL parser.
  * <p>
@@ -29,12 +32,34 @@ import io.github.eb4j.dsl.DslArticle;
  */
 public class HtmlDslVisitor extends DslVisitor<String> {
 
+    private static final String[] IMAGE_EXTS = new String[] {
+            ".png", ".jpg", ".PNG", ".JPG", ".jpeg", ".tif", ".TIF", ".BMP", ".bmp", ".tiff", ".TIFF"
+    };
+    private static final String[] SOUND_EXTS = new String[] {".WAV", ".wav", ".MP3", ".mp3"};
+
     private StringBuilder sb;
+    private boolean mediaTag = false;
+    private String mediaFile;
+    private final File basePath;
 
     /**
      * Constructor.
      */
     public HtmlDslVisitor() {
+        basePath = new File(".");
+    }
+
+    /**
+     * Constructor with media path.
+     * @param dirPath media base path.
+     * @throws IOException when given directory not found.
+     */
+    public HtmlDslVisitor(final String dirPath) throws IOException {
+        File dir = new File(dirPath);
+        if (!dir.isDirectory()) {
+            throw new IOException("Directory not found!");
+        }
+        basePath = dir;
     }
 
     @Override
@@ -93,7 +118,31 @@ public class HtmlDslVisitor extends DslVisitor<String> {
             }
         } else if (tag.isTagName("url")) {
             sb.append("<a href=\"");
+        } else if (tag.isTagName("s") || tag.isTagName("video")) {
+            mediaTag = true;
         }
+    }
+
+    private String getMediaUrl(final String mediaFile) {
+        return new File(basePath, mediaFile).toURI().toString();
+    }
+
+    private boolean isSoundFile(final String filename) {
+        for (String ext: SOUND_EXTS) {
+            if (filename.endsWith(ext)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isImageFile(final String filename) {
+        for (String ext: IMAGE_EXTS) {
+            if (filename.endsWith(ext)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -103,6 +152,24 @@ public class HtmlDslVisitor extends DslVisitor<String> {
      */
     @Override
     public void visit(final DslArticle.EndTag endTag) {
+        if (mediaTag) {
+            if (mediaFile == null) {
+                return;
+            }
+            if (endTag.isTagName("video")) {
+                sb.append("<a href=\"").append(getMediaUrl(mediaFile)).append("\">").append(mediaFile).append("</a>");
+            } else if (endTag.isTagName("s")) {
+                if (isImageFile(mediaFile)) {
+                    sb.append("<img src=\"").append(getMediaUrl(mediaFile)).append("\" />");
+                } else if (isSoundFile(mediaFile)) {
+                    sb.append("<a href=\"").append(getMediaUrl(mediaFile)).append("\" >").append(mediaFile).append("</a>");
+                } else {  // unknown files
+                    sb.append("<a href=\"").append(getMediaUrl(mediaFile)).append("\" >").append(mediaFile).append("</a>");
+                }
+            }
+            mediaTag = false;
+            mediaFile = null;
+        }
         if (endTag.isTagName("b")) {
             sb.append("</strong>");
         } else if (endTag.isTagName("u")) {
@@ -144,7 +211,11 @@ public class HtmlDslVisitor extends DslVisitor<String> {
      */
     @Override
     public void visit(final DslArticle.Text t) {
-        sb.append(t);
+        if (mediaTag) {
+            mediaFile = t.getText();
+        } else {
+            sb.append(t);
+        }
     }
 
     /**
