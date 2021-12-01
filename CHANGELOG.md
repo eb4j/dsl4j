@@ -2,6 +2,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [0.3.0]
 * Accept UTF-16, UTF-8 and ANSI files
   * can accept Cp1250, Cp1251 and Cp1252 codepages
 * Refactoring DslArticle class
@@ -34,7 +36,8 @@ All notable changes to this project will be documented in this file.
 ## 0.1.0
 * First internal release
 
-[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.2.3...HEAD
+[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/eb4j/dsl4j/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/eb4j/dsl4j/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/eb4j/dsl4j/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/eb4j/dsl4j/compare/v0.2.0...v0.2.1
