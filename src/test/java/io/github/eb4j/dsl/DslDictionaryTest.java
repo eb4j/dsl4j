@@ -20,8 +20,24 @@ class DslDictionaryTest {
     @Test
     void loadDicitonarySingle() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        assertEquals("Test (En-Ru)", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Russian", dictionary.getContentLanguage());
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("space");
+        for (Map.Entry<String, String> entry : results.getEntries(dumper)) {
+            assertEquals("space", entry.getKey());
+            assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
+                    entry.getValue());
+            break;
+        }
+    }
+
+    @Test
+    void loadDicitonaryPredictive() throws URISyntaxException, IOException {
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        DslResult results = dictionary.lookupPredictive("spa");
         for (Map.Entry<String, String> entry : results.getEntries(dumper)) {
             assertEquals("space", entry.getKey());
             assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
@@ -96,6 +112,22 @@ class DslDictionaryTest {
                     + "\" />  image and <a href=\"file:"
                     + new File(current, "video.ogv").getAbsolutePath()
                     + "\">video.ogv</a></p>\n", entry.getValue());
+        }
+    }
+
+    @Test
+    void loadDicitonaryCp1251() throws URISyntaxException, IOException {
+        URL cp1251 = this.getClass().getResource("/cp1251.dsl");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(cp1251.toURI()));
+        assertEquals("Test (En-Ru)", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Russian", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        DslResult results = dictionary.lookup("test");
+        for (Map.Entry<String, String> entry : results.getEntries(dumper)) {
+            assertEquals("[m1][trn]контрольная работа[/trn][/m]\n",
+                    entry.getValue());
+            break;
         }
     }
 }

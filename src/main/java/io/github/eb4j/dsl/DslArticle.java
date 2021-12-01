@@ -61,7 +61,6 @@ public class DslArticle implements Visitable {
      */
     public abstract static class DslElement implements Visitable {
         public abstract void accept(DslVisitor v);
-        public abstract int getLength();
         public abstract String toString();
     }
 
@@ -131,19 +130,6 @@ public class DslArticle implements Visitable {
         }
 
         /**
-         * Size of original strings.
-         * @return size of tag include start and end mark[].
-         */
-        @Override
-        public int getLength() {
-            if (attribute != null) {
-                return tagName.length() + attribute.getLength() + 2;
-            } else {
-                return tagName.length() + 2;
-            }
-        }
-
-        /**
          * Default string expression.
          * @return string mostly as same as original expression.
          */
@@ -197,15 +183,6 @@ public class DslArticle implements Visitable {
             v.visit(this);
         }
 
-        /**
-         * Length of original strings.
-         * @return size.
-         */
-        @Override
-        public int getLength() {
-            return tagName.length() + 2;
-        }
-
         @Override
         public String toString() {
             StringBuffer s = new StringBuffer();
@@ -216,7 +193,7 @@ public class DslArticle implements Visitable {
         }
     }
 
-    public static abstract class Attribute extends DslElement {
+    public static abstract class Attribute {
         protected String name;
 
         /**
@@ -226,14 +203,7 @@ public class DslArticle implements Visitable {
             return dequote(name);
         }
 
-        /**
-         * Acceptor for Attribute visitor.
-         * @param v visitor.
-         */
-        @Override
-        public void accept(final DslVisitor v) {
-            v.visit(this);
-        }
+        public abstract String getKey();
     }
 
     public static class ColorAttribute extends Attribute {
@@ -241,17 +211,14 @@ public class DslArticle implements Visitable {
             name = v;
         }
 
-        public int getLength() {
-            return name.length() + 2;
+        @Override
+        public String toString() {
+            return name;
         }
 
         @Override
-        public String toString() {
-            StringBuffer s = new StringBuffer();
-            s.append("color=\"");
-            s.append(name);
-            s.append("\"");
-            return s.toString();
+        public String getKey() {
+            return null;
         }
     }
 
@@ -263,16 +230,13 @@ public class DslArticle implements Visitable {
         }
 
         @Override
-        public String toString() {
-            if (key.equals("name")) {
-                return "name=" + name;
-            } else {
-                return "id=" + name;
-            }
+        public String getKey() {
+            return key;
         }
 
-        public int getLength() {
-            return 5 + name.length() + 2;
+        @Override
+        public String toString() {
+            return key + "=" + name;
         }
     }
 
@@ -293,10 +257,6 @@ public class DslArticle implements Visitable {
          */
         public void accept(final DslVisitor v) {
             v.visit(this);
-        }
-
-        public int getLength() {
-            return text.length();
         }
 
         public String toString() {
@@ -362,14 +322,6 @@ public class DslArticle implements Visitable {
         @Override
         public void accept(final DslVisitor v) {
             v.visit(this);
-        }
-
-        /**
-         * Source text length.
-         * @return size of new line character.
-         */
-        public int getLength() {
-            return NL.length();
         }
 
         /**

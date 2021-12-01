@@ -138,4 +138,22 @@ public class DslParserTest {
                 visitor.getObject());
     }
 
+    @Test
+    void colorHtml() throws ParseException {
+        DslParser parser = DslParser.createParser("[c blue]abc[/c]");
+        DslArticle article = parser.DslArticle();
+        HtmlDslVisitor visitor = new HtmlDslVisitor();
+        article.accept(visitor);
+        assertEquals("<span style=\"color: blue\">abc</span>", visitor.getObject());
+    }
+
+    @Test
+    void langHtml() throws ParseException {
+        DslParser parser = DslParser.createParser("[lang id=1]abc[/lang]");
+        DslArticle article = parser.DslArticle();
+        HtmlDslVisitor visitor = new HtmlDslVisitor();
+        article.accept(visitor);
+        assertEquals("<span class=\"lang_en\">abc</span>", visitor.getObject());
+    }
+
 }
