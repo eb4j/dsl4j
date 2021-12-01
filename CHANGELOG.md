@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+* Accept UTF-16, UTF-8 and ANSI files
+  * can accept Cp1250, Cp1251 and Cp1252 codepages
+* Refactoring DslArticle class
+* Handles header properties
+  * dictionary name
+  * index language
+  * contents langauge
+* Support lang tag with name and id attribute
+  * Provide acceptable LanguageName and LanguageCode map
+* Improve standard HtmlDslVisitor
 
 ## [0.2.3]
 * Fix parsing "]]" bracket

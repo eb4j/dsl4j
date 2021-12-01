@@ -11,7 +11,53 @@ for memory consumption.
 
 A status of library development is considered as `Alpha`.
 
-## How to use
+
+## Install
+
+### Apache Maven
+
+<details>
+
+```xml
+<dependency>
+  <groupId>io.github.eb4j</groupId>
+  <artifactId>dsl4j</artifactId>
+  <version>0.2.3</version>
+</dependency>
+```
+
+</details>
+
+### Gradle Groovy DSL
+
+<details>
+
+```groovy
+implementation 'io.github.eb4j:dsl4j:0.2.3'
+```
+</details>
+
+### Gradle kotlin DSL
+
+<details>
+
+```kotlin
+implementation("io.github.eb4j:dsl4j:0.2.3")
+```
+
+</details>
+
+### Scala SBT 
+
+<details>
+
+```
+libraryDependencies += "io.github.eb4j" % "dsl4j" % "0.2.3"
+```
+
+</details>
+
+## Use
 
 DSL4j provide a DSL dictionary loader and an article parser.
 You should call `DslDictionary#loadData` method to load DSL file.
@@ -57,12 +103,38 @@ List<String> result =
 
 Please check `DslDictionaryTest` cases for visitors differences.
 
-## Limitations
+### Language names and codes
 
-As of v0.2.0, DSL4j does not handle media tags for image, sound and video specially.
+DSL4j has immutable tables of language names and codes DSL supported.
+You can get ISO639 language code from instance of `LanguageName` and `LanguageCode` class
+that are immutable Map, like;
+
+```java
+LanguageCode languageCode = new LanguageCode();
+LanguageName languageName = new LanguageName();
+assert(languageCode.get(1).equals("en"));
+assert(langaugeName.containsKey("Russian"));
+```
+
+### Colors
+
+DSL4j recognize HTML color names in lower case for `[c]` tag.
+
+### Media tags
+
+DSL4j does not handle media tags for image, sound and video specially.
 DSL4j just handle `[s]` and `[video]` as a normal tag, and pass file name as
-ordinal text. Standard visitors just ignore these tags.
+ordinal text.
 
-## License
+Please see `HtmlDslVisitor` class to know how to handle these tags.
+
+## License and copyright
 
 DSL4J is distributed under GNU General Public License version 3 or (at your option) any later version.
+Please see LICENSE file for details.
+
+A part of the code is delivered from OmegaT - computer assisted translation tool.
+
+Copyright (C) 2015-2016 Hiroshi Miura, Aaron Madlon-Kay
+ 
+Copyright (C) 2021 Hiroshi Miura
