@@ -38,7 +38,17 @@ tasks.getByName<Test>("test") {
 }
 
 spotbugs {
-    excludeFilter.set(file("config/spotbugs/exclude.xml"))
+    excludeFilter.set(project.file("config/spotbugs/exclude.xml"))
+    tasks.spotbugsMain {
+        reports.create("html") {
+            required.set(true)
+        }
+    }
+    tasks.spotbugsTest {
+        reports.create("html") {
+            required.set(true)
+        }
+    }
 }
 
 jacoco {
