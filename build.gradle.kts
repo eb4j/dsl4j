@@ -12,7 +12,7 @@ plugins {
     id("com.intershop.gradle.javacc") version "4.0.1"
     kotlin("jvm") version "1.6.0"
     id("com.github.spotbugs") version "5.0.3"
-    id("com.diffplug.spotless") version "6.0.5"
+    id("com.diffplug.spotless") version "6.1.1"
     id("com.github.kt3k.coveralls") version "2.12.0"
     id("io.github.gradle-nexus.publish-plugin") version "1.1.0"
     id("com.palantir.git-version") version "0.12.3" apply false
