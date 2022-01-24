@@ -10,7 +10,7 @@ plugins {
     `java-library-distribution`
     `maven-publish`
     id("com.intershop.gradle.javacc") version "4.0.1"
-    kotlin("jvm") version "1.6.0"
+    kotlin("jvm") version "1.6.10"
     id("com.github.spotbugs") version "5.0.5"
     id("com.diffplug.spotless") version "6.0.5"
     id("com.github.kt3k.coveralls") version "2.12.0"
