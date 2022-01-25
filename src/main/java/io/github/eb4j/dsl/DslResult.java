@@ -19,6 +19,7 @@
 
 package io.github.eb4j.dsl;
 
+import io.github.eb4j.dsl.data.DslEntry;
 import io.github.eb4j.dsl.visitor.DslVisitor;
 
 import java.util.AbstractMap;
@@ -28,21 +29,21 @@ import java.util.Map;
 
 public class DslResult {
 
-    private final List<Map.Entry<String, Object>> result;
+    private final List<Map.Entry<String, String>> result;
 
-    public DslResult(final List<Map.Entry<String, Object>> res) {
+    public DslResult(final List<Map.Entry<String, String>> res) {
         result = res;
     }
 
     public <T> List<Map.Entry<String, T>> getEntries(final DslVisitor<T> filter) {
         List<Map.Entry<String, T>> res = new ArrayList<>();
-        for (Map.Entry<String, Object> entry: result) {
+        for (Map.Entry<String, String> entry: result) {
             try {
-                DslParser parser = DslParser.createParser((String) entry.getValue());
+                DslParser parser = DslParser.createParser(entry.getValue());
                 DslArticle article = parser.DslArticle();
                 article.accept(filter);
                 res.add(new AbstractMap.SimpleImmutableEntry<>(entry.getKey(), filter.getObject()));
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
             }
         }
         return res;

@@ -27,6 +27,7 @@ dependencies {
     implementation("org.jetbrains:annotations:23.0.0")
     implementation("com.github.takawitter:trie4j:0.9.8")
     implementation("commons-io:commons-io:2.11.0")
+    implementation("io.github.dictzip:dictzip:0.10.3")
     testImplementation("org.codehaus.groovy:groovy-all:3.0.9")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
