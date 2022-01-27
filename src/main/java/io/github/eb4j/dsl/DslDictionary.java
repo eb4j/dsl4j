@@ -130,6 +130,7 @@ public abstract class DslDictionary {
                     while (l != null && !l.isEmpty()) {
                         Matcher m = METAPATTERN.matcher(l);
                         if (!m.matches()) {
+                            l = reader.readLine();
                             continue;
                         }
                         for (String pattern : PATTERNS) {
