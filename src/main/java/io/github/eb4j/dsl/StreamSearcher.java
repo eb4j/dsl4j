@@ -38,7 +38,7 @@ public class StreamSearcher {
    *
    * @param stream input stream to search
    * @return bytes consumed if found, -1 otherwise.
-   * @throws IOException
+   * @throws IOException when I/O read error occurred.
    */
   public long search(final InputStream stream) throws IOException {
     long bytesRead = 0;
