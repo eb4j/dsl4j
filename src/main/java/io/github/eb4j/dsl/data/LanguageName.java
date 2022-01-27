@@ -70,17 +70,17 @@ public final class LanguageName extends HashMap<String, String> {
 
     /** Make this unmodifiable. */
     @Override
-    public String put(String key, String value) {
+    public String put(final String key, final String value) {
         throw new UnsupportedOperationException();
     }
     /** Make this unmodifiable. */
     @Override
-    public String remove(Object key) {
+    public String remove(final Object key) {
         throw new UnsupportedOperationException();
     }
     /** Make this unmodifiable. */
     @Override
-    public void putAll(Map<? extends String, ? extends String> m) {
+    public void putAll(final Map<? extends String, ? extends String> m) {
         throw new UnsupportedOperationException();
     }
     /** Make this unmodifiable. */

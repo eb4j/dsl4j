@@ -7,8 +7,6 @@ import org.dict.zip.RandomAccessInputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Locale;
 
 
 public class DslFileDictionary extends DslDictionary {

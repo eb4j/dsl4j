@@ -16,11 +16,12 @@ public class DslZipDictionary extends DslDictionary {
     public DslZipDictionary(final Path path, final DictionaryData<DslEntry> dictionaryData,
                             final DslDictionaryProperty prop) throws IOException {
         super(dictionaryData, prop);
-        dictZipInputStream = new DictZipInputStream(new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r")));
+        dictZipInputStream = new DictZipInputStream(
+                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r")));
     }
 
     @Override
-    protected String getArticle(DslEntry entry) throws IOException {
+    protected String getArticle(final DslEntry entry) throws IOException {
         long offset = entry.getOffset();
         int size = entry.getSize();
         byte[] buf = new byte[size];

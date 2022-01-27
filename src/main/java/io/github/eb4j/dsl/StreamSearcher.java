@@ -11,10 +11,10 @@ import java.util.Arrays;
  */
 public class StreamSearcher {
 
-  protected byte[] pattern_;
-  protected int[] borders_;
+  protected byte[] pattern;
+  protected int[] borders;
 
-  public StreamSearcher(byte[] pattern) {
+  public StreamSearcher(final byte[] pattern) {
     setPattern(pattern);
   }
 
@@ -23,9 +23,9 @@ public class StreamSearcher {
    * @param pattern
    *          the pattern the StreamSearcher will look for in future calls to search(...)
    */
-  public void setPattern(byte[] pattern) {
-    pattern_ = Arrays.copyOf(pattern, pattern.length);
-    borders_ = new int[pattern_.length + 1];
+  public void setPattern(final byte[] pattern) {
+    this.pattern = Arrays.copyOf(pattern, pattern.length);
+    borders = new int[this.pattern.length + 1];
     preProcess();
   }
 
@@ -36,10 +36,11 @@ public class StreamSearcher {
    * Else, the stream is entirely consumed. The latter is because InputStream semantics make it difficult to have
    * another reasonable default, i.e. leave the stream unchanged.
    *
+   * @param stream input stream to search
    * @return bytes consumed if found, -1 otherwise.
    * @throws IOException
    */
-  public long search(InputStream stream) throws IOException {
+  public long search(final InputStream stream) throws IOException {
     long bytesRead = 0;
 
     int b;
@@ -48,8 +49,8 @@ public class StreamSearcher {
     while ((b = stream.read()) != -1) {
       bytesRead++;
 
-      while (j >= 0 && (byte)b != pattern_[j]) {
-        j = borders_[j];
+      while (j >= 0 && (byte) b != pattern[j]) {
+        j = borders[j];
       }
       // Move to the next character in the pattern.
       ++j;
@@ -57,7 +58,7 @@ public class StreamSearcher {
       // If we've matched up to the full pattern length, we found it.  Return,
       // which will automatically save our position in the InputStream at the point immediately
       // following the pattern match.
-      if (j == pattern_.length) {
+      if (j == pattern.length) {
         return bytesRead;
       }
     }
@@ -75,12 +76,12 @@ public class StreamSearcher {
   protected void preProcess() {
     int i = 0;
     int j = -1;
-    borders_[i] = j;
-    while (i < pattern_.length) {
-      while (j >= 0 && pattern_[i] != pattern_[j]) {
-        j = borders_[j];
+    borders[i] = j;
+    while (i < pattern.length) {
+      while (j >= 0 && pattern[i] != pattern[j]) {
+        j = borders[j];
       }
-      borders_[++i] = ++j;
+      borders[++i] = ++j;
     }
   }
 }

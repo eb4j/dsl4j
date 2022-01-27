@@ -19,7 +19,6 @@
 
 package io.github.eb4j.dsl;
 
-import io.github.eb4j.dsl.data.DslEntry;
 import io.github.eb4j.dsl.visitor.DslVisitor;
 
 import java.util.AbstractMap;
