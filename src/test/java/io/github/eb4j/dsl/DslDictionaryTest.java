@@ -24,11 +24,21 @@ class DslDictionaryTest {
         assertEquals("English", dictionary.getIndexLanguage());
         assertEquals("Russian", dictionary.getContentLanguage());
         DumpDslVisitor dumper = new DumpDslVisitor();
-        DslResult results = dictionary.lookup("space");
-        for (Map.Entry<String, String> entry : results.getEntries(dumper)) {
+        for (Map.Entry<String, String> entry : dictionary.lookup("space").getEntries(dumper)) {
             assertEquals("space", entry.getKey());
             assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
                     entry.getValue());
+            break;
+        }
+        for (Map.Entry<String, String> entry: dictionary.lookup("tab").getEntries(dumper)) {
+            assertEquals("tab", entry.getKey());
+            assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+                    entry.getValue());
+            break;
+        }
+        for (Map.Entry<String, String> entry: dictionary.lookup("tag").getEntries(dumper)) {
+            assertEquals("tag", entry.getKey());
+            assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
             break;
         }
     }

@@ -109,17 +109,17 @@ public class LanguageCode extends HashMap<Integer, String> {
 
     /** Make super unmodifiable. */
     @Override
-    public String put(Integer key, String value) {
+    public String put(final Integer key, final String value) {
         throw new UnsupportedOperationException();
     }
     /** Make super unmodifiable. */
     @Override
-    public String remove(Object key) {
+    public String remove(final Object key) {
         throw new UnsupportedOperationException();
     }
     /** Make super unmodifiable. */
     @Override
-    public void putAll(Map<? extends Integer, ? extends String> m) {
+    public void putAll(final Map<? extends Integer, ? extends String> m) {
         throw new UnsupportedOperationException();
     }
     /** Make super unmodifiable. */

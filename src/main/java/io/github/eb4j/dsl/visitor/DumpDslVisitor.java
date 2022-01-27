@@ -49,7 +49,7 @@ public class DumpDslVisitor extends DslVisitor<String> {
      */
     @Override
     public void start() {
-        // Do nothing.
+        baos.reset();
     }
 
     /**
