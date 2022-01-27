@@ -25,6 +25,7 @@ import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import org.dict.zip.DictZipInputStream;
 import org.dict.zip.RandomAccessInputStream;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 
 
@@ -98,23 +100,28 @@ public abstract class DslDictionary {
         return loadDictionary(file.toPath());
     }
 
-    public static DslDictionary loadDictionary(final Path path) throws IOException {
-        final Map<String, String> metadata = new HashMap<>();
+    public static DslDictionary loadDictionary(@NotNull final Path path) throws IOException {
+        // check path
         if (!path.toFile().isFile()) {
             throw new IOException("Target file is not a file.");
         }
-        boolean isDictzip = false;
+        Path filename = path.getFileName();
+        if (filename == null) {
+            throw new IOException("Error reading target file.");
+        }
+        boolean isDictzip = filename.endsWith(".dz");
+        final Map<String, String> metadata = new HashMap<>();
         // Read header
         Charset charset;
-        try (InputStream rais = Files.newInputStream(path)) {
-            // Un-gzip if necessary
-            InputStream is;
-            if (path.getFileName().endsWith(".dz")) {
-                is = new GZIPInputStream(rais, 8192);
-                isDictzip = true;
-            } else {
-                is = rais;
-            }
+        // Un-gzip if necessary
+        InputStream is;
+        RandomAccessFile ras = new RandomAccessFile(path.toFile(), "r");
+        if (isDictzip) {
+            is = new DictZipInputStream(new RandomAccessInputStream(ras));
+        } else {
+            is = new RandomAccessInputStream(ras);
+        }
+        try {
             try (BOMInputStream bis = new BOMInputStream(is, false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE)) {
                 // Detect codepage and charset
                 if (!bis.hasBOM()) {
@@ -148,6 +155,9 @@ public abstract class DslDictionary {
                     }
                 }
             }
+        } finally {
+            is.close();
+            ras.close();
         }
         // detect charset when it is not UNICODE
         if (charset == StandardCharsets.ISO_8859_1 && metadata.containsKey("codepage")) {
@@ -165,15 +175,11 @@ public abstract class DslDictionary {
                 metadata.get("content"), charset);
         // Reopen dictionary and build dictionary index
         DictionaryDataBuilder<DslEntry> builder = new DictionaryDataBuilder<>();
-        InputStream is;
-        RandomAccessFile ras = new RandomAccessFile(path.toFile(), "r");
+        ras = new RandomAccessFile(path.toFile(), "r");
         if (isDictzip) {
             is = new DictZipInputStream(new RandomAccessInputStream(ras));
         } else {
             is = new RandomAccessInputStream(ras);
-        }
-        if (!is.markSupported()) {
-            throw new IOException();
         }
         // fixme. accept other than UTF16
         byte[] crlf = "\r\n".getBytes(charset);
@@ -223,6 +229,7 @@ public abstract class DslDictionary {
             }
         } finally {
             is.close();
+            ras.close();
         }
         DictionaryData<DslEntry> data = builder.build();
         if (isDictzip) {
