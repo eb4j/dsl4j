@@ -54,6 +54,10 @@ final class DslDictionaryLoader {
                     + "|INCLUDE\\s(?<include>.+?)$");
     private static final String[] ALLOWED_CODE_PAGE = {"EasternEuropean", "Cyrillic", "Latin", "Greek", "Turkish"};
 
+    private DslDictionaryLoader() {
+    }
+
+    @SuppressWarnings("AvoidInlineConditionals")
     static DslDictionary load(@NotNull final Path path) throws IOException {
         // check path
         if (!path.toFile().isFile()) {
@@ -68,9 +72,10 @@ final class DslDictionaryLoader {
         DslDictionaryProperty prop = parseHeader(path, isDictzip);
         // prepare creation of index
         Charset charset = prop.getCharset();
-        byte[] crlf = "\r\n".getBytes(charset);
-        byte[] delimiter = "\r\n\r\n".getBytes(charset);
-        StreamSearcher crlfSearcher = new StreamSearcher(crlf);
+        byte[] eol = prop.getEol();
+        byte[] delimiter = Arrays.copyOf(eol, eol.length * 2);
+        System.arraycopy(eol, 0, delimiter, eol.length, eol.length);
+        StreamSearcher eolSearcher = new StreamSearcher(eol);
         StreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
         DictionaryDataBuilder<DslEntry> builder = new DictionaryDataBuilder<>();
         // build dictionary index
@@ -86,12 +91,12 @@ final class DslDictionaryLoader {
             while (true) {
                 cardStart += skipEmptyLine(is, charset);
                 is.mark(4096);
-                long next = crlfSearcher.search(is);
+                long next = eolSearcher.search(is);
                 if (next == -1) {
                     throw new IOException("Target dictionary file is corrupted.");
                 }
                 while (!isSpaceOrTab(is, charset)) {
-                    next += crlfSearcher.search(is);
+                    next += eolSearcher.search(is);
                 }
                 articleStart = cardStart + next;
                 is.reset();
@@ -113,7 +118,7 @@ final class DslDictionaryLoader {
                 }
                 String[] tokens = headWords.split("\\r?\\n");
                 for (String token: tokens) {
-                    builder.add(token, new DslEntry(articleStart, (int) pos - crlf.length));
+                    builder.add(token, new DslEntry(articleStart, (int) pos - eol.length));
                 }
                 // increment to next card start
                 cardStart = articleStart + pos;
@@ -127,9 +132,11 @@ final class DslDictionaryLoader {
         }
     }
 
+    @SuppressWarnings("AvoidInlineConditionals")
     private static DslDictionaryProperty parseHeader(final Path path, final boolean isDictzip) throws IOException {
         final Map<String, String> metadata = new HashMap<>();
         Charset charset;
+        byte[] eol;
         try (RandomAccessFile ras = new RandomAccessFile(path.toFile(), "r");
              InputStream is = isDictzip ?
                      new DictZipInputStream(new RandomAccessInputStream(ras)) :
@@ -175,7 +182,22 @@ final class DslDictionaryLoader {
                 }
             }
         }
-        return new DslDictionaryProperty(metadata.get("name"), metadata.get("index"), metadata.get("content"), charset);
+        try (RandomAccessFile ras = new RandomAccessFile(path.toFile(), "r");
+             InputStream is = isDictzip ?
+                     new DictZipInputStream(new RandomAccessInputStream(ras)) :
+                     new RandomAccessInputStream(ras)) {
+            // detect end of line delimiter
+            is.reset();
+            byte[] crlf = "\r\n".getBytes(charset);
+            StreamSearcher crlfSearcher = new StreamSearcher(crlf);
+            if (crlfSearcher.search(is) == -1) {
+                eol = "\n".getBytes(charset);
+            } else {
+                eol = crlf;
+            }
+        }
+        return new DslDictionaryProperty(
+                metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
     }
 
     private static String chompLine(final String line) {
