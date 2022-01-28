@@ -17,4 +17,15 @@
       <Bug code="EI2"/>
     </Or>
   </Match>
+  <Match>
+    <Or>
+      <Class name="io.github.eb4j.dsl.DslIndexOuterClass"/>
+      <Class name="io.github.eb4j.dsl.DslIndexOuterClass.DslIndex"/>
+    </Or>
+    <Or>
+      <Bug code="EI"/>
+      <Bug code="EI2"/>
+      <Bug code="MS"/>
+    </Or>
+  </Match>
 </FindBugsFilter>
