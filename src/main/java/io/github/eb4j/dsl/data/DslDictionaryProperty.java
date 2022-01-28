@@ -1,13 +1,14 @@
-package io.github.eb4j.dsl;
+package io.github.eb4j.dsl.data;
 
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-public class DslDictionaryProperty {
+public class DslDictionaryProperty implements Serializable {
     private final String dictionaryName;
     private final String indexLanguage;
     private final String contentLanguage;
-    private final Charset charset;
+    private final String charset;
     private final byte[] eol;
 
     public DslDictionaryProperty(final String dictionaryName, final String indexLanguage, final String contentLanguage,
@@ -15,7 +16,7 @@ public class DslDictionaryProperty {
         this.dictionaryName = dictionaryName;
         this.indexLanguage = indexLanguage;
         this.contentLanguage = contentLanguage;
-        this.charset = charset;
+        this.charset = charset.name();
         this.eol = Arrays.copyOf(eol, eol.length);
     }
 
@@ -32,7 +33,7 @@ public class DslDictionaryProperty {
     }
 
     public Charset getCharset() {
-        return charset;
+        return Charset.forName(charset);
     }
 
     public byte[] getEol() {
