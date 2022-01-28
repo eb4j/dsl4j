@@ -23,7 +23,7 @@ import org.trie4j.patricia.MapPatriciaTrie;
 
 public final class DictionaryDataBuilder<T> {
 
-    private final MapTrie<Object> temp = new MapPatriciaTrie<>();
+    private final MapTrie<Object> mapPatriciaTrie = new MapPatriciaTrie<>();
 
     /**
      * Builder factory for POJO class DictionaryData.
@@ -36,7 +36,7 @@ public final class DictionaryDataBuilder<T> {
      * @return DictionaryData immutable object.
      */
     public DictionaryData<T> build() {
-        return new DictionaryData<>(temp);
+        return new DictionaryData<>(mapPatriciaTrie);
     }
 
     /**
@@ -66,16 +66,16 @@ public final class DictionaryDataBuilder<T> {
      * @param value
      */
     private void doAdd(final String key, final T value) {
-        Object stored = temp.get(key);
+        Object stored = mapPatriciaTrie.get(key);
         if (stored == null) {
-            temp.insert(key, value);
+            mapPatriciaTrie.insert(key, value);
         } else {
             if (stored instanceof Object[]) {
                 stored = extendArray((Object[]) stored, value);
             } else {
                 stored = new Object[] {stored, value};
             }
-            temp.put(key, stored);
+            mapPatriciaTrie.put(key, stored);
         }
     }
 

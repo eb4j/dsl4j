@@ -1,10 +1,9 @@
 package io.github.eb4j.dsl.data;
 
-import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-public class DslDictionaryProperty implements Serializable {
+public class DslDictionaryProperty {
     private final String dictionaryName;
     private final String indexLanguage;
     private final String contentLanguage;
