@@ -22,7 +22,7 @@ A status of library development is considered as `Beta`.
 <dependency>
   <groupId>io.github.eb4j</groupId>
   <artifactId>dsl4j</artifactId>
-  <version>0.4.0</version>
+  <version>0.4.1</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@ A status of library development is considered as `Beta`.
 <details>
 
 ```groovy
-implementation 'io.github.eb4j:dsl4j:0.4.0'
+implementation 'io.github.eb4j:dsl4j:0.4.1'
 ```
 </details>
 
@@ -42,7 +42,7 @@ implementation 'io.github.eb4j:dsl4j:0.4.0'
 <details>
 
 ```kotlin
-implementation("io.github.eb4j:dsl4j:0.4.0")
+implementation("io.github.eb4j:dsl4j:0.4.1")
 ```
 
 </details>
@@ -52,7 +52,7 @@ implementation("io.github.eb4j:dsl4j:0.4.0")
 <details>
 
 ```
-libraryDependencies += "io.github.eb4j" % "dsl4j" % "0.4.0"
+libraryDependencies += "io.github.eb4j" % "dsl4j" % "0.4.1"
 ```
 
 </details>
