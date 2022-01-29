@@ -134,61 +134,24 @@ final class DslDictionaryLoader {
 
     @SuppressWarnings("AvoidInlineConditionals")
     private static DslDictionaryProperty parseHeader(final Path path, final boolean isDictzip) throws IOException {
-        final Map<String, String> metadata = new HashMap<>();
-        Charset charset;
+        Map<String, String> metadata;
+        Charset charset = detectCharset(path, isDictzip);
         byte[] eol;
-        try (BOMInputStream bis = isDictzip ? new BOMInputStream(new DictZipInputStream(
-                    new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))),
-                false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE) :
-                new BOMInputStream( new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r")),
-                 false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE)) {
-            // Detect codepage and charset
-            if (!bis.hasBOM()) {
-                charset = StandardCharsets.ISO_8859_1;
-            } else if (bis.hasBOM(ByteOrderMark.UTF_16LE)) {
-                charset = StandardCharsets.UTF_16LE;
-            } else {
-                charset = StandardCharsets.UTF_8;
-            }
+        try (InputStream bis = isDictzip ? new DictZipInputStream(
+                    new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
+                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) {
+            metadata = readMetadata(bis, charset);
+            // default EoL terminator is CR+LF
+            eol = "\r\n".getBytes(charset);
+            // detect end of line delimiter
+            int c;
             try (InputStreamReader isr = new InputStreamReader(bis, charset);
                  BufferedReader reader = new BufferedReader(isr)) {
-                String l;
-                while ((l = reader.readLine()) != null && !l.isEmpty()) {
-                    Matcher m = METAPATTERN.matcher(l);
-                    if (m.matches()) {
-                        for (String pattern : PATTERNS) {
-                            String s = m.group(pattern);
-                            if (s != null) {
-                                if (s.startsWith("\"") && s.endsWith("\"")) {
-                                    metadata.put(pattern, s.substring(1, s.length() - 1));
-                                } else {
-                                    metadata.put(pattern, m.group(pattern));
-                                }
-                                break;
-                            }
-                        }
-                    }
-                }
-                // detect charset when it is not UNICODE
-                if (charset == StandardCharsets.ISO_8859_1 && metadata.containsKey("codepage")) {
-                    String codepageName = metadata.get("codepage");
-                    for (int i = 0; i < ALLOWED_CODE_PAGE.length; i++) {
-                        String name = ALLOWED_CODE_PAGE[i];
-                        if (name.equals(codepageName)) {
-                            charset = Charset.forName(String.format("Cp%4d", 1250 + i));
-                            break;
-                        }
-                    }
-                }
-                // default EoL terminator is CR+LF
-                eol = "\r\n".getBytes(charset);
-                // detect end of line delimiter
-                int c;
                 while ((c = reader.read()) != -1) {
                     if (c == '\r') {
                         eol = "\r\n".getBytes(charset);
                         break;
-                    } else if ( c == '\n') {
+                    } else if (c == '\n') {
                         eol = "\n".getBytes(charset);
                         break;
                     }
@@ -197,6 +160,66 @@ final class DslDictionaryLoader {
         }
         return new DslDictionaryProperty(
                 metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
+    }
+
+    private static Charset detectCharset(final Path path, final boolean isDictzip) throws IOException {
+        Map<String, String> metadata;
+        Charset charset;
+        try (BOMInputStream bis = isDictzip ? new BOMInputStream(new DictZipInputStream(
+                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))),
+                false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE) :
+                new BOMInputStream(new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r")),
+                        false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE)) {
+            // Detect codepage and charset
+            if (!bis.hasBOM()) {
+                charset = StandardCharsets.ISO_8859_1;
+            } else if (bis.hasBOM(ByteOrderMark.UTF_16LE)) {
+                charset = StandardCharsets.UTF_16LE;
+            } else {
+                charset = StandardCharsets.UTF_8;
+            }
+            metadata = readMetadata(bis, charset);
+            // detect charset when it is not UNICODE
+            if (charset == StandardCharsets.ISO_8859_1 && metadata.containsKey("codepage")) {
+                String codepageName = metadata.get("codepage");
+                for (int i = 0; i < ALLOWED_CODE_PAGE.length; i++) {
+                    String name = ALLOWED_CODE_PAGE[i];
+                    if (name.equals(codepageName)) {
+                        charset = Charset.forName(String.format("Cp%4d", 1250 + i));
+                        break;
+                    }
+                }
+            }
+            if (charset == StandardCharsets.ISO_8859_1) {
+                charset = StandardCharsets.UTF_16LE;
+            }
+        }
+        return charset;
+    }
+
+    private static Map<String, String> readMetadata(InputStream bis, Charset charset) throws IOException {
+        final Map<String, String> metadata = new HashMap<>();
+        try (InputStreamReader isr = new InputStreamReader(bis, charset);
+             BufferedReader reader = new BufferedReader(isr)) {
+            String l;
+            while ((l = reader.readLine()) != null && !l.isEmpty()) {
+                Matcher m = METAPATTERN.matcher(l);
+                if (m.matches()) {
+                    for (String pattern : PATTERNS) {
+                        String s = m.group(pattern);
+                        if (s != null) {
+                            if (s.startsWith("\"") && s.endsWith("\"")) {
+                                metadata.put(pattern, s.substring(1, s.length() - 1));
+                            } else {
+                                metadata.put(pattern, m.group(pattern));
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return metadata;
     }
 
     private static boolean isSpaceOrTab(final InputStream is, final Charset charset) throws IOException {
