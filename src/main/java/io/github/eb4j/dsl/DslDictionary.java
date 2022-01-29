@@ -87,11 +87,10 @@ public abstract class DslDictionary {
         String[] tokens = new String(buf, prop.getCharset()).split("\\r?\\n");
         StringBuilder article = new StringBuilder();
         for (String token: tokens) {
-            int i = 0;
-            while (i < token.length() && (token.charAt(i) == '\t' || token.charAt(i) == ' ')) {
-                i++;
+            if (token.isEmpty()) { // remove empty line
+                continue;
             }
-            article.append(token.substring(i)).append("\n");
+            article.append(token.trim()).append("\n");
         }
         return article.toString();
     }

@@ -104,7 +104,7 @@ final class DslDictionaryLoader {
                 if (is.read(headWordBytes) == 0) {
                     throw new IOException();
                 }
-                headWords = chompLine(new String(headWordBytes, charset));
+                headWords = new String(headWordBytes, charset).trim();
                 is.mark(4096);
                 long pos = cardEndSearcher.search(is);
                 if (pos == -1) {
@@ -197,10 +197,6 @@ final class DslDictionaryLoader {
         }
         return new DslDictionaryProperty(
                 metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
-    }
-
-    private static String chompLine(final String line) {
-        return line.substring(0, line.lastIndexOf("\r"));
     }
 
     private static boolean isSpaceOrTab(final InputStream is, final Charset charset) throws IOException {
