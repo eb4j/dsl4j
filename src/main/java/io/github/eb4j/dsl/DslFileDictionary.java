@@ -20,21 +20,11 @@ public class DslFileDictionary extends DslDictionary {
         ras = new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"));
     }
 
+    @Override
     protected String getArticle(final DslEntry entry) throws IOException {
-        long offset = entry.getOffset();
-        int size = entry.getSize();
-        byte[] buf = new byte[size];
-        ras.seek(offset);
+        byte[] buf = new byte[entry.getSize()];
+        ras.seek(entry.getOffset());
         ras.readFully(buf);
-        String[] tokens = new String(buf, prop.getCharset()).split("\\r?\\n");
-        StringBuilder article = new StringBuilder();
-        for (String token: tokens) {
-            int i = 0;
-            while (i < token.length() && (token.charAt(i) == '\t' || token.charAt(i) == ' ')) {
-                i++;
-            }
-            article.append(token.substring(i)).append("\n");
-        }
-        return article.toString();
+        return trimArticle(buf);
     }
 }

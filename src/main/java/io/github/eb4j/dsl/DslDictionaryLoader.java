@@ -68,7 +68,7 @@ final class DslDictionaryLoader {
         if (filename == null) {
             throw new IOException("Error reading target file.");
         }
-        boolean isDictzip = filename.endsWith(".dz");
+        boolean isDictzip = filename.toString().endsWith(".dz");
         // parse header
         DslDictionaryProperty prop = parseHeader(path, isDictzip);
         // prepare creation of index
@@ -80,10 +80,9 @@ final class DslDictionaryLoader {
         StreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
         DictionaryDataBuilder<DslEntry> builder = new DictionaryDataBuilder<>();
         // build dictionary index
-        try (RandomAccessFile ras = new RandomAccessFile(path.toFile(), "r");
-             InputStream is = isDictzip ?
-                     new DictZipInputStream(new RandomAccessInputStream(ras)) :
-                     new RandomAccessInputStream(ras)) {
+        try (InputStream is = isDictzip ? new DictZipInputStream(
+                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
+                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) {
             long cardStart;
             long articleStart;
             String headWords;
@@ -138,11 +137,11 @@ final class DslDictionaryLoader {
         final Map<String, String> metadata = new HashMap<>();
         Charset charset;
         byte[] eol;
-        try (RandomAccessFile ras = new RandomAccessFile(path.toFile(), "r");
-             InputStream is = isDictzip ?
-                     new DictZipInputStream(new RandomAccessInputStream(ras)) :
-                     new RandomAccessInputStream(ras);
-             BOMInputStream bis = new BOMInputStream(is, false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE)) {
+        try (BOMInputStream bis = isDictzip ? new BOMInputStream(new DictZipInputStream(
+                    new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))),
+                false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE) :
+                new BOMInputStream( new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r")),
+                 false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE)) {
             // Detect codepage and charset
             if (!bis.hasBOM()) {
                 charset = StandardCharsets.ISO_8859_1;
@@ -170,31 +169,30 @@ final class DslDictionaryLoader {
                         }
                     }
                 }
-            }
-        }
-        // detect charset when it is not UNICODE
-        if (charset == StandardCharsets.ISO_8859_1 && metadata.containsKey("codepage")) {
-            String codepageName = metadata.get("codepage");
-            for (int i = 0; i < ALLOWED_CODE_PAGE.length; i++) {
-                String name = ALLOWED_CODE_PAGE[i];
-                if (name.equals(codepageName)) {
-                    charset = Charset.forName(String.format("Cp%4d", 1250 + i));
-                    break;
+                // detect charset when it is not UNICODE
+                if (charset == StandardCharsets.ISO_8859_1 && metadata.containsKey("codepage")) {
+                    String codepageName = metadata.get("codepage");
+                    for (int i = 0; i < ALLOWED_CODE_PAGE.length; i++) {
+                        String name = ALLOWED_CODE_PAGE[i];
+                        if (name.equals(codepageName)) {
+                            charset = Charset.forName(String.format("Cp%4d", 1250 + i));
+                            break;
+                        }
+                    }
                 }
-            }
-        }
-        try (RandomAccessFile ras = new RandomAccessFile(path.toFile(), "r");
-             InputStream is = isDictzip ?
-                     new DictZipInputStream(new RandomAccessInputStream(ras)) :
-                     new RandomAccessInputStream(ras)) {
-            // detect end of line delimiter
-            is.reset();
-            byte[] crlf = "\r\n".getBytes(charset);
-            StreamSearcher crlfSearcher = new StreamSearcher(crlf);
-            if (crlfSearcher.search(is) == -1) {
-                eol = "\n".getBytes(charset);
-            } else {
-                eol = crlf;
+                // default EoL terminator is CR+LF
+                eol = "\r\n".getBytes(charset);
+                // detect end of line delimiter
+                int c;
+                while ((c = reader.read()) != -1) {
+                    if (c == '\r') {
+                        eol = "\r\n".getBytes(charset);
+                        break;
+                    } else if ( c == '\n') {
+                        eol = "\n".getBytes(charset);
+                        break;
+                    }
+                }
             }
         }
         return new DslDictionaryProperty(
