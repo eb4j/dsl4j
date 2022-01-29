@@ -9,7 +9,7 @@ for memory consumption.
 
 ## Development status
 
-A status of library development is considered as `Alpha`.
+A status of library development is considered as `Beta`.
 
 
 ## Install
@@ -22,7 +22,7 @@ A status of library development is considered as `Alpha`.
 <dependency>
   <groupId>io.github.eb4j</groupId>
   <artifactId>dsl4j</artifactId>
-  <version>0.2.3</version>
+  <version>0.4.0</version>
 </dependency>
 ```
 
@@ -33,7 +33,7 @@ A status of library development is considered as `Alpha`.
 <details>
 
 ```groovy
-implementation 'io.github.eb4j:dsl4j:0.2.3'
+implementation 'io.github.eb4j:dsl4j:0.4.0'
 ```
 </details>
 
@@ -42,7 +42,7 @@ implementation 'io.github.eb4j:dsl4j:0.2.3'
 <details>
 
 ```kotlin
-implementation("io.github.eb4j:dsl4j:0.2.3")
+implementation("io.github.eb4j:dsl4j:0.4.0")
 ```
 
 </details>
@@ -52,7 +52,7 @@ implementation("io.github.eb4j:dsl4j:0.2.3")
 <details>
 
 ```
-libraryDependencies += "io.github.eb4j" % "dsl4j" % "0.2.3"
+libraryDependencies += "io.github.eb4j" % "dsl4j" % "0.4.0"
 ```
 
 </details>
@@ -137,4 +137,4 @@ A part of the code is delivered from OmegaT - computer assisted translation tool
 
 Copyright (C) 2015-2016 Hiroshi Miura, Aaron Madlon-Kay
  
-Copyright (C) 2021 Hiroshi Miura
+Copyright (C) 2021-2022 Hiroshi Miura
