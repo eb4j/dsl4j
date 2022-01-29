@@ -83,6 +83,19 @@ public abstract class DslDictionary {
      */
     abstract String getArticle(DslEntry entry) throws IOException;
 
+    protected String trimArticle(final byte[] buf) {
+        String[] tokens = new String(buf, prop.getCharset()).split("\\r?\\n");
+        StringBuilder article = new StringBuilder();
+        for (String token: tokens) {
+            int i = 0;
+            while (i < token.length() && (token.charAt(i) == '\t' || token.charAt(i) == ' ')) {
+                i++;
+            }
+            article.append(token.substring(i)).append("\n");
+        }
+        return article.toString();
+    }
+
     public String getDictionaryName() {
         return prop.getDictionaryName();
     }

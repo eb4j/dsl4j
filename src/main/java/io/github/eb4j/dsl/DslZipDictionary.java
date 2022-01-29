@@ -12,27 +12,20 @@ import java.nio.file.Path;
 
 public class DslZipDictionary extends DslDictionary {
 
-    private final DictZipInputStream dictZipInputStream;
+    private final DictZipInputStream dzis;
 
     public DslZipDictionary(final Path path, final DictionaryData<DslEntry> dictionaryData,
                             final DslDictionaryProperty prop) throws IOException {
         super(dictionaryData, prop);
-        dictZipInputStream = new DictZipInputStream(
+        dzis = new DictZipInputStream(
                 new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r")));
     }
 
     @Override
     protected String getArticle(final DslEntry entry) throws IOException {
-        long offset = entry.getOffset();
-        int size = entry.getSize();
-        byte[] buf = new byte[size];
-        dictZipInputStream.seek(offset);
-        dictZipInputStream.readFully(buf);
-        String article = new String(buf, prop.getCharset());
-        int i = 0;
-        while (article.charAt(i) == '\t' || article.charAt(i) == ' ') {
-            i++;
-        }
-        return article.substring(i);
+        byte[] buf = new byte[entry.getSize()];
+        dzis.seek(entry.getOffset());
+        dzis.readFully(buf);
+        return trimArticle(buf);
     }
 }
