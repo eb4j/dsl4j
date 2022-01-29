@@ -140,4 +140,19 @@ class DslDictionaryTest {
             break;
         }
     }
+
+    @Test
+    void loadDicitonaryUTF16LF() throws URISyntaxException, IOException {
+        URL utf16lelf = this.getClass().getResource("/test2.dsl");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf16lelf.toURI()));
+        assertEquals("en-ja Wikidict", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Japanese", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        DslResult results = dictionary.lookup("Japan");
+        for (Map.Entry<String, String> entry : results.getEntries(dumper)) {
+            assertEquals("[m1]Japan[/m]\n[m1]日本[/m]\n", entry.getValue());
+            break;
+        }
+    }
 }
