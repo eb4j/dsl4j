@@ -18,12 +18,13 @@
 
 package io.github.eb4j.dsl.data;
 
+import io.github.eb4j.dsl.DslIndexOuterClass;
 import org.trie4j.MapTrie;
 import org.trie4j.patricia.MapPatriciaTrie;
 
-public final class DictionaryDataBuilder<T> {
+import java.util.List;
 
-    private final MapTrie<Object> mapPatriciaTrie = new MapPatriciaTrie<>();
+public final class DictionaryDataBuilder<T> {
 
     /**
      * Builder factory for POJO class DictionaryData.
@@ -33,28 +34,19 @@ public final class DictionaryDataBuilder<T> {
 
     /**
      * build DictionaryData POJO.
+     * @param entries List of ProtoBuf defined entry
      * @return DictionaryData immutable object.
      */
-    public DictionaryData<T> build() {
-        return new DictionaryData<>(mapPatriciaTrie);
-    }
-
-    /**
-     * Insert a key=value pair into the data store. Unicode normalization is
-     * performed on the key. The value is stored both for the key and its
-     * lowercase version, if the latter differs.
-     *
-     * @param key
-     *            The key
-     * @param value
-     *            The value
-     */
-    public void add(final String key, final T value) {
-        doAdd(key, value);
-        String lowerKey = key.toLowerCase();
-        if (!key.equals(lowerKey)) {
-            doAdd(lowerKey, value);
+    public DictionaryData<T> build(final List<DslIndexOuterClass.DslIndex.Entry> entries) {
+        MapTrie<Object> mapPatriciaTrie = new MapPatriciaTrie<>();
+        for (DslIndexOuterClass.DslIndex.Entry en: entries) {
+            doAdd(mapPatriciaTrie, en.getHeadWord(), en.getOffset(), en.getSize());
+            String lowerKey = en.getHeadWord().toLowerCase();
+            if (!en.getHeadWord().equals(lowerKey)) {
+                doAdd(mapPatriciaTrie, lowerKey, en.getOffset(), en.getSize());
+            }
         }
+        return new DictionaryData<>(mapPatriciaTrie);
     }
 
     /**
@@ -63,17 +55,16 @@ public final class DictionaryDataBuilder<T> {
      * that case we store the values in an array.
      *
      * @param key
-     * @param value
      */
-    private void doAdd(final String key, final T value) {
+    private void doAdd(final MapTrie<Object> mapPatriciaTrie, final String key, final long offset, final int size) {
         Object stored = mapPatriciaTrie.get(key);
         if (stored == null) {
-            mapPatriciaTrie.insert(key, value);
+            mapPatriciaTrie.insert(key, new DslEntry(offset, size));
         } else {
             if (stored instanceof Object[]) {
-                stored = extendArray((Object[]) stored, value);
+                stored = extendArray((Object[]) stored, new DslEntry(offset, size));
             } else {
-                stored = new Object[] {stored, value};
+                stored = new Object[] {stored, new DslEntry(offset, size)};
             }
             mapPatriciaTrie.put(key, stored);
         }

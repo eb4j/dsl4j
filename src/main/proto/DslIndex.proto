@@ -1,0 +1,18 @@
+syntax = "proto3";
+package io.github.eb4j.dsl;
+message DslIndex {
+  string filename = 1;
+  uint64 filesize = 2;
+  uint64 fileLastModifiedTime = 3;
+  string dictionaryName = 4;
+  string indexLanguage = 5;
+  string contentLanguage = 6;
+  string charset = 7;
+  bytes eol = 8;
+  message Entry {
+    string headWord = 1;
+    uint64 offset = 2;
+    uint32 size = 3;
+  }
+  repeated Entry entries = 9;
+}

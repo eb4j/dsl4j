@@ -1,6 +1,8 @@
 import java.io.File
 import java.io.FileInputStream
 import java.util.Properties
+import com.google.protobuf.gradle.protobuf
+import com.google.protobuf.gradle.protoc
 
 plugins {
     checkstyle
@@ -10,6 +12,7 @@ plugins {
     `java-library-distribution`
     `maven-publish`
     id("com.intershop.gradle.javacc") version "4.0.1"
+    id("com.google.protobuf") version "0.8.18"
     id("com.github.spotbugs") version "5.0.5"
     id("com.diffplug.spotless") version "6.2.0"
     id("com.github.kt3k.coveralls") version "2.12.0"
@@ -23,11 +26,14 @@ repositories {
     mavenCentral()
 }
 
+val protobufVersion = "3.6.1"
+
 dependencies {
     implementation("org.jetbrains:annotations:23.0.0")
     implementation("com.github.takawitter:trie4j:0.9.8")
     implementation("commons-io:commons-io:2.11.0")
     implementation("io.github.dictzip:dictzip:0.11.1")
+    implementation("com.google.protobuf:protobuf-java:$protobufVersion")
     testImplementation("org.codehaus.groovy:groovy-all:3.0.9")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
@@ -90,15 +96,24 @@ tasks.withType<Javadoc> {
     exclude("io/github/eb4j/dsl/DslParser*",
             "io/github/eb4j/dsl/Token*",
             "io/github/eb4j/dsl/JavaCharStream.java",
-            "io/github/eb4j/dsl/ParseException.java")
+            "io/github/eb4j/dsl/ParseException.java",
+            "io/github/eb4j/dsl/DslIndexOuterClass.java"
+            )
 }
 
 javacc {
     javaCCVersion = "7.0.10"
     configs.create("dsl") {
         inputFile = File("src/main/java/io/github/eb4j/dsl/DslParser.jj")
-        outputDir = File("build/generated/javacc")
+        outputDir = File("src/generated/main/java")
         packageName = "io.github.eb4j.dsl"
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobufVersion"
+        generatedFilesBaseDir = File("src/generated").toString()
     }
 }
 

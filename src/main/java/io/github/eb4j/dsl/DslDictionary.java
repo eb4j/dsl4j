@@ -124,6 +124,17 @@ public abstract class DslDictionary {
      * @throws IOException raise when I/O error occurred
      */
     public static DslDictionary loadDictionary(@NotNull final Path path) throws IOException {
-        return DslDictionaryLoader.load(path);
+        return DslDictionaryLoader.load(path, null);
+    }
+
+    /**
+     * Loader entry point.
+     * @param path dictionary file.
+     * @param index dictionary index file.
+     * @return DslDictionary object.
+     * @throws IOException raise when I/O error occurred
+     */
+    public static DslDictionary loadDictionary(@NotNull final Path path, final Path index) throws IOException {
+        return DslDictionaryLoader.load(path, index);
     }
 }
