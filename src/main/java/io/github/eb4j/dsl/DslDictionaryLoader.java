@@ -48,6 +48,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
 
 /**
  * Loader class for DSL dictionary.
@@ -79,7 +82,8 @@ final class DslDictionaryLoader {
         DslDictionaryProperty prop = null;
         DslIndexOuterClass.DslIndex index = getIndexFromFileAndValidate(path, indexPath);
         if (index != null) {
-            prop = getPropertyFromIndex(index);
+            prop = new DslDictionaryProperty( index.getDictionaryName(), index.getIndexLanguage(),
+                    index.getContentLanguage(), Charset.forName(index.getCharset()), index.getEol().toByteArray());
             entries = index.getEntriesList();
         }
         // When there is no index or failed to validate
@@ -98,11 +102,6 @@ final class DslDictionaryLoader {
         } else {
             return new DslFileDictionary(path, data, prop);
         }
-    }
-
-    @SuppressWarnings("AvoidInlineConditionals")
-    static DslDictionary load(@NotNull final Path path) throws IOException {
-        return load(path, null);
     }
 
     @SuppressWarnings("AvoidInlineConditionals")
@@ -174,32 +173,19 @@ final class DslDictionaryLoader {
 
     private static DslIndexOuterClass.DslIndex getIndexFromFileAndValidate(final Path path, final Path indexPath) {
         if (indexPath != null && indexPath.toFile().canRead()) {
-            try (InputStream is = Files.newInputStream(indexPath)) {
+            try (InputStream is = new GZIPInputStream(Files.newInputStream(indexPath))) {
                 DslIndexOuterClass.DslIndex index = DslIndexOuterClass.DslIndex.parseFrom(is);
-                if (validateIndex(path, index)) {
+                long mtime = Files.getLastModifiedTime(path).toMillis();
+                long expectedMTime = index.getFileLastModifiedTime();
+                if (path.toString().equals(index.getFilename())
+                        && (Files.size(path) == index.getFilesize())
+                        && mtime == expectedMTime) {
                     return index;
                 }
             } catch (IOException ignored) {
             }
         }
         return null;
-    }
-
-    private static boolean validateIndex(final Path path, final DslIndexOuterClass.DslIndex index) throws IOException {
-        long mtime = Files.getLastModifiedTime(path).toMillis();
-        long expectedMTime = index.getFileLastModifiedTime();
-        return (path.toString().equals(index.getFilename())
-                && (Files.size(path) == index.getFilesize())
-                && mtime == expectedMTime);
-    }
-
-    private static DslDictionaryProperty getPropertyFromIndex(final DslIndexOuterClass.DslIndex index) {
-        return new DslDictionaryProperty(
-                index.getDictionaryName(),
-                index.getIndexLanguage(),
-                index.getContentLanguage(),
-                Charset.forName(index.getCharset()),
-                index.getEol().toByteArray());
     }
 
     private static void buildIndexFile(@NotNull final Path path, @Nullable final Path indexPath,
@@ -209,8 +195,8 @@ final class DslDictionaryLoader {
             // do nothing when indexPath is not specified.
             return;
         }
-        try (OutputStream os = Files.newOutputStream(indexPath, StandardOpenOption.CREATE,
-            StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+        try (OutputStream os = new GZIPOutputStream(Files.newOutputStream(indexPath,
+                StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE))) {
             DslIndexOuterClass.DslIndex index = DslIndexOuterClass.DslIndex.newBuilder()
                 .setFilename(path.toString())
                 .setFilesize(Files.size(path))
@@ -224,7 +210,9 @@ final class DslDictionaryLoader {
                 .build();
             index.writeTo(os);
             os.flush();
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            // clean up when error
+            Files.deleteIfExists(indexPath);
         }
     }
 
