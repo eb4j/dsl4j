@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.4.3]
+* Support index file
+* Allow load/save index that is compressed with GZIP
+* Introduce new API to accept index file path.
+
 ## [0.4.2]
 * Fix bug raising exception when file end with double EOL terminator.
 * Improve charset detection
@@ -51,9 +56,10 @@ All notable changes to this project will be documented in this file.
 ## 0.1.0
 * First internal release
 
-[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.4.2...HEAD
-[0.4.1]: https://github.com/eb4j/dsl4j/compare/v0.4.1...v0.4.2
-[0.4.0]: https://github.com/eb4j/dsl4j/compare/v0.3.0...v0.4.1
+[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/eb4j/dsl4j/compare/v0.4.2...v0.4.3
+[0.4.2]: https://github.com/eb4j/dsl4j/compare/v0.4.1...v0.4.2
+[0.4.1]: https://github.com/eb4j/dsl4j/compare/v0.3.0...v0.4.1
 [0.3.0]: https://github.com/eb4j/dsl4j/compare/v0.2.3...v0.3.0
 [0.2.3]: https://github.com/eb4j/dsl4j/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/eb4j/dsl4j/compare/v0.2.1...v0.2.2
