@@ -169,7 +169,16 @@ final class DslDictionaryLoader {
                         false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE)) {
             // Detect codepage and charset
             if (!bis.hasBOM()) {
-                charset = StandardCharsets.ISO_8859_1;
+                byte[] buf = new byte[4];
+                if (bis.read(buf, 0, 4) == -1) {
+                    throw new IOException("Unexpected end of file.");
+                };
+                if (buf[1] == '\0') {
+                    charset = StandardCharsets.UTF_16LE;
+                } else {
+                    // Temporary set ANSI charset
+                    charset = StandardCharsets.ISO_8859_1;
+                }
             } else if (bis.hasBOM(ByteOrderMark.UTF_16LE)) {
                 charset = StandardCharsets.UTF_16LE;
             } else {
@@ -189,7 +198,8 @@ final class DslDictionaryLoader {
                 }
             }
             if (charset == StandardCharsets.ISO_8859_1) {
-                charset = StandardCharsets.UTF_16LE;
+                // When codepage is not set but not UTF-16LE, then assumes UTF-8
+                charset = StandardCharsets.UTF_8;
             }
         }
         return charset;
