@@ -66,12 +66,8 @@ final class DslDictionaryLoader {
     }
 
     @SuppressWarnings("AvoidInlineConditionals")
-    static DslDictionary load(@NotNull final Path path) throws IOException {
-        return load(path, null);
-    }
-
-    @SuppressWarnings("AvoidInlineConditionals")
     static DslDictionary load(@NotNull final Path path, @Nullable final Path indexPath) throws IOException {
+        // check path
         if (!path.toFile().isFile()) {
             throw new IOException("Target file is not a file.");
         }
@@ -176,6 +172,11 @@ final class DslDictionaryLoader {
         } else {
             return new DslFileDictionary(path, data, prop);
         }
+    }
+
+    @SuppressWarnings("AvoidInlineConditionals")
+    static DslDictionary load(@NotNull final Path path) throws IOException {
+        return load(path, null);
     }
 
     private static boolean validateIndex(final Path path, final DslIndexOuterClass.DslIndex index) throws IOException {
