@@ -18,6 +18,7 @@
 
 package io.github.eb4j.dsl;
 
+import com.google.protobuf.ByteString;
 import io.github.eb4j.dsl.data.DictionaryData;
 import io.github.eb4j.dsl.data.DictionaryDataBuilder;
 import io.github.eb4j.dsl.data.DslDictionaryProperty;
@@ -27,17 +28,23 @@ import org.apache.commons.io.input.BOMInputStream;
 import org.dict.zip.DictZipInputStream;
 import org.dict.zip.RandomAccessInputStream;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,7 +67,11 @@ final class DslDictionaryLoader {
 
     @SuppressWarnings("AvoidInlineConditionals")
     static DslDictionary load(@NotNull final Path path) throws IOException {
-        // check path
+        return load(path, null);
+    }
+
+    @SuppressWarnings("AvoidInlineConditionals")
+    static DslDictionary load(@NotNull final Path path, @Nullable final Path indexPath) throws IOException {
         if (!path.toFile().isFile()) {
             throw new IOException("Target file is not a file.");
         }
@@ -69,63 +80,97 @@ final class DslDictionaryLoader {
             throw new IOException("Error reading target file.");
         }
         boolean isDictzip = filename.toString().endsWith(".dz");
-        Charset charset = detectCharset(path, isDictzip);
-        byte[] eol = detectEol(path, isDictzip, charset);
-        Map<String, String> metadata = readMetadata(path, isDictzip, charset);
-        DslDictionaryProperty prop = new DslDictionaryProperty(
-                metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
-        // prepare creation of index
-        byte[] delimiter = Arrays.copyOf(eol, eol.length * 2);
-        System.arraycopy(eol, 0, delimiter, eol.length, eol.length);
-        StreamSearcher eolSearcher = new StreamSearcher(eol);
-        StreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
-        DictionaryDataBuilder<DslEntry> builder = new DictionaryDataBuilder<>();
-        // build dictionary index
-        try (InputStream is = isDictzip ? new DictZipInputStream(
-                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
-                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) {
-            long cardStart;
-            long articleStart;
-            String headWords;
-            // search delimiter to skip header
-            cardStart = cardEndSearcher.search(is);
-            while (true) {
-                cardStart += skipEmptyLine(is, charset);
-                is.mark(4096);
-                long next = eolSearcher.search(is);
-                if (next == -1) {
-                    break;
+        List<DslIndexOuterClass.DslIndex.Entry> entries = null;
+        DslDictionaryProperty prop = null;
+        if (indexPath != null && indexPath.toFile().canRead()) {
+            try (InputStream is = Files.newInputStream(indexPath)) {
+                DslIndexOuterClass.DslIndex index = DslIndexOuterClass.DslIndex.parseFrom(is);
+                if (validateIndex(path, index)) {
+                    prop = new DslDictionaryProperty(
+                            index.getDictionaryName(),
+                            index.getIndexLanguage(),
+                            index.getContentLanguage(),
+                            Charset.forName(index.getCharset()),
+                            index.getEol().toByteArray());
+                    entries = index.getEntriesList();
                 }
-                while (!isSpaceOrTab(is, charset)) {
-                    next += eolSearcher.search(is);
-                }
-                articleStart = cardStart + next;
-                is.reset();
-                byte[] headWordBytes = new byte[(int) next];
-                if (is.read(headWordBytes) == 0) {
-                    throw new IOException();
-                }
-                headWords = new String(headWordBytes, charset).trim();
-                is.mark(4096);
-                long pos = cardEndSearcher.search(is);
-                if (pos == -1) {
-                    is.reset();
-                    // last article
-                    String[] tokens = headWords.split("\\r?\\n");
-                    for (String token: tokens) {
-                        builder.add(token, new DslEntry(articleStart, (is.available())));
-                    }
-                    break;
-                }
-                String[] tokens = headWords.split("\\r?\\n");
-                for (String token: tokens) {
-                    builder.add(token, new DslEntry(articleStart, (int) pos - eol.length));
-                }
-                // increment to next card start
-                cardStart = articleStart + pos;
+            } catch (IOException ignored) {
             }
         }
-        DictionaryData<DslEntry> data = builder.build();
+        // When there is no index or failed to validate
+        if (entries == null) {
+            Charset charset = detectCharset(path, isDictzip);
+            byte[] eol = detectEol(path, isDictzip, charset);
+            Map<String, String> metadata = readMetadata(path, isDictzip, charset);
+            prop = new DslDictionaryProperty(
+                    metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
+            // prepare creation of index
+            byte[] delimiter = Arrays.copyOf(eol, eol.length * 2);
+            System.arraycopy(eol, 0, delimiter, eol.length, eol.length);
+            StreamSearcher eolSearcher = new StreamSearcher(eol);
+            StreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
+            entries = new ArrayList<>();
+            // build dictionary index
+            try (InputStream is = isDictzip ? new DictZipInputStream(
+                    new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
+                    new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) {
+                long cardStart;
+                long articleStart;
+                String headWords;
+                // search delimiter to skip header
+                cardStart = cardEndSearcher.search(is);
+                while (true) {
+                    cardStart += skipEmptyLine(is, charset);
+                    is.mark(4096);
+                    long next = eolSearcher.search(is);
+                    if (next == -1) {
+                        break;
+                    }
+                    while (!isSpaceOrTab(is, charset)) {
+                        next += eolSearcher.search(is);
+                    }
+                    articleStart = cardStart + next;
+                    is.reset();
+                    byte[] headWordBytes = new byte[(int) next];
+                    if (is.read(headWordBytes) == 0) {
+                        throw new IOException();
+                    }
+                    headWords = new String(headWordBytes, charset).trim();
+                    is.mark(4096);
+                    long pos = cardEndSearcher.search(is);
+                    if (pos == -1) {
+                        is.reset();
+                        // last article
+                        String[] tokens = headWords.split("\\r?\\n");
+                        for (String token : tokens) {
+                            entries.add(DslIndexOuterClass.DslIndex.Entry.newBuilder()
+                                    .setHeadWord(token)
+                                    .setOffset(articleStart)
+                                    .setSize(is.available())
+                                    .build());
+                        }
+                        break;
+                    }
+                    String[] tokens = headWords.split("\\r?\\n");
+                    for (String token : tokens) {
+                        entries.add(DslIndexOuterClass.DslIndex.Entry.newBuilder()
+                                .setHeadWord(token)
+                                .setOffset(articleStart)
+                                .setSize((int) pos - eol.length)
+                                .build());
+                    }
+                    // increment to next card start
+                    cardStart = articleStart + pos;
+                }
+                if (indexPath != null) {
+                    try {
+                        buildIndexFile(path, indexPath, entries, prop);
+                    } catch (IOException ignored) {
+                    }
+                }
+            }
+        }
+        DictionaryData<DslEntry> data = new DictionaryDataBuilder<DslEntry>().build(entries);
         if (isDictzip) {
             return new DslZipDictionary(path, data, prop);
         } else {
@@ -133,8 +178,38 @@ final class DslDictionaryLoader {
         }
     }
 
+    private static boolean validateIndex(final Path path, final DslIndexOuterClass.DslIndex index) throws IOException {
+        long mtime = Files.getLastModifiedTime(path).toMillis();
+        long expectedMTime = index.getFileLastModifiedTime();
+        return (path.toString().equals(index.getFilename())
+                && (Files.size(path) == index.getFilesize())
+                && mtime == expectedMTime);
+    }
+
+    private static void buildIndexFile(@NotNull final Path path, @NotNull final Path indexPath,
+                                       @NotNull final List<DslIndexOuterClass.DslIndex.Entry> entries,
+                                       @NotNull final DslDictionaryProperty prop) throws IOException {
+        try (OutputStream os = Files.newOutputStream(indexPath, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE)) {
+            DslIndexOuterClass.DslIndex index = DslIndexOuterClass.DslIndex.newBuilder()
+                    .setFilename(path.toString())
+                    .setFilesize(Files.size(path))
+                    .setFileLastModifiedTime(Files.getLastModifiedTime(path).toMillis())
+                    .setDictionaryName(prop.getDictionaryName())
+                    .setIndexLanguage(prop.getIndexLanguage())
+                    .setContentLanguage(prop.getContentLanguage())
+                    .setCharset(prop.getCharset().name())
+                    .setEol(ByteString.copyFrom(prop.getEol()))
+                    .addAllEntries(entries)
+                    .build();
+            index.writeTo(os);
+            os.flush();
+        }
+    }
+
     @SuppressWarnings("AvoidInlineConditionals")
-    private static byte[] detectEol(final Path path, final boolean isDictzip, final Charset charset) throws IOException {
+    private static byte[] detectEol(final Path path, final boolean isDictzip, final Charset charset)
+            throws IOException {
         byte[] eol;
         try (InputStream bis = isDictzip ? new DictZipInputStream(
                     new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
@@ -159,6 +234,7 @@ final class DslDictionaryLoader {
         return eol;
     }
 
+    @SuppressWarnings("AvoidInlineConditionals")
     private static Charset detectCharset(final Path path, final boolean isDictzip) throws IOException {
         Map<String, String> metadata;
         Charset charset;
@@ -172,7 +248,7 @@ final class DslDictionaryLoader {
                 byte[] buf = new byte[4];
                 if (bis.read(buf, 0, 4) == -1) {
                     throw new IOException("Unexpected end of file.");
-                };
+                }
                 if (buf[1] == '\0') {
                     charset = StandardCharsets.UTF_16LE;
                 } else {
@@ -205,7 +281,9 @@ final class DslDictionaryLoader {
         return charset;
     }
 
-    private static Map<String, String> readMetadata(final Path path, final boolean isDictzip, Charset charset) throws IOException {
+    @SuppressWarnings("AvoidInlineConditionals")
+    private static Map<String, String> readMetadata(final Path path, final boolean isDictzip, final Charset charset)
+            throws IOException {
         final Map<String, String> metadata = new HashMap<>();
         try (InputStream bis = isDictzip ? new DictZipInputStream(
                 new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
