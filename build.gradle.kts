@@ -66,6 +66,10 @@ tasks.jacocoTestReport {
     }
 }
 
+tasks.coveralls {
+    dependsOn(tasks.jacocoTestReport)
+}
+
 coveralls {
     jacocoReportPath = "build/reports/jacoco/test/jacocoTestReport.xml"
 }
