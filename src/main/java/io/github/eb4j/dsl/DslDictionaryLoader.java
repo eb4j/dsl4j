@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 final class DslDictionaryLoader {
     private static final String[] PATTERNS = {"name", "index", "content", "codepage", "include"};
     private static final Pattern METAPATTERN = Pattern.compile(
-                    "^#(NAME\\s(?<name>.+?)"
+                    "^(\uFEFF)?#(NAME\\s(?<name>.+?)"
                     + "|INDEX_LANGUAGE\\s(?<index>.+?)"
                     + "|CONTENTS_LANGUAGE\\s(?<content>.+?)"
                     + "|SOURCE_CODE_PAGE\\s(?<codepage>.+?))"
@@ -69,11 +69,12 @@ final class DslDictionaryLoader {
             throw new IOException("Error reading target file.");
         }
         boolean isDictzip = filename.toString().endsWith(".dz");
-        // parse header
-        DslDictionaryProperty prop = parseHeader(path, isDictzip);
+        Charset charset = detectCharset(path, isDictzip);
+        byte[] eol = detectEol(path, isDictzip, charset);
+        Map<String, String> metadata = readMetadata(path, isDictzip, charset);
+        DslDictionaryProperty prop = new DslDictionaryProperty(
+                metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
         // prepare creation of index
-        Charset charset = prop.getCharset();
-        byte[] eol = prop.getEol();
         byte[] delimiter = Arrays.copyOf(eol, eol.length * 2);
         System.arraycopy(eol, 0, delimiter, eol.length, eol.length);
         StreamSearcher eolSearcher = new StreamSearcher(eol);
@@ -93,7 +94,7 @@ final class DslDictionaryLoader {
                 is.mark(4096);
                 long next = eolSearcher.search(is);
                 if (next == -1) {
-                    throw new IOException("Target dictionary file is corrupted.");
+                    break;
                 }
                 while (!isSpaceOrTab(is, charset)) {
                     next += eolSearcher.search(is);
@@ -133,14 +134,11 @@ final class DslDictionaryLoader {
     }
 
     @SuppressWarnings("AvoidInlineConditionals")
-    private static DslDictionaryProperty parseHeader(final Path path, final boolean isDictzip) throws IOException {
-        Map<String, String> metadata;
-        Charset charset = detectCharset(path, isDictzip);
+    private static byte[] detectEol(final Path path, final boolean isDictzip, final Charset charset) throws IOException {
         byte[] eol;
         try (InputStream bis = isDictzip ? new DictZipInputStream(
                     new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
                 new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) {
-            metadata = readMetadata(bis, charset);
             // default EoL terminator is CR+LF
             eol = "\r\n".getBytes(charset);
             // detect end of line delimiter
@@ -158,8 +156,7 @@ final class DslDictionaryLoader {
                 }
             }
         }
-        return new DslDictionaryProperty(
-                metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
+        return eol;
     }
 
     private static Charset detectCharset(final Path path, final boolean isDictzip) throws IOException {
@@ -178,9 +175,10 @@ final class DslDictionaryLoader {
             } else {
                 charset = StandardCharsets.UTF_8;
             }
-            metadata = readMetadata(bis, charset);
-            // detect charset when it is not UNICODE
-            if (charset == StandardCharsets.ISO_8859_1 && metadata.containsKey("codepage")) {
+        }
+        if (charset == StandardCharsets.ISO_8859_1) {
+            metadata = readMetadata(path, isDictzip, charset);
+            if (metadata.containsKey("codepage")) {
                 String codepageName = metadata.get("codepage");
                 for (int i = 0; i < ALLOWED_CODE_PAGE.length; i++) {
                     String name = ALLOWED_CODE_PAGE[i];
@@ -197,9 +195,12 @@ final class DslDictionaryLoader {
         return charset;
     }
 
-    private static Map<String, String> readMetadata(InputStream bis, Charset charset) throws IOException {
+    private static Map<String, String> readMetadata(final Path path, final boolean isDictzip, Charset charset) throws IOException {
         final Map<String, String> metadata = new HashMap<>();
-        try (InputStreamReader isr = new InputStreamReader(bis, charset);
+        try (InputStream bis = isDictzip ? new DictZipInputStream(
+                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
+                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"));
+             InputStreamReader isr = new InputStreamReader(bis, charset);
              BufferedReader reader = new BufferedReader(isr)) {
             String l;
             while ((l = reader.readLine()) != null && !l.isEmpty()) {
