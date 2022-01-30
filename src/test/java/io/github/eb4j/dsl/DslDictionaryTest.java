@@ -155,4 +155,34 @@ class DslDictionaryTest {
             break;
         }
     }
+
+    @Test
+    void loadEndDoubleEol() throws URISyntaxException, IOException {
+        URL utf16lelf = this.getClass().getResource("/test3.dsl.dz");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf16lelf.toURI()));
+        assertEquals("en-ja Wikidict", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Japanese", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        DslResult results = dictionary.lookup("Voiceless palatal stop");
+        for (Map.Entry<String, String> entry : results.getEntries(dumper)) {
+            assertEquals("[m1]Voiceless palatal stop[/m]\n[m1]無声硬口蓋破裂音[/m]\n", entry.getValue());
+            break;
+        }
+    }
+
+    @Test
+    void loadUtf8() throws URISyntaxException, IOException {
+        URL utf8 = this.getClass().getResource("/utf8.dsl");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf8.toURI()));
+        assertEquals("UTF-8 dictionary", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Japanese", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        DslResult results = dictionary.lookup("Voiceless palatal stop");
+        for (Map.Entry<String, String> entry : results.getEntries(dumper)) {
+            assertEquals("[m1]Voiceless palatal stop[/m]\n[m1]無声硬口蓋破裂音[/m]\n", entry.getValue());
+            break;
+        }
+    }
 }
