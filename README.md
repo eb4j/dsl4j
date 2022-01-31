@@ -5,7 +5,7 @@ DSL4j is a parser library of Lingvo DSL dictionary file for Java.
 
 DSL4j supports `.dsl` file and also `.dsl.dz` compressed file.
 DSL4j loads all dictionary data and parse its index into memory.
-An index will be saved in index file specified in second argument of `DslDictionary#loadData` method.
+An index will be saved in index file specified in second argument of `DslDictionary#loadDictionary` method.
 When a specified index file exists and validated as up-to-date, dsl4j load the index instead of parsing dictionary.
 
 NOTICE: Current version does not support media archive file `...dsl.files.zip` that is supported by GoldenDict.
@@ -34,7 +34,7 @@ A status of library development is considered as `Beta`.
 
 ### Gradle Groovy DSL
 
-<details>
+<details>validateAbsolutePath? 
 
 ```groovy
 implementation 'io.github.eb4j:dsl4j:0.4.3'
@@ -89,7 +89,7 @@ public static void main(String... argv){
         Path dictionaryPath = Path.to(argv[1]);
         Path indexPath = Path.to(dictionaryPath + ".idx"); 
         String word = argv[2];
-        DslDictionary dslDictionary = DslDictionary.loadData(dictionaryPath,indexPath);
+        DslDictionary dslDictionary = DslDictionary.loadDictionary(dictionaryPath,indexPath);
         PlainDslVisitor plainDslVisitor = new PlainDslVisitor();
         DslResult dslResult=dslDictionary.lookup(word);
         for (Map.Entry<String, String> entry: dslResult.getEntries(plainDslVisitor)){
@@ -103,7 +103,7 @@ public static void main(String... argv){
 Here is pragmatic one with java8 streams, predictive search method and HTML converter;
 
 ```java
-DslDictionary dslDictionary = DslDictionary.loadData(file);
+DslDictionary dslDictionary = DslDictionary.loadDictionary(file);
 HtmlDslVisitor htmlDslVisitor = new HtmlDslVisitor(file.getParent());
 List<String> result =
     dslDictionary.lookupPredictive(word).getEntries(htmlDslVisitor).stream()

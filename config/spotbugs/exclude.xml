@@ -19,8 +19,9 @@
   </Match>
   <Match>
     <Or>
-      <Class name="io.github.eb4j.dsl.DslIndexOuterClass"/>
-      <Class name="io.github.eb4j.dsl.DslIndexOuterClass.DslIndex"/>
+      <Class name="io.github.eb4j.dsl.index.DslIndex"/>
+      <Class name="io.github.eb4j.dsl.index.DslIndexOrBulder"/>
+      <Class name="io.github.eb4j.dsl.index.DslIndexOuterClass"/>
     </Or>
     <Or>
       <Bug code="EI"/>
