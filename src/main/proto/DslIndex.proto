@@ -1,6 +1,11 @@
 syntax = "proto3";
-package io.github.eb4j.dsl;
+package dsl;
+option java_package = "io.github.eb4j.dsl.index";
+option java_multiple_files = true;
+
 message DslIndex {
+  uint32 indexVersion = 10;
+  string parentPath = 11;
   string filename = 1;
   uint64 filesize = 2;
   uint64 fileLastModifiedTime = 3;

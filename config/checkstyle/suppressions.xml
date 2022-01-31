@@ -9,5 +9,7 @@
   <suppress checks=".*" files="Parse.*.java"/>
   <suppress checks=".*" files="JavaChar.*.java"/>
   <suppress checks="ModifierOrder" files="DslArticle.java"/>
+  <suppress checks=".*" files="DslIndex.java"/>
+  <suppress checks=".*" files="DslIndexOrBuilder.java"/>
   <suppress checks=".*" files="DslIndexOuterClass.java"/>
 </suppressions>
