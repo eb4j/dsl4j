@@ -238,5 +238,7 @@ public class HtmlDslVisitor extends DslVisitor<String> {
         TAGMAP.put("m9", "<p style=\"text-indent: 90px\">");
         ENDTAGMAP.put("m", "</p>");
         ENDTAGMAP.put("lang", "</span>");
+        TAGMAP.put("*", "<details>");
+        ENDTAGMAP.put("*", "</details>");
     }
 }
