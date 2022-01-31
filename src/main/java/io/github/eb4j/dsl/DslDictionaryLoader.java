@@ -23,6 +23,7 @@ import io.github.eb4j.dsl.data.DictionaryData;
 import io.github.eb4j.dsl.data.DictionaryDataBuilder;
 import io.github.eb4j.dsl.data.DslDictionaryProperty;
 import io.github.eb4j.dsl.data.DslEntry;
+import io.github.eb4j.dsl.index.DslIndex;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
 import org.dict.zip.DictZipInputStream;
@@ -65,10 +66,13 @@ final class DslDictionaryLoader {
                     + "|INCLUDE\\s(?<include>.+?)$");
     private static final String[] ALLOWED_CODE_PAGE = {"EasternEuropean", "Cyrillic", "Latin", "Greek", "Turkish"};
 
+    private static final int INDEX_VERSION = 1;
+
     private DslDictionaryLoader() {
     }
 
-    static DslDictionary load(@NotNull final Path path, @Nullable final Path indexPath) throws IOException {
+    static DslDictionary load(@NotNull final Path path, @Nullable final Path indexPath,
+                              final boolean validateIndexAbsPath) throws IOException {
         // check path
         if (!path.toFile().isFile()) {
             throw new IOException("Target file is not a file.");
@@ -78,11 +82,11 @@ final class DslDictionaryLoader {
             throw new IOException("Error reading target file.");
         }
         boolean isDictzip = filename.toString().endsWith(".dz");
-        List<DslIndexOuterClass.DslIndex.Entry> entries = null;
+        List<DslIndex.Entry> entries = null;
         DslDictionaryProperty prop = null;
-        DslIndexOuterClass.DslIndex index = getIndexFromFileAndValidate(path, indexPath);
+        DslIndex index = getIndexFromFileAndValidate(path, indexPath, validateIndexAbsPath);
         if (index != null) {
-            prop = new DslDictionaryProperty( index.getDictionaryName(), index.getIndexLanguage(),
+            prop = new DslDictionaryProperty(index.getDictionaryName(), index.getIndexLanguage(),
                     index.getContentLanguage(), Charset.forName(index.getCharset()), index.getEol().toByteArray());
             entries = index.getEntriesList();
         }
@@ -91,9 +95,9 @@ final class DslDictionaryLoader {
             Charset charset = detectCharset(path, isDictzip);
             byte[] eol = detectEol(path, isDictzip, charset);
             Map<String, String> metadata = readMetadata(path, isDictzip, charset);
+            entries = loadEntriesFromDslFile(path, isDictzip, eol, charset);
             prop = new DslDictionaryProperty(
                     metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
-            entries = loadEntriesFromDslFile(path, isDictzip, prop);
             buildIndexFile(path, indexPath, entries, prop);
         }
         DictionaryData<DslEntry> data = new DictionaryDataBuilder<DslEntry>().build(entries);
@@ -105,16 +109,14 @@ final class DslDictionaryLoader {
     }
 
     @SuppressWarnings("AvoidInlineConditionals")
-    private static List<DslIndexOuterClass.DslIndex.Entry> loadEntriesFromDslFile(
-            final Path path, final boolean isDictzip, final DslDictionaryProperty prop) throws IOException {
+    private static List<DslIndex.Entry> loadEntriesFromDslFile(
+            final Path path, final boolean isDictzip, final byte[] eol, final Charset charset) throws IOException {
         // prepare creation of index
-        byte[] eol = prop.getEol();
-        Charset charset = prop.getCharset();
         byte[] delimiter = Arrays.copyOf(eol, eol.length * 2);
         System.arraycopy(eol, 0, delimiter, eol.length, eol.length);
         StreamSearcher eolSearcher = new StreamSearcher(eol);
         StreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
-        List<DslIndexOuterClass.DslIndex.Entry> entries = new ArrayList<>();
+        List<DslIndex.Entry> entries = new ArrayList<>();
         // build dictionary index
         try (InputStream is = isDictzip ? new DictZipInputStream(
                 new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
@@ -148,7 +150,7 @@ final class DslDictionaryLoader {
                     // last article
                     String[] tokens = headWords.split("\\r?\\n");
                     for (String token : tokens) {
-                        entries.add(DslIndexOuterClass.DslIndex.Entry.newBuilder()
+                        entries.add(DslIndex.Entry.newBuilder()
                                 .setHeadWord(token)
                                 .setOffset(articleStart)
                                 .setSize(is.available())
@@ -158,7 +160,7 @@ final class DslDictionaryLoader {
                 }
                 String[] tokens = headWords.split("\\r?\\n");
                 for (String token : tokens) {
-                    entries.add(DslIndexOuterClass.DslIndex.Entry.newBuilder()
+                    entries.add(DslIndex.Entry.newBuilder()
                             .setHeadWord(token)
                             .setOffset(articleStart)
                             .setSize((int) pos - eol.length)
@@ -171,16 +173,33 @@ final class DslDictionaryLoader {
         return entries;
     }
 
-    private static DslIndexOuterClass.DslIndex getIndexFromFileAndValidate(final Path path, final Path indexPath) {
+    private static DslIndex getIndexFromFileAndValidate(final Path path, final Path indexPath,
+                                                        final boolean validateAbsolutePath) {
         if (indexPath != null && indexPath.toFile().canRead()) {
             try (InputStream is = new GZIPInputStream(Files.newInputStream(indexPath))) {
-                DslIndexOuterClass.DslIndex index = DslIndexOuterClass.DslIndex.parseFrom(is);
-                long mtime = Files.getLastModifiedTime(path).toMillis();
-                long expectedMTime = index.getFileLastModifiedTime();
-                if (path.toString().equals(index.getFilename())
-                        && (Files.size(path) == index.getFilesize())
-                        && mtime == expectedMTime) {
-                    return index;
+                DslIndex index = DslIndex.parseFrom(is);
+                if (INDEX_VERSION == index.getIndexVersion()) {
+                    long mtime = Files.getLastModifiedTime(path).toMillis();
+                    long expectedMTime = index.getFileLastModifiedTime();
+                    Path filepath = path.getFileName();
+                    String filename;
+                    if (filepath != null) {
+                        filename = filepath.toString();
+                    } else {
+                        filename = "";
+                    }
+                    Path parentpath = path.getParent();
+                    String parent;
+                    if (parentpath != null) {
+                        parent = parentpath.toString();
+                    } else {
+                        parent = "";
+                    }
+                    boolean samePath = filename.equals(index.getFilename())
+                            && (!validateAbsolutePath || parent.equals(index.getParentPath()));
+                    if (samePath && Files.size(path) == index.getFilesize() && mtime == expectedMTime) {
+                        return index;
+                    }
                 }
             } catch (IOException ignored) {
             }
@@ -189,25 +208,41 @@ final class DslDictionaryLoader {
     }
 
     private static void buildIndexFile(@NotNull final Path path, @Nullable final Path indexPath,
-                                       @NotNull final List<DslIndexOuterClass.DslIndex.Entry> entries,
+                                       @NotNull final List<DslIndex.Entry> entries,
                                        @NotNull final DslDictionaryProperty prop) throws IOException {
         if (indexPath == null) {
             // do nothing when indexPath is not specified.
             return;
         }
+        String filename;
+        Path filepath = path.getFileName();
+        if (filepath != null) {
+            filename = filepath.toString();
+        } else {
+            filename = "";
+        }
+        String parent;
+        Path parentpath = path.getParent();
+        if (parentpath != null) {
+            parent = parentpath.toString();
+        } else {
+            parent = "";
+        }
         try (OutputStream os = new GZIPOutputStream(Files.newOutputStream(indexPath,
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE))) {
-            DslIndexOuterClass.DslIndex index = DslIndexOuterClass.DslIndex.newBuilder()
-                .setFilename(path.toString())
-                .setFilesize(Files.size(path))
-                .setFileLastModifiedTime(Files.getLastModifiedTime(path).toMillis())
-                .setDictionaryName(prop.getDictionaryName())
-                .setIndexLanguage(prop.getIndexLanguage())
-                .setContentLanguage(prop.getContentLanguage())
-                .setCharset(prop.getCharset().name())
-                .setEol(ByteString.copyFrom(prop.getEol()))
-                .addAllEntries(entries)
-                .build();
+            DslIndex index = DslIndex.newBuilder()
+                    .setIndexVersion(INDEX_VERSION)
+                    .setFilename(filename)
+                    .setParentPath(parent)
+                    .setFilesize(Files.size(path))
+                    .setFileLastModifiedTime(Files.getLastModifiedTime(path).toMillis())
+                    .setDictionaryName(prop.getDictionaryName())
+                    .setIndexLanguage(prop.getIndexLanguage())
+                    .setContentLanguage(prop.getContentLanguage())
+                    .setCharset(prop.getCharset().name())
+                    .setEol(ByteString.copyFrom(prop.getEol()))
+                    .addAllEntries(entries)
+                    .build();
             index.writeTo(os);
             os.flush();
         } catch (IOException e) {

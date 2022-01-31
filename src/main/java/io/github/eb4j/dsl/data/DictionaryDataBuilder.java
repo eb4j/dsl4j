@@ -18,7 +18,7 @@
 
 package io.github.eb4j.dsl.data;
 
-import io.github.eb4j.dsl.DslIndexOuterClass;
+import io.github.eb4j.dsl.index.DslIndex;
 import org.trie4j.MapTrie;
 import org.trie4j.patricia.MapPatriciaTrie;
 
@@ -37,9 +37,9 @@ public final class DictionaryDataBuilder<T> {
      * @param entries List of ProtoBuf defined entry
      * @return DictionaryData immutable object.
      */
-    public DictionaryData<T> build(final List<DslIndexOuterClass.DslIndex.Entry> entries) {
+    public DictionaryData<T> build(final List<DslIndex.Entry> entries) {
         MapTrie<Object> mapPatriciaTrie = new MapPatriciaTrie<>();
-        for (DslIndexOuterClass.DslIndex.Entry en: entries) {
+        for (DslIndex.Entry en: entries) {
             doAdd(mapPatriciaTrie, en.getHeadWord(), en.getOffset(), en.getSize());
             String lowerKey = en.getHeadWord().toLowerCase();
             if (!en.getHeadWord().equals(lowerKey)) {

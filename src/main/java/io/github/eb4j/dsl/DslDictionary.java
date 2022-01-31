@@ -124,7 +124,7 @@ public abstract class DslDictionary {
      * @throws IOException raise when I/O error occurred
      */
     public static DslDictionary loadDictionary(@NotNull final Path path) throws IOException {
-        return DslDictionaryLoader.load(path, null);
+        return DslDictionaryLoader.load(path, null, true);
     }
 
     /**
@@ -135,6 +135,19 @@ public abstract class DslDictionary {
      * @throws IOException raise when I/O error occurred
      */
     public static DslDictionary loadDictionary(@NotNull final Path path, final Path index) throws IOException {
-        return DslDictionaryLoader.load(path, index);
+        return DslDictionaryLoader.load(path, index, false);
+    }
+
+    /**
+     * Loader entry point.
+     * @param path dictionary file.
+     * @param index dictionary index file.
+     * @param validateIndexAbspath true if validate index by compare with full path of generated one, otherwise false.
+     * @return DslDictionary object.
+     * @throws IOException raise when I/O error occurred
+     */
+    public static DslDictionary loadDictionary(@NotNull final Path path, final Path index,
+                                               final boolean validateIndexAbspath) throws IOException {
+        return DslDictionaryLoader.load(path, index, validateIndexAbspath);
     }
 }
