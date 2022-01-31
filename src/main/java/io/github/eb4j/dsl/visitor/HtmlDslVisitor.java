@@ -92,7 +92,7 @@ public class HtmlDslVisitor extends DslVisitor<String> {
             return;
         }
         // Handle URL and media tags
-        if (tag.isTagName("url") || tag.isTagName("s") || tag.isTagName("video")) {
+        if (tag.isTagName("url") || tag.isTagName("s") || tag.isTagName("video") || tag.isTagName("*")) {
             specialTag = true;
             return;
         }
@@ -156,6 +156,8 @@ public class HtmlDslVisitor extends DslVisitor<String> {
             } else if (endTag.isTagName("s")) {
                 // img tag when image file
                 sb.append("<img src=\"").append(getMediaUrl()).append("\" />");
+            } else if (endTag.isTagName("*")) {
+                sb.append("<!-- <details>").append(current).append("</details> -->");
             }
             specialTag = false;
             current = null;
@@ -238,7 +240,5 @@ public class HtmlDslVisitor extends DslVisitor<String> {
         TAGMAP.put("m9", "<p style=\"text-indent: 90px\">");
         ENDTAGMAP.put("m", "</p>");
         ENDTAGMAP.put("lang", "</span>");
-        TAGMAP.put("*", "<details>");
-        ENDTAGMAP.put("*", "</details>");
     }
 }
