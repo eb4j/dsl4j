@@ -102,7 +102,7 @@ PARSER_END(DslParser)
 
 <LexStartTag> TOKEN: {
    <TAG_NAME: (<MEAN> | "b" | "br" | "c" | "com" | "ex" | "i" | "lang" | "p" | "preview" | "ref"
-               | "s" | "sub" | "sup" | "t" | "trn" | "trn1" | "trs" | "!trs" | "u" | "video" | "'" ) > : LexInTag
+               | "s" | "sub" | "sup" | "t" | "trn" | "trn1" | "trs" | "!trs" | "u" | "video" | "'" | "*" ) > : LexInTag
   | <LST_ERROR: ~[]> : DEFAULT
 }
 

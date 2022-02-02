@@ -156,4 +156,13 @@ public class DslParserTest {
         assertEquals("<span class=\"lang_en\">abc</span>", visitor.getObject());
     }
 
+    @Test
+    void asteriskHtml() throws ParseException {
+        DslParser parser = DslParser.createParser("[*]abc[/*]");
+        DslArticle article = parser.DslArticle();
+        HtmlDslVisitor visitor = new HtmlDslVisitor();
+        article.accept(visitor);
+        assertEquals("<!-- <details>abc</details> -->", visitor.getObject());
+    }
+
 }
