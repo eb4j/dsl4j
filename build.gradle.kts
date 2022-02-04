@@ -32,7 +32,7 @@ dependencies {
     implementation("org.jetbrains:annotations:23.0.0")
     implementation("com.github.takawitter:trie4j:0.9.8")
     implementation("commons-io:commons-io:2.11.0")
-    implementation("io.github.dictzip:dictzip:0.11.1")
+    implementation("io.github.dictzip:dictzip:0.11.2")
     implementation("com.google.protobuf:protobuf-java:$protobufVersion")
     testImplementation("org.codehaus.groovy:groovy-all:3.0.9")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
