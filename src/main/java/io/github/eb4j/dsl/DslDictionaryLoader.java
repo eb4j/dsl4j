@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -139,9 +140,7 @@ final class DslDictionaryLoader {
                 articleStart = cardStart + next;
                 is.reset();
                 byte[] headWordBytes = new byte[(int) next];
-                if (is.read(headWordBytes) == 0) {
-                    throw new IOException();
-                }
+                readFully(is, headWordBytes, 0, (int) next);
                 headWords = new String(headWordBytes, charset).trim();
                 is.mark(4096);
                 long pos = cardEndSearcher.search(is);
@@ -171,6 +170,18 @@ final class DslDictionaryLoader {
             }
         }
         return entries;
+    }
+
+    private static void readFully(final InputStream is, final byte[] buffer, final int off, final int size)
+            throws IOException {
+        int num = 0;
+        while (num < size) {
+            int count = is.read(buffer, off + num, size - num);
+            if (count < 0) {
+                throw new EOFException();
+            }
+            num += count;
+        }
     }
 
     private static DslIndex getIndexFromFileAndValidate(final Path path, final Path indexPath,

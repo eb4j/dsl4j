@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DslDictionaryIndexTest {
 
     private final URL resource = this.getClass().getResource("/test1.dsl.dz");
+    private final URL resource2 = this.getClass().getResource("/test4.dsl.dz");
 
     @Test
     @Order(1)
@@ -29,25 +30,19 @@ class DslDictionaryIndexTest {
         assertEquals("English", dictionary.getIndexLanguage());
         assertEquals("Russian", dictionary.getContentLanguage());
         DumpDslVisitor dumper = new DumpDslVisitor();
-        for (Map.Entry<String, String> entry : dictionary.lookup("space").getEntries(dumper)) {
-            assertEquals("space", entry.getKey());
-            assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
-                    entry.getValue());
-            break;
-        }
-        for (Map.Entry<String, String> entry : dictionary.lookup("tab").getEntries(dumper)) {
-            assertEquals("tab", entry.getKey());
-            assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
-                    entry.getValue());
-            break;
-        }
-        for (Map.Entry<String, String> entry : dictionary.lookup("tag").getEntries(dumper)) {
-            assertEquals("tag", entry.getKey());
-            assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
-            break;
-        }
+        Map.Entry<String, String> entry = dictionary.lookup("space").getEntries(dumper).get(0);
+        assertEquals("space", entry.getKey());
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
+                entry.getValue());
+        entry = dictionary.lookup("tab").getEntries(dumper).get(0);
+        assertEquals("tab", entry.getKey());
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+                entry.getValue());
+        entry = dictionary.lookup("tag").getEntries(dumper).get(0);
+        assertEquals("tag", entry.getKey());
+        assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
         dumper = new DumpDslVisitor();
-        for (Map.Entry<String, String> entry : dictionary.lookup("abandon").getEntries(dumper)) {
+        entry = dictionary.lookup("abandon").getEntries(dumper).get(0);
             assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
                     " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
                     "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
@@ -57,8 +52,6 @@ class DslDictionaryIndexTest {
                     "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
                     "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
                     "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
-            break;
-        }
     }
 
     @Test
@@ -72,35 +65,51 @@ class DslDictionaryIndexTest {
         assertEquals("English", dictionary.getIndexLanguage());
         assertEquals("Russian", dictionary.getContentLanguage());
         DumpDslVisitor dumper = new DumpDslVisitor();
-        for (Map.Entry<String, String> entry : dictionary.lookup("space").getEntries(dumper)) {
-            assertEquals("space", entry.getKey());
-            assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
-                    entry.getValue());
-            break;
-        }
-        for (Map.Entry<String, String> entry: dictionary.lookup("tab").getEntries(dumper)) {
-            assertEquals("tab", entry.getKey());
-            assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
-                    entry.getValue());
-            break;
-        }
-        for (Map.Entry<String, String> entry: dictionary.lookup("tag").getEntries(dumper)) {
-            assertEquals("tag", entry.getKey());
-            assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
-            break;
-        }
+        Map.Entry<String, String> entry = dictionary.lookup("space").getEntries(dumper).get(0);
+        assertEquals("space", entry.getKey());
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
+                entry.getValue());
+
+        entry = dictionary.lookup("tab").getEntries(dumper).get(0);
+        assertEquals("tab", entry.getKey());
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+                entry.getValue());
+        entry = dictionary.lookup("tag").getEntries(dumper).get(0);
+        assertEquals("tag", entry.getKey());
+        assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
         dumper = new DumpDslVisitor();
-        for (Map.Entry<String, String> entry : dictionary.lookup("abandon").getEntries(dumper)) {
-            assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
-                    " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
-                    "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
-                    "[m2]to [ref]abandon attempts[/ref][/m]\n" +
-                    "[m2]to [ref]abandon a claim[/ref][/m]\n" +
-                    "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
-                    "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
-                    "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
-                    "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
-            break;
-        }
+        entry = dictionary.lookup("abandon").getEntries(dumper).get(0);
+        assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
+                " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
+                "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
+                "[m2]to [ref]abandon attempts[/ref][/m]\n" +
+                "[m2]to [ref]abandon a claim[/ref][/m]\n" +
+                "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
+                "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
+                "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
+                "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
+    }
+
+    @Test
+    void loadDicitonaryIndex2() throws URISyntaxException, IOException {
+        Path dictPath = Paths.get(resource2.toURI());
+        DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, null);
+        assertEquals("IPA Dictionary - English", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("English", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        Map.Entry<String, String> entry = dictionary.lookup("ace").getEntries(dumper).get(0);
+        assertEquals("ace", entry.getKey());
+        assertEquals("[m1]/ˈeɪs/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("aerogenosa").getEntries(dumper).get(0);
+        assertEquals("[m1]/ˈɛɹədʒəˌnoʊsə/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("agree").getEntries(dumper).get(0);
+        assertEquals("[m1]/əˈɡɹi/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("ahren").getEntries(dumper).get(0);
+        assertEquals("[m1]/ˈɑɹən/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("aiwa").getEntries(dumper).get(0);
+        assertEquals("[m1]/ˈaɪwə/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("analysis").getEntries(dumper).get(0);
+        assertEquals("[m1]/əˈnæɫəsəs/, /əˈnæɫɪsɪs/[/m]\n", entry.getValue());
     }
 }
