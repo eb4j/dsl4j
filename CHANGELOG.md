@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.4.5]
+* Fix parsing index that is seldom broken position.(#35)
+
 ## [0.4.4]
 * Handle [*]...[/*] properly.
 * Default HtmlDslVIsitor convert [*]...[/*] as html comment.
@@ -60,7 +63,8 @@ All notable changes to this project will be documented in this file.
 ## 0.1.0
 * First internal release
 
-[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.4.4...HEAD
+[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.4.5...HEAD
+[0.4.5]: https://github.com/eb4j/dsl4j/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/eb4j/dsl4j/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/eb4j/dsl4j/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/eb4j/dsl4j/compare/v0.4.1...v0.4.2
