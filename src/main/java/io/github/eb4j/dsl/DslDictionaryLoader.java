@@ -115,7 +115,7 @@ final class DslDictionaryLoader {
         // prepare creation of index
         byte[] delimiter = Arrays.copyOf(eol, eol.length * 2);
         System.arraycopy(eol, 0, delimiter, eol.length, eol.length);
-        IStreamSearcher eolSearcher = new StreamSearcher(eol);
+        IStreamSearcher eolSearcher = new LFStreamSearcher(charset.equals(StandardCharsets.UTF_16LE));
         IStreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
         List<DslIndex.Entry> entries = new ArrayList<>();
         // build dictionary index
