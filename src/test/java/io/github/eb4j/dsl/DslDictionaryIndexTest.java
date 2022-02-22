@@ -19,6 +19,7 @@ class DslDictionaryIndexTest {
 
     private final URL resource = this.getClass().getResource("/test1.dsl.dz");
     private final URL resource2 = this.getClass().getResource("/test4.dsl.dz");
+    private final URL resource3 = this.getClass().getResource("/test5.dsl");
 
     @Test
     @Order(1)
@@ -111,5 +112,18 @@ class DslDictionaryIndexTest {
         assertEquals("[m1]/ˈaɪwə/[/m]\n", entry.getValue());
         entry = dictionary.lookup("analysis").getEntries(dumper).get(0);
         assertEquals("[m1]/əˈnæɫəsəs/, /əˈnæɫɪsɪs/[/m]\n", entry.getValue());
+    }
+
+    @Test
+    void loadDictionaryIndex3() throws URISyntaxException, IOException {
+        Path dictPath = Paths.get(resource3.toURI());
+        DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, null);
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        Map.Entry<String, String> entry = dictionary.lookup("ace").getEntries(dumper).get(0);
+        assertEquals("ace", entry.getKey());
+        assertEquals("[m1]ace[/m]\n", entry.getValue());
+        entry = dictionary.lookup("Universe").getEntries(dumper).get(0);
+        assertEquals("Universe", entry.getKey());
+        assertEquals("[m1]\u5B87\u5B99[/m]\n", entry.getValue());
     }
 }
