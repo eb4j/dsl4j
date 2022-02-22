@@ -29,7 +29,7 @@ import java.util.Arrays;
  * For more on the algorithm works see: https://www.inf.fh-flensburg.de/lang/algorithmen/pattern/kmpen.htm.
  * borrowed from twitter/elephant-bird (apache-2.0)
  */
-public class StreamSearcher {
+public class StreamSearcher implements IStreamSearcher {
 
   protected byte[] pattern;
   protected int[] borders;
