@@ -32,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,8 +42,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -96,7 +93,9 @@ final class DslDictionaryLoader {
             Charset charset = detectCharset(path, isDictzip);
             byte[] eol = detectEol(path, isDictzip, charset);
             Map<String, String> metadata = readMetadata(path, isDictzip, charset);
-            entries = loadEntriesFromDslFile(path, isDictzip, eol, charset);
+            try (EntriesLoaderImpl loader = new EntriesLoaderImpl(path, isDictzip, charset, eol)) {
+                entries = loader.load();
+            }
             prop = new DslDictionaryProperty(
                     metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
             buildIndexFile(path, indexPath, entries, prop);
@@ -106,81 +105,6 @@ final class DslDictionaryLoader {
             return new DslZipDictionary(path, data, prop);
         } else {
             return new DslFileDictionary(path, data, prop);
-        }
-    }
-
-    @SuppressWarnings("AvoidInlineConditionals")
-    private static List<DslIndex.Entry> loadEntriesFromDslFile(
-            final Path path, final boolean isDictzip, final byte[] eol, final Charset charset) throws IOException {
-        // prepare creation of index
-        byte[] delimiter = Arrays.copyOf(eol, eol.length * 2);
-        System.arraycopy(eol, 0, delimiter, eol.length, eol.length);
-        IStreamSearcher eolSearcher = new LFStreamSearcher(charset.equals(StandardCharsets.UTF_16LE));
-        IStreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
-        List<DslIndex.Entry> entries = new ArrayList<>();
-        // build dictionary index
-        try (InputStream is = isDictzip ? new DictZipInputStream(
-                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) :
-                new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))) {
-            long cardStart;
-            long articleStart;
-            String headWords;
-            // search delimiter to skip header
-            cardStart = cardEndSearcher.search(is);
-            while (true) {
-                cardStart += skipEmptyLine(is, charset);
-                is.mark(4096);
-                long next = eolSearcher.search(is);
-                if (next == -1) {
-                    break;
-                }
-                while (!isSpaceOrTab(is, charset)) {
-                    next += eolSearcher.search(is);
-                }
-                articleStart = cardStart + next;
-                is.reset();
-                byte[] headWordBytes = new byte[(int) next];
-                readFully(is, headWordBytes, 0, (int) next);
-                headWords = new String(headWordBytes, charset).trim();
-                is.mark(4096);
-                long pos = cardEndSearcher.search(is);
-                if (pos == -1) {
-                    is.reset();
-                    // last article
-                    String[] tokens = headWords.split("\\r?\\n");
-                    for (String token : tokens) {
-                        entries.add(DslIndex.Entry.newBuilder()
-                                .setHeadWord(token)
-                                .setOffset(articleStart)
-                                .setSize(is.available())
-                                .build());
-                    }
-                    break;
-                }
-                String[] tokens = headWords.split("\\r?\\n");
-                for (String token : tokens) {
-                    entries.add(DslIndex.Entry.newBuilder()
-                            .setHeadWord(token)
-                            .setOffset(articleStart)
-                            .setSize((int) pos - eol.length)
-                            .build());
-                }
-                // increment to next card start
-                cardStart = articleStart + pos;
-            }
-        }
-        return entries;
-    }
-
-    private static void readFully(final InputStream is, final byte[] buffer, final int off, final int size)
-            throws IOException {
-        int num = 0;
-        while (num < size) {
-            int count = is.read(buffer, off + num, size - num);
-            if (count < 0) {
-                throw new EOFException();
-            }
-            num += count;
         }
     }
 
@@ -366,39 +290,4 @@ final class DslDictionaryLoader {
         return metadata;
     }
 
-    private static boolean isSpaceOrTab(final InputStream is, final Charset charset) throws IOException {
-        byte[] tab = "\t".getBytes(charset);
-        byte[] space = " ".getBytes(charset);
-        byte[] b = new byte[tab.length];
-        if (is.read(b) != 0) {
-            return Arrays.equals(tab, b) || Arrays.equals(space, b);
-        }
-        // end of file found
-        return false;
-    }
-
-    private static int skipEmptyLine(final InputStream is, final Charset charset) throws IOException {
-        int readByte = 0;
-        byte[] cr = "\r".getBytes(charset);
-        byte[] lf = "\n".getBytes(charset);
-        byte[] b = new byte[cr.length];
-        is.mark(cr.length);
-        while (is.read(b) != 0) {
-            if (!Arrays.equals(cr, b)) {
-                // character other than CR found
-                is.reset();
-                return readByte;
-            }
-            readByte += cr.length;
-            if (is.read(b) != 0 && Arrays.equals(lf, b)) {
-                readByte += lf.length;
-            } else {
-                // CR without LF
-                throw new IOException();
-            }
-            is.mark(2);
-        }
-        // end of file without CRLF
-        return readByte;
-    }
 }
