@@ -9,16 +9,18 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DslDictionaryTest {
 
-    private final URL resource = this.getClass().getResource("/test.dsl");
+    private final URL resource = this.getClass().getResource("/utf16le_bom_crlf_el.dsl");
 
     @Test
-    void loadDicitonarySingle() throws URISyntaxException, IOException {
+    void loadDictionarySingle() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         assertEquals("Test (En-Ru)", dictionary.getDictionaryName());
         assertEquals("English", dictionary.getIndexLanguage());
@@ -38,7 +40,7 @@ class DslDictionaryTest {
     }
 
     @Test
-    void loadDicitonaryPredictive() throws URISyntaxException, IOException {
+    void loadDictionaryPredictive() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookupPredictive("spa");
@@ -46,10 +48,14 @@ class DslDictionaryTest {
         assertEquals("space", entry.getKey());
         assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
                 entry.getValue());
+        entry = dictionary.lookupPredictive("ta").getEntries(dumper).get(0);
+        assertEquals("tab", entry.getKey());
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+                entry.getValue());
     }
 
     @Test
-    void loadDicitonaryMulti() throws URISyntaxException, IOException {
+    void loadDictionaryMulti() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         DslResult res = dictionary.lookup("abandon");
 
@@ -97,7 +103,7 @@ class DslDictionaryTest {
     }
 
     @Test
-    void loadDicitonaryMedia() throws URISyntaxException, IOException {
+    void loadDictionaryMedia() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         DslResult res = dictionary.lookup("media");
         File current = new File(".");
@@ -111,8 +117,8 @@ class DslDictionaryTest {
     }
 
     @Test
-    void loadDicitonaryCp1251() throws URISyntaxException, IOException {
-        URL cp1251 = this.getClass().getResource("/cp1251.dsl");
+    void loadCp1251_CRLF() throws URISyntaxException, IOException {
+        URL cp1251 = this.getClass().getResource("/cp1251_crlf.dsl");
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(cp1251.toURI()));
         assertEquals("Test (En-Ru)", dictionary.getDictionaryName());
         assertEquals("English", dictionary.getIndexLanguage());
@@ -125,8 +131,8 @@ class DslDictionaryTest {
     }
 
     @Test
-    void loadDicitonaryUTF16LF() throws URISyntaxException, IOException {
-        URL utf16lelf = this.getClass().getResource("/test2.dsl");
+    void loadUTF16LF_BOM_LF_EL() throws URISyntaxException, IOException {
+        URL utf16lelf = this.getClass().getResource("/utf16le_bom_lf_el.dsl");
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf16lelf.toURI()));
         assertEquals("en-ja Wikidict", dictionary.getDictionaryName());
         assertEquals("English", dictionary.getIndexLanguage());
@@ -138,8 +144,8 @@ class DslDictionaryTest {
     }
 
     @Test
-    void loadEndDoubleEol() throws URISyntaxException, IOException {
-        URL utf16lelf = this.getClass().getResource("/test3.dsl.dz");
+    void loadUTF16_End_DoubleEol() throws URISyntaxException, IOException {
+        URL utf16lelf = this.getClass().getResource("/utf16_double_eol.dsl.dz");
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf16lelf.toURI()));
         assertEquals("en-ja Wikidict", dictionary.getDictionaryName());
         assertEquals("English", dictionary.getIndexLanguage());
@@ -151,8 +157,8 @@ class DslDictionaryTest {
     }
 
     @Test
-    void loadUtf8() throws URISyntaxException, IOException {
-        URL utf8 = this.getClass().getResource("/utf8.dsl");
+    void loadUtf8_LF_EL() throws URISyntaxException, IOException {
+        URL utf8 = this.getClass().getResource("/utf8_lf_el.dsl");
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf8.toURI()));
         assertEquals("UTF-8 dictionary", dictionary.getDictionaryName());
         assertEquals("English", dictionary.getIndexLanguage());
@@ -161,5 +167,75 @@ class DslDictionaryTest {
         DslResult results = dictionary.lookup("Life");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
         assertEquals("[m1]Life[/m]\n[m1]\u751F\u547D[/m]\n", entry.getValue());
+    }
+
+    @Test
+    void loadUTF16LE_BOM_LF_NOEL() throws URISyntaxException, IOException {
+        URL utf16le_lf_nel = this.getClass().getResource("/utf16le_lf_nel.dsl");
+        Path dictPath = Paths.get(utf16le_lf_nel.toURI());
+        DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, null);
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        Map.Entry<String, String> entry = dictionary.lookup("ace").getEntries(dumper).get(0);
+        assertEquals("ace", entry.getKey());
+        assertEquals("[m1]ace[/m]\n", entry.getValue());
+        entry = dictionary.lookup("Universe").getEntries(dumper).get(0);
+        assertEquals("Universe", entry.getKey());
+        assertEquals("[m1]\u5B87\u5B99[/m]\n", entry.getValue());
+    }
+
+    @Test
+    void loadUTF16LE_NOBOM_LF_EL_DZ() throws URISyntaxException, IOException {
+        URL resource2 = this.getClass().getResource("/utf16le_nobom_lf_el.dsl.dz");
+        Path dictPath = Paths.get(resource2.toURI());
+        DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, null);
+        assertEquals("IPA Dictionary - English", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("English", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        Map.Entry<String, String> entry = dictionary.lookup("ace").getEntries(dumper).get(0);
+        assertEquals("ace", entry.getKey());
+        assertEquals("[m1]/ˈeɪs/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("aerogenosa").getEntries(dumper).get(0);
+        assertEquals("[m1]/ˈɛɹədʒəˌnoʊsə/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("agree").getEntries(dumper).get(0);
+        assertEquals("[m1]/əˈɡɹi/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("ahren").getEntries(dumper).get(0);
+        assertEquals("[m1]/ˈɑɹən/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("aiwa").getEntries(dumper).get(0);
+        assertEquals("[m1]/ˈaɪwə/[/m]\n", entry.getValue());
+        entry = dictionary.lookup("analysis").getEntries(dumper).get(0);
+        assertEquals("[m1]/əˈnæɫəsəs/, /əˈnæɫɪsɪs/[/m]\n", entry.getValue());
+    }
+
+    @Test
+    void loadUTF16LE_BOM_CRLF_EL_DZ() throws URISyntaxException, IOException {
+        Path dictPath = Paths.get(this.getClass().getResource("/utf16le_bom_crlf_el.dsl.dz").toURI());
+        DslDictionary dictionary = DslDictionary.loadDictionary(dictPath);
+        assertEquals("Test (En-Ru)", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Russian", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        Map.Entry<String, String> entry = dictionary.lookup("space").getEntries(dumper).get(0);
+        assertEquals("space", entry.getKey());
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
+                entry.getValue());
+        entry = dictionary.lookup("tab").getEntries(dumper).get(0);
+        assertEquals("tab", entry.getKey());
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+                entry.getValue());
+        entry = dictionary.lookup("tag").getEntries(dumper).get(0);
+        assertEquals("tag", entry.getKey());
+        assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
+        dumper = new DumpDslVisitor();
+        entry = dictionary.lookup("abandon").getEntries(dumper).get(0);
+        assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
+                " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
+                "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
+                "[m2]to [ref]abandon attempts[/ref][/m]\n" +
+                "[m2]to [ref]abandon a claim[/ref][/m]\n" +
+                "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
+                "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
+                "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
+                "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
     }
 }
