@@ -24,35 +24,27 @@ public class DslDictzipTest {
         assertEquals("English", dictionary.getIndexLanguage());
         assertEquals("Russian", dictionary.getContentLanguage());
         DumpDslVisitor dumper = new DumpDslVisitor();
-        for (Map.Entry<String, String> entry : dictionary.lookup("space").getEntries(dumper)) {
-            assertEquals("space", entry.getKey());
-            assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
-                    entry.getValue());
-            break;
-        }
-        for (Map.Entry<String, String> entry : dictionary.lookup("tab").getEntries(dumper)) {
-            assertEquals("tab", entry.getKey());
-            assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
-                    entry.getValue());
-            break;
-        }
-        for (Map.Entry<String, String> entry : dictionary.lookup("tag").getEntries(dumper)) {
-            assertEquals("tag", entry.getKey());
-            assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
-            break;
-        }
+        Map.Entry<String, String> entry = dictionary.lookup("space").getEntries(dumper).get(0);
+        assertEquals("space", entry.getKey());
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
+                entry.getValue());
+        entry = dictionary.lookup("tab").getEntries(dumper).get(0);
+        assertEquals("tab", entry.getKey());
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+                entry.getValue());
+        entry = dictionary.lookup("tag").getEntries(dumper).get(0);
+        assertEquals("tag", entry.getKey());
+        assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
         dumper = new DumpDslVisitor();
-        for (Map.Entry<String, String> entry : dictionary.lookup("abandon").getEntries(dumper)) {
-            assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
-                    " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
-                    "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
-                    "[m2]to [ref]abandon attempts[/ref][/m]\n" +
-                    "[m2]to [ref]abandon a claim[/ref][/m]\n" +
-                    "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
-                    "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
-                    "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
-                    "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
-            break;
-        }
+        entry = dictionary.lookup("abandon").getEntries(dumper).get(0);
+        assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
+                " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
+                "[m1][b]2.[/b] [trn]покидать, оставлять[/trn][/m]\n" +
+                "[m2]to [ref]abandon attempts[/ref][/m]\n" +
+                "[m2]to [ref]abandon a claim[/ref][/m]\n" +
+                "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
+                "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
+                "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
+                "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
     }
 }
