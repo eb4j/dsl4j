@@ -158,8 +158,8 @@ class DslDictionaryTest {
         assertEquals("English", dictionary.getIndexLanguage());
         assertEquals("Japanese", dictionary.getContentLanguage());
         DumpDslVisitor dumper = new DumpDslVisitor();
-        DslResult results = dictionary.lookup("Voiceless palatal stop");
+        DslResult results = dictionary.lookup("Life");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]Voiceless palatal stop[/m]\n[m1]無声硬口蓋破裂音[/m]\n", entry.getValue());
+        assertEquals("[m1]Life[/m]\n[m1]\u751F\u547D[/m]\n", entry.getValue());
     }
 }
