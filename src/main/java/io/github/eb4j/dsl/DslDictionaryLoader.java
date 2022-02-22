@@ -115,8 +115,8 @@ final class DslDictionaryLoader {
         // prepare creation of index
         byte[] delimiter = Arrays.copyOf(eol, eol.length * 2);
         System.arraycopy(eol, 0, delimiter, eol.length, eol.length);
-        StreamSearcher eolSearcher = new StreamSearcher(eol);
-        StreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
+        IStreamSearcher eolSearcher = new StreamSearcher(eol);
+        IStreamSearcher cardEndSearcher = new StreamSearcher(delimiter);
         List<DslIndex.Entry> entries = new ArrayList<>();
         // build dictionary index
         try (InputStream is = isDictzip ? new DictZipInputStream(
