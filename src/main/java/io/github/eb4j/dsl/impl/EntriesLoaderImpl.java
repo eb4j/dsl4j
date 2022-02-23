@@ -93,8 +93,11 @@ public class EntriesLoaderImpl implements AutoCloseable {
             byte[] headWordBytes = new byte[(int) headWordLen];
             readFully(headWordBytes);
             headWords = new String(headWordBytes, charset).trim();
-            skipSpaceTabs();
-            articleStart = position();
+            long spaces = skipSpaceTabs();
+            articleStart = cardStart + headWordLen + spaces;
+            seek(articleStart);
+            // It can be position() but dictzip may not return correct position
+            // articleStart = position();
             long articleLen = cardEndSearch();
             String[] tokens = headWords.split("\\r?\\n");
             for (String token : tokens) {
@@ -104,9 +107,17 @@ public class EntriesLoaderImpl implements AutoCloseable {
                         .setSize((int) articleLen)
                         .build());
             }
-            cardStart = position();
+            // reset to new cardStart. previous cardEndSearch() point NEXT to cardStart first character.
+            cardStart = articleStart + articleLen;
+            if (isEof()) {
+                break;
+            }
+            seek(cardStart);
             int empty;
             if ((empty = skipEmptyLine()) != -1) {
+                if (isEof()) {
+                    break;
+                }
                 cardStart += empty;
             } else {
                 // EOF detected
@@ -121,6 +132,14 @@ public class EntriesLoaderImpl implements AutoCloseable {
             dzis.seek(pos);
         } else {
             rais.seek(pos);
+        }
+    }
+
+    private boolean isEof() throws IOException {
+        if (isDictZip) {
+            return dzis.available() <= 0;
+        } else {
+            return rais.available() <= 0;
         }
     }
 
@@ -188,7 +207,8 @@ public class EntriesLoaderImpl implements AutoCloseable {
         }
     }
 
-    private void skipSpaceTabs() throws IOException {
+    private long skipSpaceTabs() throws IOException {
+        long readBytes = 0;
         InputStream is;
         if (isDictZip) {
             is = dzis;
@@ -197,9 +217,11 @@ public class EntriesLoaderImpl implements AutoCloseable {
         }
         is.mark(tab.length);
         while (isSpaceOrTab()) {
+            readBytes += tab.length;
             is.mark(tab.length);
         }
         is.reset();
+        return readBytes;
     }
 
     private void readFully(final byte[] buffer) throws IOException {
@@ -234,7 +256,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
             is = rais;
         }
         is.mark(cr.length);
-        while (is.read(b) != 0) {
+        while (is.read(b) > 0) {
             if (Arrays.equals(cr, b)) {
                 readByte += cr.length;
                 if (is.read(b) != 0 && Arrays.equals(lf, b)) {
