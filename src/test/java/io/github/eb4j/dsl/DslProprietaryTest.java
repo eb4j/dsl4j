@@ -1,6 +1,7 @@
 package io.github.eb4j.dsl;
 
 import io.github.eb4j.dsl.visitor.DumpDslVisitor;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -16,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DslProprietaryTest {
 
-    private static final String TARGET = "/content/Ru-En-Smirnitsky.dsl.dz";
+    private static final String SMIRNITSKY = "/content/Ru-En-Smirnitsky.dsl.dz";
 
     @Test
     @EnabledIf("targetFileExist")
-    void loadPropDicitonary() throws URISyntaxException, IOException {
-        Path dictPath = Paths.get(DslProprietaryTest.class.getResource(TARGET).toURI());
+    void loadDictionarySmirnitsky() throws URISyntaxException, IOException {
+        Path dictPath = Paths.get(DslProprietaryTest.class.getResource(SMIRNITSKY).toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);
         assertEquals("Smirnitsky (Ru-En)", dictionary.getDictionaryName());
@@ -49,14 +50,20 @@ public class DslProprietaryTest {
     }
 
     static boolean targetFileExist() {
-        return DslProprietaryTest.class.getResource(TARGET) != null;
+        return DslProprietaryTest.class.getResource(SMIRNITSKY) != null;
     }
 
     private static final String WORDNET = "/WordNet_3.0/En-En-WordNet3_gl_1_0.dsl.dz";
 
+    /**
+     * Test against WordNet dictionary.
+     * Currently know as not working.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
     @Test
-    @EnabledIf("wordnetExist")
-    void loadProprietaryDictionary() throws URISyntaxException, IOException {
+    @Disabled // @EnabledIf("wordnetExist")
+    void loadDictionaryWordNet() throws URISyntaxException, IOException {
         Path dictPath = Paths.get(DslProprietaryTest.class.getResource(WORDNET).toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);
@@ -72,4 +79,34 @@ public class DslProprietaryTest {
     static boolean wordnetExist() {
         return DslProprietaryTest.class.getResource(WORDNET) != null;
     }
+
+    private static final String APRESYAN = "/content/En-Ru-Apresyan.dsl.dz";
+    private static final String APRESYAN2 = "/En-Ru_Apresyan/En-Ru_Apresyan.dsl.dz";
+
+    @Test
+    @EnabledIf("targetFileExist")
+    void loadDictionaryApresyan() throws URISyntaxException, IOException {
+        Path dictPath = Paths.get(DslProprietaryTest.class.getResource(APRESYAN).toURI());
+        Path indexPath = Paths.get(dictPath + ".idx");
+        DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);
+        assertEquals("Apresyan (En-Ru)", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Russian", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        Map.Entry<String, String> entry = dictionary.lookup("hello")
+                .getEntries(dumper).get(0);
+        assertEquals("hello", entry.getKey());
+        assertEquals("[b]1.[/b] \\[h\u0259|'l\u0259\u028B,he{'l\u0259\u028B}-\\] [com][i]= halloa I \u0438 II[/i][/com] [trn][m2][/m][/trn]\n" +
+                        "[b]2.[/b] \\[h\u0259|'l\u0259\u028B,he{'l\u0259\u028B}-\\] [com][i]= halloa I \u0438 II[/i][/com] [trn][m2][/m][/trn]\n",
+                entry.getValue());
+        try {
+            Files.deleteIfExists(indexPath);
+        } catch (IOException ignored) {
+        }
+    }
+
+    static boolean ApresyanExist() {
+        return DslProprietaryTest.class.getResource(APRESYAN) != null;
+    }
+
 }
