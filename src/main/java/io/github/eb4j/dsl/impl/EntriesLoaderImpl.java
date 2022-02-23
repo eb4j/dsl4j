@@ -45,6 +45,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
     private final byte[] lf;
     private final byte[] tab;
     private final byte[] space;
+    private final byte[] commentStart;
 
     public EntriesLoaderImpl(final Path path, final boolean isDictZip, final Charset charset, final byte[] eol)
             throws IOException {
@@ -64,6 +65,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
         lf = "\n".getBytes(charset);
         tab = "\t".getBytes(charset);
         space = " ".getBytes(charset);
+        commentStart = "{{".getBytes(charset);
     }
 
     public void close() throws IOException {
@@ -81,13 +83,19 @@ public class EntriesLoaderImpl implements AutoCloseable {
         String headWords;
         cardStart = entryStartSearch();
         while (true) {
+            // skip comment
+            long next = skipComment();
             // check multiple head words
             long headWordLen = eolSearch();
             if (headWordLen == -1) {
                 break;
             }
             while (!isSpaceOrTab()) {
-                headWordLen += eolSearch();
+                next = eolSearch();
+                if (next == -1) {
+                    break;
+                }
+                headWordLen += next;
             }
             seek(cardStart);
             byte[] headWordBytes = new byte[(int) headWordLen];
@@ -149,6 +157,33 @@ public class EntriesLoaderImpl implements AutoCloseable {
         } else {
             return rais.position();
         }
+    }
+
+    private long skipComment() throws IOException {
+        byte[] b = new byte[commentStart.length];
+        InputStream is;
+        if (isDictZip) {
+            is = dzis;
+        } else {
+            is = rais;
+        }
+        is.mark(commentStart.length);
+        if (is.read(b) > 0) {
+            if (Arrays.equals(commentStart, b)) {
+                // a line looks comment
+                long next = eolSearch();
+                if (next == -1) {
+                    return -1;
+                }
+                // we should check end of comment, but now we ignore line.
+                return next;
+            }
+            is.reset();
+            return 0;
+        }
+        // got EOF
+        return -1;
+
     }
 
     private long entryStartSearch() throws IOException {

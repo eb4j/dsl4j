@@ -283,4 +283,14 @@ class DslDictionaryTest {
                 "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
                 "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
     }
+
+    @Test
+    void loadUtf8_Comment() throws URISyntaxException, IOException {
+        URL utf8 = this.getClass().getResource("/utf8_comment.dsl");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf8.toURI()));
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        DslResult results = dictionary.lookup("About");
+        Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
+        assertEquals("Version: 0.0\n", entry.getValue());
+    }
 }
