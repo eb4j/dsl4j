@@ -157,6 +157,19 @@ class DslDictionaryTest {
     }
 
     @Test
+    void loadUtf8_LF_NOEL() throws URISyntaxException, IOException {
+        URL utf8 = this.getClass().getResource("/utf8_lf_noel.dsl");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf8.toURI()));
+        assertEquals("UTF-8 dictionary", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Japanese", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        DslResult results = dictionary.lookup("Life");
+        Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
+        assertEquals("[m1]Life[/m]\n[m1]\u751F\u547D[/m]\n", entry.getValue());
+    }
+
+    @Test
     void loadUtf8_LF_EL() throws URISyntaxException, IOException {
         URL utf8 = this.getClass().getResource("/utf8_lf_el.dsl");
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf8.toURI()));
