@@ -199,6 +199,22 @@ class DslDictionaryTest {
     }
 
     @Test
+    void loadUtf8_BOM_LF_NOEL() throws URISyntaxException, IOException {
+        URL utf8 = this.getClass().getResource("/utf8_bom_lf_noel.dsl");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(utf8.toURI()));
+        assertEquals("test (En-Ru)", dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Russian", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        DslResult results = dictionary.lookup("ABC");
+        Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
+        assertEquals("[m1]\\[[t]ABC[/t]\\] [p]n[/p][/m]\n", entry.getValue());
+        results = dictionary.lookup("Foo");
+        entry = results.getEntries(dumper).get(0);
+        assertEquals("[m1]\\[[t]Boo[/t]\\] [p]pl[/p][/m]\n", entry.getValue());
+    }
+
+    @Test
     void loadUTF16LE_BOM_LF_NOEL() throws URISyntaxException, IOException {
         URL utf16le_lf_nel = this.getClass().getResource("/utf16le_lf_nel.dsl");
         Path dictPath = Paths.get(utf16le_lf_nel.toURI());
