@@ -22,7 +22,7 @@ Here is a table to show what variations are supported.
 | -- | -------- | --- | ------------------------ | ------------------------ |
 | ✓  | UTF-16LE | Yes | CR+LF / empty line       |                          | 
 | ✓  | UTF-16LE | Yes | LF / empty line          |                          |
-| ?  | UTF-8    | Yes | LF / empty line          |                          |
+| ✓  | UTF-8    | Yes | LF / empty line          |                          |
 | ✓  | UTF-8    | No  | LF / empty line          |                          |
 | ✓  | CP1251   | No  | CR+LF / empty line       | CODEPAGE header required |
 | ✓  | CP1251   | No  | LF / empty line          | CODEPAGE header required |
