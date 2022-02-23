@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package io.github.eb4j.dsl;
+package io.github.eb4j.dsl.impl;
 
 import io.github.eb4j.dsl.index.DslIndex;
 import org.dict.zip.DictZipInputStream;
@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class EntriesLoaderImpl implements AutoCloseable {
+public class EntriesLoaderImpl implements AutoCloseable {
 
     private final boolean isDictZip;
     private final Charset charset;
@@ -74,7 +74,7 @@ class EntriesLoaderImpl implements AutoCloseable {
         }
     }
 
-    List<DslIndex.Entry> load() throws IOException {
+    public List<DslIndex.Entry> load() throws IOException {
         List<DslIndex.Entry> entries = new ArrayList<>();
         long cardStart;
         long articleStart;

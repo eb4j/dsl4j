@@ -23,6 +23,7 @@ import io.github.eb4j.dsl.data.DictionaryData;
 import io.github.eb4j.dsl.data.DictionaryDataBuilder;
 import io.github.eb4j.dsl.data.DslDictionaryProperty;
 import io.github.eb4j.dsl.data.DslEntry;
+import io.github.eb4j.dsl.impl.EntriesLoaderImpl;
 import io.github.eb4j.dsl.index.DslIndex;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
