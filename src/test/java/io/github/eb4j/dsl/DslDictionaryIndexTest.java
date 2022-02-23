@@ -17,12 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DslDictionaryIndexTest {
 
-    private final URL resource = this.getClass().getResource("/test1.dsl.dz");
-    private final URL resource2 = this.getClass().getResource("/test4.dsl.dz");
+    private final URL resource = this.getClass().getResource("/utf16le_bom_crlf_el.dsl");
 
     @Test
     @Order(1)
-    void saveDicitonaryIndex() throws URISyntaxException, IOException {
+    void saveDictionaryIndex() throws URISyntaxException, IOException {
         Path dictPath = Paths.get(resource.toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);
@@ -56,7 +55,7 @@ class DslDictionaryIndexTest {
 
     @Test
     @Order(2)
-    void loadDicitonaryIndex() throws URISyntaxException, IOException {
+    void loadDictionaryIndex() throws URISyntaxException, IOException {
         Path dictPath = Paths.get(resource.toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         Assumptions.assumeTrue(Files.exists(indexPath) && indexPath.toFile().canRead());
@@ -90,26 +89,4 @@ class DslDictionaryIndexTest {
                 "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
     }
 
-    @Test
-    void loadDicitonaryIndex2() throws URISyntaxException, IOException {
-        Path dictPath = Paths.get(resource2.toURI());
-        DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, null);
-        assertEquals("IPA Dictionary - English", dictionary.getDictionaryName());
-        assertEquals("English", dictionary.getIndexLanguage());
-        assertEquals("English", dictionary.getContentLanguage());
-        DumpDslVisitor dumper = new DumpDslVisitor();
-        Map.Entry<String, String> entry = dictionary.lookup("ace").getEntries(dumper).get(0);
-        assertEquals("ace", entry.getKey());
-        assertEquals("[m1]/ˈeɪs/[/m]\n", entry.getValue());
-        entry = dictionary.lookup("aerogenosa").getEntries(dumper).get(0);
-        assertEquals("[m1]/ˈɛɹədʒəˌnoʊsə/[/m]\n", entry.getValue());
-        entry = dictionary.lookup("agree").getEntries(dumper).get(0);
-        assertEquals("[m1]/əˈɡɹi/[/m]\n", entry.getValue());
-        entry = dictionary.lookup("ahren").getEntries(dumper).get(0);
-        assertEquals("[m1]/ˈɑɹən/[/m]\n", entry.getValue());
-        entry = dictionary.lookup("aiwa").getEntries(dumper).get(0);
-        assertEquals("[m1]/ˈaɪwə/[/m]\n", entry.getValue());
-        entry = dictionary.lookup("analysis").getEntries(dumper).get(0);
-        assertEquals("[m1]/əˈnæɫəsəs/, /əˈnæɫɪsɪs/[/m]\n", entry.getValue());
-    }
 }

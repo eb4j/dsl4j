@@ -2,13 +2,13 @@ package io.github.eb4j.dsl;
 
 import io.github.eb4j.dsl.visitor.DumpDslVisitor;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Disabled
 public class RemoteDataTest {
 
     private static Path testData;
@@ -38,7 +39,7 @@ public class RemoteDataTest {
 
     @Test
     @Order(1)
-    void ipaDictDslTest() throws URISyntaxException, IOException {
+    void ipaDictDslTest() throws IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(testData, indexData, false);
         assertEquals("IPA Dictionary - English", dictionary.getDictionaryName());
         assertEquals("English", dictionary.getIndexLanguage());
