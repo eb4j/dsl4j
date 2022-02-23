@@ -11,6 +11,31 @@ When a specified index file exists and validated as up-to-date, dsl4j load the i
 NOTICE: Current version does not support media archive file `...dsl.files.zip` that is supported by GoldenDict.
 
 
+## Supported dictionary format
+
+Lingvo DSL format specification is a little ambiguous, and there are many variations of data in the wild.
+Here is a table to show what variations are supported.
+
+|    | Encoding | BOM | Line/record terminators  | Note                     |
+| -- | -------- | --- | ------------------------ | ------------------------ |
+| ✓  | UTF-16LE | Yes | CR+LF / empty line       |                          | 
+| ✓  | UTF-16LE | Yes | CR+LF / empty line       |                          |
+| ✓  | UTF-16LE | Yes | LF / empty line          |                          |
+| ✓  | UTF-8    | Yes | LF / empty line          |                          |
+| ✓  | UTF-8    | No  | LF / empty line          |                          |
+| ✓  | CP1251   | No  | CR+LF / empty line       | CODEPAGE header required |
+| ✓  | CP1251   | No  | LF / empty line          | CODEPAGE header required |
+| ✓  | CP1252   | No  | CR+LF / empty line       | CODEPAGE header required |
+| ✓  | CP1252   | No  | LF / empty line          | CODEPAGE header required |
+| ✓  | CP1253   | No  | CR+LF / empty line       | CODEPAGE header required |
+| ✓  | CP1253   | No  | LF / empty line          | CODEPAGE header required |
+| ✓  | UTF-16LE | No  | LF / empty line          |                          |
+| ❌ | UTF-16LE | Yes | CR+LF / single CR+LF     |                          |
+| ❌ | UTF-16LE | Yes | LF / single LF           |                          |
+| ❌ | UTF-8    | Yes | LF / single LF           |                          |
+| ❌ | UTF-8    | No  | LF / single LF           |                          |
+
+
 ## Development status
 
 A status of library development is considered as `Beta`.
