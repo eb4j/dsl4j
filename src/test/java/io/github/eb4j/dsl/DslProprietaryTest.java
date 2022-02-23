@@ -86,18 +86,24 @@ public class DslProprietaryTest {
     @Test
     @EnabledIf("targetFileExist")
     void loadDictionaryApresyan() throws URISyntaxException, IOException {
-        Path dictPath = Paths.get(DslProprietaryTest.class.getResource(APRESYAN).toURI());
+        Path dictPath = Paths.get(DslProprietaryTest.class.getResource(APRESYAN2).toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);
         assertEquals("Apresyan (En-Ru)", dictionary.getDictionaryName());
         assertEquals("English", dictionary.getIndexLanguage());
         assertEquals("Russian", dictionary.getContentLanguage());
         DumpDslVisitor dumper = new DumpDslVisitor();
-        Map.Entry<String, String> entry = dictionary.lookup("hello")
+        Map.Entry<String, String> entry = dictionary.lookupPredictive("zombi")
                 .getEntries(dumper).get(0);
-        assertEquals("hello", entry.getKey());
-        assertEquals("[b]1.[/b] \\[h\u0259|'l\u0259\u028B,he{'l\u0259\u028B}-\\] [com][i]= halloa I \u0438 II[/i][/com] [trn][m2][/m][/trn]\n" +
-                        "[b]2.[/b] \\[h\u0259|'l\u0259\u028B,he{'l\u0259\u028B}-\\] [com][i]= halloa I \u0438 II[/i][/com] [trn][m2][/m][/trn]\n",
+        assertEquals("zombi{(}e{)}", entry.getKey());
+        assertEquals("[m0\\]\\[[t]ˈzɒmbɪ[/t]\\] [p]n[/p][/m]\n"
+                + "[m1]1. 1) [trn]зомби, оживший мертвец; оборотень[/trn][/m]\n"
+                + "[m3]2) [trn]колдовство; нечистая сила[/trn][/m]\n" + "[m1]2. [p]сл.[/p] [trn]зануда, тупица, кретин[/trn][/m]\n"
+                + "[m1]3. [p]сл.[/p] [trn]чудной, малахольный тип[/trn][/m]\n"
+                + "[m1]4. [trn]коктейль из рома с фруктовым соком и содовой водой[/trn][/m]\n"
+                + "[m1]5. [p]воен.[/p] [p]жарг.[/p] [trn]новобранец[/trn][/m]\n"
+                + "[m1]6. [p]рел.[/p], [p]фольк.[/p] [trn]божество-змея; священный питон[/trn]"
+                + " [com]([i]в Вест-Индии, на юге США[/i] [p]и т. п.[/p])[/com][/m]\n",
                 entry.getValue());
         try {
             Files.deleteIfExists(indexPath);
