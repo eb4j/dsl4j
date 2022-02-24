@@ -3,6 +3,29 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+* Update README
+  * support matrix
+  * Unsupported syntax
+* Update test cases
+  * test data variations
+  * test case with proprietary data
+
+### Changed
+* Bump versions
+  * spotbugs@5.0.6
+  * spotless@6.3.0
+  * dictzip@0.11.2
+* Update dictionary loader
+  * Allow UTF-16LE without BOM
+  * Allow LF line terminators with UTF-16LE
+  * Support records without empty line separator
+  * Handle comment only head word line
+  * Accept UTF-8 with BOM
+
+### Removed
+* StreamSearcher class
+
 ## [0.4.5]
 * Fix parsing index that is seldom broken position.(#35)
 
