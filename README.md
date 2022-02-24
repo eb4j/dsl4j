@@ -69,7 +69,17 @@ Here is a table to show what variations are supported.
 | ✓  | UTF-8    | Yes | LF / single LF           |                          |
 | ✓  | UTF-8    | No  | LF / single LF           |                          |
 
-If you find a new condition for dictionary file. Please report it.
+### Unsupported DSL syntax
+
+There are several syntax that DSL4j cannot handle.
+These syntax characters are passed as-is.
+
+- Unsorted part of head word with braces
+- Tilda word replacement
+- Alternative heading section with (...)
+- Subentry @ mark
+- Reference to another card entry
+- Comments with double braces "{{comment}}" in article
 
 ## Development status
 
