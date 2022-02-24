@@ -1,7 +1,6 @@
 package io.github.eb4j.dsl;
 
 import io.github.eb4j.dsl.visitor.DumpDslVisitor;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -62,7 +61,7 @@ public class DslProprietaryTest {
      * @throws IOException
      */
     @Test
-    @Disabled // @EnabledIf("wordnetExist")
+    @EnabledIf("wordnetExist")
     void loadDictionaryWordNet() throws URISyntaxException, IOException {
         Path dictPath = Paths.get(DslProprietaryTest.class.getResource(WORDNET).toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
@@ -71,9 +70,16 @@ public class DslProprietaryTest {
         assertEquals("English", dictionary.getIndexLanguage());
         assertEquals("English", dictionary.getContentLanguage());
         DumpDslVisitor dumper = new DumpDslVisitor();
-        Map.Entry<String, String> entry = dictionary.lookup("Yukon River").getEntries(dumper).get(0);
-        assertEquals("Yukon River", entry.getKey());
-        assertEquals("[]\n", entry.getValue());
+        Map.Entry<String, String> entry = dictionary.lookup("zodiac").getEntries(dumper).get(0);
+        assertEquals("zodiac", entry.getKey());
+        assertTrue(entry.getValue().startsWith("[m1][p]noun[/p][/m]\n" +
+                        "[m2][b]1.[/b] [trn]a belt-shaped region in the heavens on either side to the ecliptic[/trn];" +
+                        " [trn]divided into 12 constellations or signs for astrological purposes[/trn][/m]\n" +
+                        "[m3][com][c dodgerblue]•[/c] [p]Derivationally related forms[/p]: ↑<<zodiacal>>[/com][/m]\n"));
+        try {
+            Files.deleteIfExists(indexPath);
+        } catch (IOException ignored) {
+        }
     }
 
     static boolean wordnetExist() {

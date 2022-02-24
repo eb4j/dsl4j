@@ -90,7 +90,7 @@ final class DslDictionaryLoader {
             entries = index.getEntriesList();
         }
         // When there is no index or failed to validate
-        if (entries == null) {
+        if (entries == null || entries.isEmpty()) {
             Charset charset = detectCharset(path, isDictzip);
             byte[] eol = detectEol(path, isDictzip, charset);
             Map<String, String> metadata = readMetadata(path, isDictzip, charset);

@@ -46,6 +46,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
     private final byte[] tab;
     private final byte[] space;
     private final byte[] commentStart;
+    private final byte[] sharp;
 
     public EntriesLoaderImpl(final Path path, final boolean isDictZip, final Charset charset, final byte[] eol)
             throws IOException {
@@ -66,6 +67,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
         tab = "\t".getBytes(charset);
         space = " ".getBytes(charset);
         commentStart = "{{".getBytes(charset);
+        sharp = "#".getBytes(charset);
     }
 
     public void close() throws IOException {
@@ -170,13 +172,8 @@ public class EntriesLoaderImpl implements AutoCloseable {
         is.mark(commentStart.length);
         if (is.read(b) > 0) {
             if (Arrays.equals(commentStart, b)) {
-                // a line looks comment
-                long next = eolSearch();
-                if (next == -1) {
-                    return -1;
-                }
                 // we should check end of comment, but now we ignore line.
-                return next;
+                return eolSearch();
             }
             is.reset();
             return 0;
@@ -187,19 +184,32 @@ public class EntriesLoaderImpl implements AutoCloseable {
     }
 
     private long entryStartSearch() throws IOException {
-        byte[] b = new byte[eol.length];
+        byte[] b = new byte[sharp.length];
         InputStream is;
         if (isDictZip) {
             is = dzis;
         } else {
             is = rais;
         }
-        do {
-            if (eolSearch() == -1) {
-                break;
+        if (eolSearch() == -1) {
+            return -1;
+        }
+        is.mark(sharp.length);
+        while (is.read(b) != 0) {
+            if (Arrays.equals(sharp, b)) {
+                if (eolSearch() == -1) {
+                    break;
+                }
+            } else if (Arrays.equals(cr, b) || Arrays.equals(lf, b)) {
+                is.mark(sharp.length);
+                continue;
+            } else {
+                is.reset();
+                return position();
             }
-        } while (is.read(b) != 0 && !Arrays.equals(eol, b));
-        return position();
+            is.mark(sharp.length);
+        }
+        return -1;
     }
 
     /**
