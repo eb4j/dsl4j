@@ -57,7 +57,7 @@ public class DslProprietaryTest {
 
     /**
      * Test against WordNet dictionary.
-     * Currently know as not working.
+     * Currently known as not working.
      * @throws URISyntaxException
      * @throws IOException
      */
@@ -81,10 +81,9 @@ public class DslProprietaryTest {
     }
 
     private static final String APRESYAN = "/content/En-Ru-Apresyan.dsl.dz";
-    private static final String APRESYAN2 = "/En-Ru_Apresyan/En-Ru_Apresyan.dsl.dz";
 
     @Test
-    @EnabledIf("targetFileExist")
+    @EnabledIf("apresyanExist")
     void loadDictionaryApresyan() throws URISyntaxException, IOException {
         Path dictPath = Paths.get(DslProprietaryTest.class.getResource(APRESYAN2).toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
@@ -111,8 +110,9 @@ public class DslProprietaryTest {
         }
     }
 
-    static boolean ApresyanExist() {
+    static boolean apresyanExist() {
         return DslProprietaryTest.class.getResource(APRESYAN) != null;
     }
 
+    private static final String APRESYAN2 = "/En-Ru_Apresyan/En-Ru_Apresyan.dsl.dz";
 }
