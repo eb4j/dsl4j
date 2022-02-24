@@ -12,4 +12,5 @@
   <suppress checks=".*" files="DslIndex.java"/>
   <suppress checks=".*" files="DslIndexOrBuilder.java"/>
   <suppress checks=".*" files="DslIndexOuterClass.java"/>
+  <suppress checks="MethodName" files="DslDictionaryTest.java"/>
 </suppressions>

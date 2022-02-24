@@ -216,8 +216,8 @@ class DslDictionaryTest {
 
     @Test
     void loadUTF16LE_BOM_LF_NOEL() throws URISyntaxException, IOException {
-        URL utf16le_lf_nel = this.getClass().getResource("/utf16le_lf_nel.dsl");
-        Path dictPath = Paths.get(utf16le_lf_nel.toURI());
+        URL target = this.getClass().getResource("/utf16le_lf_nel.dsl");
+        Path dictPath = Paths.get(target.toURI());
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, null);
         DumpDslVisitor dumper = new DumpDslVisitor();
         Map.Entry<String, String> entry = dictionary.lookup("ace").getEntries(dumper).get(0);
