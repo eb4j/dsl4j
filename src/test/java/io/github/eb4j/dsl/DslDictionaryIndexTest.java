@@ -1,6 +1,7 @@
 package io.github.eb4j.dsl;
 
 import io.github.eb4j.dsl.visitor.DumpDslVisitor;
+import org.junit.AfterClass;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -15,13 +16,30 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class DslDictionaryIndexTest {
+public class DslDictionaryIndexTest {
 
-    private final URL resource = this.getClass().getResource("/utf16le_bom_crlf_el.dsl");
+    private static final URL resource = DslDictionaryIndexTest.class.getResource("/utf16le_bom_crlf_el.dsl");
 
+    /**
+     * Clean up created index cache file.
+     * @throws IOException
+     * @throws URISyntaxException
+     */
+    @AfterClass
+    public static void cleanIndex() throws IOException, URISyntaxException {
+        Path dictPath = Paths.get(resource.toURI());
+        Path indexPath = Paths.get(dictPath + ".idx");
+        Files.deleteIfExists(indexPath);
+    }
+
+    /**
+     * Load dictionary and save index cache.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
     @Test
     @Order(1)
-    void saveDictionaryIndex() throws URISyntaxException, IOException {
+    public void saveDictionaryIndex() throws URISyntaxException, IOException {
         Path dictPath = Paths.get(resource.toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);
@@ -53,9 +71,14 @@ class DslDictionaryIndexTest {
                     "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
     }
 
+    /**
+     * Load index file which saveDictionaryIndex method created.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
     @Test
     @Order(2)
-    void loadDictionaryIndex() throws URISyntaxException, IOException {
+    public void loadDictionaryIndex() throws URISyntaxException, IOException {
         Path dictPath = Paths.get(resource.toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         Assumptions.assumeTrue(Files.exists(indexPath) && indexPath.toFile().canRead());
