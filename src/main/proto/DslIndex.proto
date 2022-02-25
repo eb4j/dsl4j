@@ -18,6 +18,8 @@ message DslIndex {
     string headWord = 1;
     uint64 offset = 2;
     uint32 size = 3;
+    uint64 headerOffset = 4;
+    uint32 headerSize = 5;
   }
   repeated Entry entries = 9;
 }

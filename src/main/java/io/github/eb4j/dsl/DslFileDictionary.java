@@ -38,10 +38,10 @@ public class DslFileDictionary extends DslDictionary {
     }
 
     @Override
-    protected String getArticle(final DslEntry entry) throws IOException {
-        byte[] buf = new byte[entry.getSize()];
-        ras.seek(entry.getOffset());
+    String getRecord(final long offset, final int size) throws IOException {
+        byte[] buf = new byte[size];
+        ras.seek(offset);
         ras.readFully(buf);
-        return trimArticle(buf);
+        return new String(buf, prop.getCharset());
     }
 }
