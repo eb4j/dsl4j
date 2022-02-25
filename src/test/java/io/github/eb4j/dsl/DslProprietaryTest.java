@@ -31,7 +31,7 @@ public class DslProprietaryTest {
         Map.Entry<String, String> entry = dictionary.lookup("\u0430\u0431\u0430\u0436\u0443\u0440")
                 .getEntries(dumper).get(0);
         assertEquals("\u0430\u0431\u0430\u0436\u0443\u0440", entry.getKey());
-        assertEquals("[com][i][c][p]\u043C.[/p][/c][/i][/com]\n[trn][m1]lampshade, shade [/m]\n[m1][/m][/trn]\n",
+        assertEquals("[com][i][c][p]\u043C.[/p][/c][/i][/com]\n[trn][m1]lampshade, shade [/m]\n[m1][/m][/trn]",
                 entry.getValue());
         entry = dictionary.lookup("\u044F\u0432\u043B\u044F\u0442\u044C\u0441\u044F").getEntries(dumper).get(0);
         assertTrue(entry.getValue().startsWith("[com][i]\u044F\u0432\u0438\u0442\u044C\u0441\u044F[/i][/com]\n" +
@@ -100,7 +100,7 @@ public class DslProprietaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         Map.Entry<String, String> entry = dictionary.lookupPredictive("zombi")
                 .getEntries(dumper).get(0);
-        assertEquals("zombi{(}e{)}", entry.getKey());
+        assertEquals("zombi{(e)}\nzombi{(}e{)}", entry.getKey());
         assertEquals("[m0\\]\\[[t]ˈzɒmbɪ[/t]\\] [p]n[/p][/m]\n"
                 + "[m1]1. 1) [trn]зомби, оживший мертвец; оборотень[/trn][/m]\n"
                 + "[m3]2) [trn]колдовство; нечистая сила[/trn][/m]\n" + "[m1]2. [p]сл.[/p] [trn]зануда, тупица, кретин[/trn][/m]\n"
@@ -108,7 +108,7 @@ public class DslProprietaryTest {
                 + "[m1]4. [trn]коктейль из рома с фруктовым соком и содовой водой[/trn][/m]\n"
                 + "[m1]5. [p]воен.[/p] [p]жарг.[/p] [trn]новобранец[/trn][/m]\n"
                 + "[m1]6. [p]рел.[/p], [p]фольк.[/p] [trn]божество-змея; священный питон[/trn]"
-                + " [com]([i]в Вест-Индии, на юге США[/i] [p]и т. п.[/p])[/com][/m]\n",
+                + " [com]([i]в Вест-Индии, на юге США[/i] [p]и т. п.[/p])[/com][/m]",
                 entry.getValue());
         try {
             Files.deleteIfExists(indexPath);

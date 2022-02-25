@@ -49,15 +49,13 @@ public class DslDictionaryIndexTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         Map.Entry<String, String> entry = dictionary.lookup("space").getEntries(dumper).get(0);
         assertEquals("space", entry.getKey());
-        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
-                entry.getValue());
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]", entry.getValue());
         entry = dictionary.lookup("tab").getEntries(dumper).get(0);
         assertEquals("tab", entry.getKey());
-        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
-                entry.getValue());
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]", entry.getValue());
         entry = dictionary.lookup("tag").getEntries(dumper).get(0);
         assertEquals("tag", entry.getKey());
-        assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
+        assertEquals("[m1][trn]tag should be ignored[/trn][/m]", entry.getValue());
         dumper = new DumpDslVisitor();
         entry = dictionary.lookup("abandon").getEntries(dumper).get(0);
             assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
@@ -68,7 +66,7 @@ public class DslDictionaryIndexTest {
                     "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
                     "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
                     "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
-                    "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
+                    "[m2]to [ref]abandon a right[/ref][/m]", entry.getValue());
     }
 
     /**
@@ -89,16 +87,13 @@ public class DslDictionaryIndexTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         Map.Entry<String, String> entry = dictionary.lookup("space").getEntries(dumper).get(0);
         assertEquals("space", entry.getKey());
-        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
-                entry.getValue());
-
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]", entry.getValue());
         entry = dictionary.lookup("tab").getEntries(dumper).get(0);
         assertEquals("tab", entry.getKey());
-        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
-                entry.getValue());
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]", entry.getValue());
         entry = dictionary.lookup("tag").getEntries(dumper).get(0);
         assertEquals("tag", entry.getKey());
-        assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
+        assertEquals("[m1][trn]tag should be ignored[/trn][/m]", entry.getValue());
         dumper = new DumpDslVisitor();
         entry = dictionary.lookup("abandon").getEntries(dumper).get(0);
         assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
@@ -109,7 +104,6 @@ public class DslDictionaryIndexTest {
                 "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
                 "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
                 "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
-                "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
+                "[m2]to [ref]abandon a right[/ref][/m]", entry.getValue());
     }
-
 }

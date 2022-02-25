@@ -28,15 +28,15 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         Map.Entry<String, String> entry = dictionary.lookup("space").getEntries(dumper).get(0);
         assertEquals("space", entry.getKey());
-        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]",
                 entry.getValue());
         entry = dictionary.lookup("tab").getEntries(dumper).get(0);
         assertEquals("tab", entry.getKey());
-        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]",
                 entry.getValue());
         entry = dictionary.lookup("tag").getEntries(dumper).get(0);
         assertEquals("tag", entry.getKey());
-        assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
+        assertEquals("[m1][trn]tag should be ignored[/trn][/m]", entry.getValue());
     }
 
     @Test
@@ -46,11 +46,11 @@ class DslDictionaryTest {
         DslResult results = dictionary.lookupPredictive("spa");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
         assertEquals("space", entry.getKey());
-        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]",
                 entry.getValue());
         entry = dictionary.lookupPredictive("ta").getEntries(dumper).get(0);
         assertEquals("tab", entry.getKey());
-        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]",
                 entry.getValue());
     }
 
@@ -69,7 +69,7 @@ class DslDictionaryTest {
                 "to abandon convertibility\n" +
                 "to abandon the [gold] standard\n" +
                 "to abandon [price] control\n" +
-                "to abandon a right\n", entry.getValue());
+                "to abandon a right", entry.getValue());
 
         DumpDslVisitor dumper = new DumpDslVisitor();
         entry = res.getEntries(dumper).get(0);
@@ -81,7 +81,7 @@ class DslDictionaryTest {
                 "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
                 "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
                 "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
-                "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
+                "[m2]to [ref]abandon a right[/ref][/m]", entry.getValue());
 
         HtmlDslVisitor filter = new HtmlDslVisitor();
         entry = res.getEntries(filter).get(0);
@@ -99,7 +99,7 @@ class DslDictionaryTest {
                 "<p style=\"text-indent: 60px\">to abandon convertibility</p>\n" +
                 "<p style=\"text-indent: 60px\">to abandon the [gold] standard</p>\n" +
                 "<p style=\"text-indent: 60px\">to abandon [price] control</p>\n" +
-                "<p style=\"text-indent: 60px\">to abandon a right</p>\n", entry.getValue());
+                "<p style=\"text-indent: 60px\">to abandon a right</p>", entry.getValue());
     }
 
     @Test
@@ -113,7 +113,7 @@ class DslDictionaryTest {
                 + new File(current, "image.jpg").getAbsolutePath()
                 + "\" />  image and <a href=\"file:"
                 + new File(current, "video.ogv").getAbsolutePath()
-                + "\">video.ogv</a></p>\n", entry.getValue());
+                + "\">video.ogv</a></p>", entry.getValue());
     }
 
     @Test
@@ -126,8 +126,7 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("test");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1][trn]контрольная работа[/trn][/m]\n",
-                entry.getValue());
+        assertEquals("[m1][trn]контрольная работа[/trn][/m]", entry.getValue());
     }
 
     @Test
@@ -140,7 +139,7 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("Japan");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]Japan[/m]\n[m1]日本[/m]\n", entry.getValue());
+        assertEquals("[m1]Japan[/m]\n[m1]日本[/m]", entry.getValue());
     }
 
     @Test
@@ -153,7 +152,7 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("Voiceless palatal stop");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]Voiceless palatal stop[/m]\n[m1]無声硬口蓋破裂音[/m]\n", entry.getValue());
+        assertEquals("[m1]Voiceless palatal stop[/m]\n[m1]無声硬口蓋破裂音[/m]", entry.getValue());
     }
 
     @Test
@@ -166,7 +165,7 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("Life");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]Life[/m]\n[m1]\u751F\u547D[/m]\n", entry.getValue());
+        assertEquals("[m1]Life[/m]\n[m1]\u751F\u547D[/m]", entry.getValue());
     }
 
     @Test
@@ -179,7 +178,7 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("Life");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]Life[/m]\n[m1]\u751F\u547D[/m]\n", entry.getValue());
+        assertEquals("[m1]Life[/m]\n[m1]\u751F\u547D[/m]", entry.getValue());
     }
 
     @Test
@@ -192,10 +191,10 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("ABC");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]\\[[t]ABC[/t]\\] [p]n[/p][/m]\n", entry.getValue());
+        assertEquals("[m1]\\[[t]ABC[/t]\\] [p]n[/p][/m]", entry.getValue());
         results = dictionary.lookup("Foo");
         entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]\\[[t]Boo[/t]\\] [p]pl[/p][/m]\n", entry.getValue());
+        assertEquals("[m1]\\[[t]Boo[/t]\\] [p]pl[/p][/m]", entry.getValue());
     }
 
     @Test
@@ -208,10 +207,10 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("ABC");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]\\[[t]ABC[/t]\\] [p]n[/p][/m]\n", entry.getValue());
+        assertEquals("[m1]\\[[t]ABC[/t]\\] [p]n[/p][/m]", entry.getValue());
         results = dictionary.lookup("Foo");
         entry = results.getEntries(dumper).get(0);
-        assertEquals("[m1]\\[[t]Boo[/t]\\] [p]pl[/p][/m]\n", entry.getValue());
+        assertEquals("[m1]\\[[t]Boo[/t]\\] [p]pl[/p][/m]", entry.getValue());
     }
 
     @Test
@@ -222,10 +221,10 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         Map.Entry<String, String> entry = dictionary.lookup("ace").getEntries(dumper).get(0);
         assertEquals("ace", entry.getKey());
-        assertEquals("[m1]ace[/m]\n", entry.getValue());
+        assertEquals("[m1]ace[/m]", entry.getValue());
         entry = dictionary.lookup("Universe").getEntries(dumper).get(0);
         assertEquals("Universe", entry.getKey());
-        assertEquals("[m1]\u5B87\u5B99[/m]\n", entry.getValue());
+        assertEquals("[m1]\u5B87\u5B99[/m]", entry.getValue());
     }
 
     @Test
@@ -239,17 +238,17 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         Map.Entry<String, String> entry = dictionary.lookup("ace").getEntries(dumper).get(0);
         assertEquals("ace", entry.getKey());
-        assertEquals("[m1]/ˈeɪs/[/m]\n", entry.getValue());
+        assertEquals("[m1]/ˈeɪs/[/m]", entry.getValue());
         entry = dictionary.lookup("aerogenosa").getEntries(dumper).get(0);
-        assertEquals("[m1]/ˈɛɹədʒəˌnoʊsə/[/m]\n", entry.getValue());
+        assertEquals("[m1]/ˈɛɹədʒəˌnoʊsə/[/m]", entry.getValue());
         entry = dictionary.lookup("agree").getEntries(dumper).get(0);
-        assertEquals("[m1]/əˈɡɹi/[/m]\n", entry.getValue());
+        assertEquals("[m1]/əˈɡɹi/[/m]", entry.getValue());
         entry = dictionary.lookup("ahren").getEntries(dumper).get(0);
-        assertEquals("[m1]/ˈɑɹən/[/m]\n", entry.getValue());
+        assertEquals("[m1]/ˈɑɹən/[/m]", entry.getValue());
         entry = dictionary.lookup("aiwa").getEntries(dumper).get(0);
-        assertEquals("[m1]/ˈaɪwə/[/m]\n", entry.getValue());
+        assertEquals("[m1]/ˈaɪwə/[/m]", entry.getValue());
         entry = dictionary.lookup("analysis").getEntries(dumper).get(0);
-        assertEquals("[m1]/əˈnæɫəsəs/, /əˈnæɫɪsɪs/[/m]\n", entry.getValue());
+        assertEquals("[m1]/əˈnæɫəsəs/, /əˈnæɫɪsɪs/[/m]", entry.getValue());
     }
 
     @Test
@@ -262,15 +261,15 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         Map.Entry<String, String> entry = dictionary.lookup("space").getEntries(dumper).get(0);
         assertEquals("space", entry.getKey());
-        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]\n",
+        assertEquals("[m1][trn]Only a single white space on first character[/trn][/m]",
                 entry.getValue());
         entry = dictionary.lookup("tab").getEntries(dumper).get(0);
         assertEquals("tab", entry.getKey());
-        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]\n",
+        assertEquals("[m1][trn]Translation line also can have a single TAB char[/trn][/m]",
                 entry.getValue());
         entry = dictionary.lookup("tag").getEntries(dumper).get(0);
         assertEquals("tag", entry.getKey());
-        assertEquals("[m1][trn]tag should be ignored[/trn][/m]\n", entry.getValue());
+        assertEquals("[m1][trn]tag should be ignored[/trn][/m]", entry.getValue());
         dumper = new DumpDslVisitor();
         entry = dictionary.lookup("abandon").getEntries(dumper).get(0);
         assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
@@ -281,7 +280,7 @@ class DslDictionaryTest {
                 "[m2]to [ref]abandon convertibility[/ref][/m]\n" +
                 "[m2]to [ref]abandon the \\[gold\\] standard[/ref][/m]\n" +
                 "[m2]to [ref]abandon \\[price\\] control[/ref][/m]\n" +
-                "[m2]to [ref]abandon a right[/ref][/m]\n", entry.getValue());
+                "[m2]to [ref]abandon a right[/ref][/m]", entry.getValue());
     }
 
     @Test
@@ -291,6 +290,6 @@ class DslDictionaryTest {
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookup("About");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
-        assertEquals("Version: 0.0\n", entry.getValue());
+        assertEquals("Version: 0.0", entry.getValue());
     }
 }
