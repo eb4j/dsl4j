@@ -65,7 +65,7 @@ final class DslDictionaryLoader {
                     + "|INCLUDE\\s(?<include>.+?)$");
     private static final String[] ALLOWED_CODE_PAGE = {"EasternEuropean", "Cyrillic", "Latin", "Greek", "Turkish"};
 
-    private static final int INDEX_VERSION = 1;
+    private static final int INDEX_VERSION = 2;
 
     private DslDictionaryLoader() {
     }

@@ -40,10 +40,10 @@ public final class DictionaryDataBuilder<T> {
     public DictionaryData<T> build(final List<DslIndex.Entry> entries) {
         MapTrie<Object> mapPatriciaTrie = new MapPatriciaTrie<>();
         for (DslIndex.Entry en: entries) {
-            doAdd(mapPatriciaTrie, en.getHeadWord(), en.getOffset(), en.getSize());
+            doAdd(mapPatriciaTrie, en.getHeadWord(), en.getOffset(), en.getSize(), en.getHeaderOffset(), en.getHeaderSize());
             String lowerKey = en.getHeadWord().toLowerCase();
             if (!en.getHeadWord().equals(lowerKey)) {
-                doAdd(mapPatriciaTrie, lowerKey, en.getOffset(), en.getSize());
+                doAdd(mapPatriciaTrie, lowerKey, en.getOffset(), en.getSize(), en.getHeaderOffset(), en.getHeaderSize());
             }
         }
         return new DictionaryData<>(mapPatriciaTrie);
@@ -56,15 +56,16 @@ public final class DictionaryDataBuilder<T> {
      *
      * @param key
      */
-    private void doAdd(final MapTrie<Object> mapPatriciaTrie, final String key, final long offset, final int size) {
+    private void doAdd(final MapTrie<Object> mapPatriciaTrie, final String key, final long offset, final int size,
+                       final long headerOffiset, final int headerSize) {
         Object stored = mapPatriciaTrie.get(key);
         if (stored == null) {
-            mapPatriciaTrie.insert(key, new DslEntry(offset, size));
+            mapPatriciaTrie.insert(key, new DslEntry(headerOffiset, headerSize, offset, size));
         } else {
             if (stored instanceof Object[]) {
-                stored = extendArray((Object[]) stored, new DslEntry(offset, size));
+                stored = extendArray((Object[]) stored, new DslEntry(headerOffiset, headerSize, offset, size));
             } else {
-                stored = new Object[] {stored, new DslEntry(offset, size)};
+                stored = new Object[] {stored, new DslEntry(headerOffiset, headerSize, offset, size)};
             }
             mapPatriciaTrie.put(key, stored);
         }

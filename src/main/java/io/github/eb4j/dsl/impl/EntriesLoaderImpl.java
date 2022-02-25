@@ -115,6 +115,8 @@ public class EntriesLoaderImpl implements AutoCloseable {
                         .setHeadWord(token)
                         .setOffset(articleStart)
                         .setSize((int) articleLen)
+                        .setHeaderOffset(cardStart)
+                        .setHeaderSize((int) headWordLen)
                         .build());
             }
             // reset to new cardStart. previous cardEndSearch() point NEXT to cardStart first character.

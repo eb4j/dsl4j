@@ -19,12 +19,24 @@
 package io.github.eb4j.dsl.data;
 
 public class DslEntry {
+    private final long headerOffset;
+    private final int headerSize;
     private final long offset;
     private final int size;
 
-    public DslEntry(final long offset, final int size) {
+    public DslEntry(final long headerOffset, final int headerSize, final long offset, final int size) {
+        this.headerOffset = headerOffset;
+        this.headerSize = headerSize;
         this.offset = offset;
         this.size = size;
+    }
+
+    public long getHeaderOffset() {
+        return headerOffset;
+    }
+
+    public int getHeaderSize() {
+        return headerSize;
     }
 
     public long getOffset() {
@@ -37,19 +49,23 @@ public class DslEntry {
 
     @Override
     @SuppressWarnings("NeedBraces")
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         DslEntry dslEntry = (DslEntry) o;
 
+        if (headerOffset != dslEntry.headerOffset) return false;
+        if (headerSize != dslEntry.headerSize) return false;
         if (offset != dslEntry.offset) return false;
         return size == dslEntry.size;
     }
 
     @Override
     public int hashCode() {
-        int result = (int) (offset ^ (offset >>> 32));
+        int result = (int) (headerOffset ^ (headerOffset >>> 32));
+        result = 31 * result + headerSize;
+        result = 31 * result + (int) (offset ^ (offset >>> 32));
         result = 31 * result + size;
         return result;
     }

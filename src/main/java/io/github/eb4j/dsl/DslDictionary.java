@@ -30,6 +30,8 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -41,6 +43,7 @@ import java.util.Map;
 public abstract class DslDictionary {
     protected final DictionaryData<DslEntry> dictionaryData;
     protected final DslDictionaryProperty prop;
+    protected final static Pattern articleDlim = Pattern.compile("(\\r?\\n)+(\\s+)?");
 
     protected DslDictionary(final DictionaryData<DslEntry> dictionaryData, final DslDictionaryProperty prop) {
         this.dictionaryData = dictionaryData;
@@ -56,7 +59,7 @@ public abstract class DslDictionary {
     public DslResult lookup(final String word) throws IOException {
         List<Map.Entry<String, String>> result = new ArrayList<>();
         for (Map.Entry<String, DslEntry> en: dictionaryData.lookUp(word)) {
-            result.add(new AbstractMap.SimpleImmutableEntry<>(en.getKey(), getArticle(en.getValue())));
+            result.add(new AbstractMap.SimpleImmutableEntry<>(getHeadWord(en.getValue()), getArticle(en.getValue())));
         }
         return new DslResult(result);
     }
@@ -70,29 +73,36 @@ public abstract class DslDictionary {
     public DslResult lookupPredictive(final String word) throws IOException {
         List<Map.Entry<String, String>> result = new ArrayList<>();
         for (Map.Entry<String, DslEntry> en: dictionaryData.lookUpPredictive(word)) {
-            result.add(new AbstractMap.SimpleImmutableEntry<>(en.getKey(), getArticle(en.getValue())));
+            result.add(new AbstractMap.SimpleImmutableEntry<>(getHeadWord(en.getValue()), getArticle(en.getValue())));
         }
         return new DslResult(result);
     }
 
     /**
-     * Comcrete implementation should implement a method to get article.
-     * @param entry DslEntry to indicate posttion and size of article.
+     * Return article text.
+     * @param entry DslEntry to indicate position and size of article.
      * @return article string.
      * @throws IOException when I/O error occurred
      */
-    abstract String getArticle(DslEntry entry) throws IOException;
+    protected String getArticle(final DslEntry entry) throws IOException {
+        return trimArticle(getRecord(entry.getOffset(), entry.getSize()));
+    }
 
-    protected String trimArticle(final byte[] buf) {
-        String[] tokens = new String(buf, prop.getCharset()).split("\\r?\\n");
-        StringBuilder article = new StringBuilder();
-        for (String token: tokens) {
-            if (token.isEmpty()) { // remove empty line
-                continue;
-            }
-            article.append(token.trim()).append("\n");
-        }
-        return article.toString();
+    /**
+     * Return head word.
+     * @param entry DslEntry to indicate record.
+     * @return article string.
+     * @throws IOException
+     */
+    String getHeadWord(DslEntry entry) throws IOException {
+        return getRecord(entry.getHeaderOffset(), entry.getHeaderSize()).trim();
+    }
+
+    abstract String getRecord(long offset, int size) throws IOException;
+
+    protected String trimArticle(final String article) {
+        Matcher matcher = articleDlim.matcher(article);
+        return matcher.replaceAll("\n").trim();
     }
 
     public String getDictionaryName() {
