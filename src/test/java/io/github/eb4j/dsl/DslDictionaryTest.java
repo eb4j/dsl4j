@@ -55,6 +55,16 @@ class DslDictionaryTest {
     }
 
     @Test
+    void loadDictionaryMultiHead() throws URISyntaxException, IOException {
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        DslResult res = dictionary.lookup("一個樣");
+
+        DumpDslVisitor plainFilter = new DumpDslVisitor();
+        Map.Entry<String, String> entry = res.getEntries(plainFilter).get(0);
+        assertEquals("一個樣\n一个样", entry.getKey());
+    }
+
+    @Test
     void loadDictionaryMulti() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
         DslResult res = dictionary.lookup("abandon");

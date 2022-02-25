@@ -95,7 +95,7 @@ public abstract class DslDictionary {
      * @throws IOException
      */
     String getHeadWord(DslEntry entry) throws IOException {
-        return getRecord(entry.getHeaderOffset(), entry.getHeaderSize()).trim();
+        return trimArticle(getRecord(entry.getHeaderOffset(), entry.getHeaderSize()));
     }
 
     abstract String getRecord(long offset, int size) throws IOException;
