@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DslDictionaryTest {
 
+    protected final static String LINE_SEPARATOR = System.getProperty("line.separator");
     private final URL resource = this.getClass().getResource("/utf16le_bom_crlf_el.dsl");
 
     @Test
@@ -57,11 +58,11 @@ class DslDictionaryTest {
     @Test
     void loadDictionaryMultiHead() throws URISyntaxException, IOException {
         DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
-        DslResult res = dictionary.lookup("一個樣");
+        DslResult res = dictionary.lookup("\u4E00\u500B\u6A23");
 
         DumpDslVisitor plainFilter = new DumpDslVisitor();
         Map.Entry<String, String> entry = res.getEntries(plainFilter).get(0);
-        assertEquals("一個樣\n一个样", entry.getKey());
+        assertEquals("\u4E00\u500B\u6A23" + LINE_SEPARATOR + "\u4E00\u4E2A\u6837", entry.getKey());
     }
 
     @Test

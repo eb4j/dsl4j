@@ -43,7 +43,8 @@ import java.util.regex.Pattern;
 public abstract class DslDictionary {
     protected final DictionaryData<DslEntry> dictionaryData;
     protected final DslDictionaryProperty prop;
-    protected final static Pattern articleDlim = Pattern.compile("(\\r?\\n)+(\\s+)?");
+    protected final static String LINE_SEPARATOR = System.getProperty("line.separator");
+    protected final static Pattern DELIMITER_PATTERN = Pattern.compile("(\\r\\n|[\\n\\r\\u2028\\u2029\\u0085])+(\\s+)?");
 
     protected DslDictionary(final DictionaryData<DslEntry> dictionaryData, final DslDictionaryProperty prop) {
         this.dictionaryData = dictionaryData;
@@ -101,8 +102,8 @@ public abstract class DslDictionary {
     abstract String getRecord(long offset, int size) throws IOException;
 
     protected String trimArticle(final String article) {
-        Matcher matcher = articleDlim.matcher(article);
-        return matcher.replaceAll("\n").trim();
+        Matcher matcher = DELIMITER_PATTERN.matcher(article);
+        return matcher.replaceAll(LINE_SEPARATOR).trim();
     }
 
     public String getDictionaryName() {
