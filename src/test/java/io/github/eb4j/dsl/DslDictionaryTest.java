@@ -303,4 +303,15 @@ class DslDictionaryTest {
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
         assertEquals("Version: 0.0", entry.getValue());
     }
+
+    @Test
+    void loadDictionaryUTF16LE_noel_wo_lasteof() throws URISyntaxException, IOException {
+        URL target = this.getClass().getResource("/utf16le_bom_crlf_noel_wo_lasteol.dsl");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(target.toURI()));
+        DslResult res = dictionary.lookup("media");
+        DumpDslVisitor filter = new DumpDslVisitor();
+        Map.Entry entry = res.getEntries(filter).get(0);
+        assertEquals("[m][trn]this is media [s]image.jpg[/s]  image and [video]video.ogv[/video][/trn][/m]",
+                entry.getValue());
+    }
 }
