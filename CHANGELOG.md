@@ -3,6 +3,26 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.0]
+
+### Changed
+* Behavior change
+  * Now returns head words with subentry key when exist
+* Index cache file format
+  * cache file version raised to v2
+  * extend to hold head word block's offset and size
+* Bump versions
+  * spotbugs@5.0.6
+  * spotless@6.3.0
+  * dictzip@0.12.1
+* Rewrite dictionary entries loader
+  * Allow UTF-16LE without BOM
+  * Allow LF line terminators with UTF-16LE
+  * Support records without empty line separator
+  * Handle comment only head word line
+  * Accept UTF-8 with BOM
+  * Improve metadata loading
+
 ### Added
 * Update README
   * support matrix
@@ -10,18 +30,6 @@ All notable changes to this project will be documented in this file.
 * Update test cases
   * test data variations
   * test case with proprietary data
-
-### Changed
-* Bump versions
-  * spotbugs@5.0.6
-  * spotless@6.3.0
-  * dictzip@0.11.2
-* Update dictionary loader
-  * Allow UTF-16LE without BOM
-  * Allow LF line terminators with UTF-16LE
-  * Support records without empty line separator
-  * Handle comment only head word line
-  * Accept UTF-8 with BOM
 
 ### Removed
 * StreamSearcher class
@@ -86,7 +94,8 @@ All notable changes to this project will be documented in this file.
 ## 0.1.0
 * First internal release
 
-[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.4.5...HEAD
+[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/eb4j/dsl4j/compare/v0.4.5...v0.5.0
 [0.4.5]: https://github.com/eb4j/dsl4j/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/eb4j/dsl4j/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/eb4j/dsl4j/compare/v0.4.2...v0.4.3
