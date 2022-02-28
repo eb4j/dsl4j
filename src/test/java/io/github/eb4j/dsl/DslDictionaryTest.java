@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DslDictionaryTest {
 
-    protected final static String LINE_SEPARATOR = System.getProperty("line.separator");
+    protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private final URL resource = this.getClass().getResource("/utf16le_bom_crlf_el.dsl");
 
     @Test

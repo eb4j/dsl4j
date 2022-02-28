@@ -78,6 +78,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
         }
     }
 
+    @SuppressWarnings("innerassignment")
     public List<DslIndex.Entry> load() throws IOException {
         List<DslIndex.Entry> entries = new ArrayList<>();
         long cardStart;
@@ -339,6 +340,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
      * @return -1 when EoF, otherwise a distance to eol from current position.
      * @throws IOException when i/o error occurred.
      */
+    @SuppressWarnings("innerassignment")
     private long eolSearch() throws IOException {
         int b;
         InputStream stream;

@@ -40,10 +40,12 @@ public final class DictionaryDataBuilder<T> {
     public DictionaryData<T> build(final List<DslIndex.Entry> entries) {
         MapTrie<Object> mapPatriciaTrie = new MapPatriciaTrie<>();
         for (DslIndex.Entry en: entries) {
-            doAdd(mapPatriciaTrie, en.getHeadWord(), en.getOffset(), en.getSize(), en.getHeaderOffset(), en.getHeaderSize());
+            doAdd(mapPatriciaTrie, en.getHeadWord(), en.getOffset(), en.getSize(),
+                    en.getHeaderOffset(), en.getHeaderSize());
             String lowerKey = en.getHeadWord().toLowerCase();
             if (!en.getHeadWord().equals(lowerKey)) {
-                doAdd(mapPatriciaTrie, lowerKey, en.getOffset(), en.getSize(), en.getHeaderOffset(), en.getHeaderSize());
+                doAdd(mapPatriciaTrie, lowerKey, en.getOffset(), en.getSize(),
+                        en.getHeaderOffset(), en.getHeaderSize());
             }
         }
         return new DictionaryData<>(mapPatriciaTrie);
