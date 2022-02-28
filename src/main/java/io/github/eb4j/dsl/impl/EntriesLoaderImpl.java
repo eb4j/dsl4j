@@ -344,30 +344,24 @@ public class EntriesLoaderImpl implements AutoCloseable {
     private long eolSearch() throws IOException {
         int b;
         InputStream stream;
-        boolean isUTF16 = StandardCharsets.UTF_16LE.equals(charset);
-        long current;
         if (isDictZip) {
             stream = dzis;
-            current = dzis.position();
         } else {
             stream = rais;
-            current = rais.position();
         }
+        long current = position();
+        boolean isUTF16 = StandardCharsets.UTF_16LE.equals(charset);
         while ((b = stream.read()) != -1) {
             if ((byte) b != 0x0a) {
                 continue;
             }
             if (!isUTF16) {
                 // LF found when UTF-8 and ANSI charsets
-                if (isDictZip) {
-                    return dzis.position() - current;
-                } else {
-                    return rais.position() - current;
-                }
+                return position() - current;
             }
             // check second byte
             if ((b = stream.read()) == -1) {
-                // eof detected after 0x0a found in UTF-16 case.
+                // eof detected after 0x0a found in UTF-16 case. data seems broken
                 return -1;
             }
             if (b != 0x00) {
@@ -375,11 +369,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
                 continue;
             }
             // Found LF in UTF-16LE
-            if (isDictZip) {
-                return dzis.position() - current;
-            } else {
-                return rais.position() - current;
-            }
+            return position() - current;
         }
         // no dice, eof found.
         return -1;
