@@ -43,7 +43,7 @@ Here is a table to show what variations are supported.
 | ❌  | UTF-8    | No  | LF / single LF           |                          |
 
 
-### Development version(main branch)
+### v0.5.0
 
 |    | Encoding | BOM | Line/record terminators  | Note                     |
 | -- | -------- | --- | ------------------------ | ------------------------ |
