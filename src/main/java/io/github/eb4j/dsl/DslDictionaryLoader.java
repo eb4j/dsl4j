@@ -285,6 +285,8 @@ final class DslDictionaryLoader {
                             break;
                         }
                     }
+                } else {
+                    break;
                 }
             }
         }
