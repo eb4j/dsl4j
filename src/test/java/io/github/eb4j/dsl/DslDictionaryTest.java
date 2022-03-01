@@ -18,11 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DslDictionaryTest {
 
     protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private final URL resource = this.getClass().getResource("/utf16le_bom_crlf_el.dsl");
+    private final URL RESOURCE = this.getClass().getResource("/utf16le_bom_crlf_el.dsl");
 
     @Test
     void loadDictionarySingle() throws URISyntaxException, IOException {
-        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(RESOURCE.toURI()));
         assertEquals("Test (En-Ru)", dictionary.getDictionaryName());
         assertEquals("English", dictionary.getIndexLanguage());
         assertEquals("Russian", dictionary.getContentLanguage());
@@ -42,7 +42,7 @@ class DslDictionaryTest {
 
     @Test
     void loadDictionaryPredictive() throws URISyntaxException, IOException {
-        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(RESOURCE.toURI()));
         DumpDslVisitor dumper = new DumpDslVisitor();
         DslResult results = dictionary.lookupPredictive("spa");
         Map.Entry<String, String> entry = results.getEntries(dumper).get(0);
@@ -57,7 +57,7 @@ class DslDictionaryTest {
 
     @Test
     void loadDictionaryMultiHead() throws URISyntaxException, IOException {
-        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(RESOURCE.toURI()));
         DslResult res = dictionary.lookup("\u4E00\u500B\u6A23");
 
         DumpDslVisitor plainFilter = new DumpDslVisitor();
@@ -67,7 +67,7 @@ class DslDictionaryTest {
 
     @Test
     void loadDictionaryMulti() throws URISyntaxException, IOException {
-        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(RESOURCE.toURI()));
         DslResult res = dictionary.lookup("abandon");
 
         PlainDslVisitor plainFilter = new PlainDslVisitor();
@@ -115,7 +115,7 @@ class DslDictionaryTest {
 
     @Test
     void loadDictionaryMedia() throws URISyntaxException, IOException {
-        DslDictionary dictionary = DslDictionary.loadDictionary(new File(resource.toURI()));
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(RESOURCE.toURI()));
         DslResult res = dictionary.lookup("media");
         File current = new File(".");
         HtmlDslVisitor filter = new HtmlDslVisitor(current.getPath());

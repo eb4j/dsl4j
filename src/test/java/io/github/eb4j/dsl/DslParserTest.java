@@ -105,21 +105,27 @@ public class DslParserTest {
 
     @Test
     void complex() throws ParseException {
-        DslParser parser = DslParser.createParser("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com], прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]");
+        DslParser parser = DslParser.createParser("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
+                " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]");
         DslArticle article = parser.DslArticle();
         DumpDslVisitor dumper = new DumpDslVisitor();
         article.accept(dumper);
-        assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com], прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]",
+        assertEquals("[m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
+                        " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]",
                 dumper.getObject());
     }
 
     @Test
     void multiline() throws ParseException {
-        DslParser parser = DslParser.createParser("    [m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com], прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n    [m2]to [ref]abandon attempts[/ref][/m]");
+        DslParser parser = DslParser.createParser("    [m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
+                " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
+                "    [m2]to [ref]abandon attempts[/ref][/m]");
         DslArticle article = parser.DslArticle();
         DumpDslVisitor dumper = new DumpDslVisitor();
         article.accept(dumper);
-        assertEquals("    [m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com], прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n    [m2]to [ref]abandon attempts[/ref][/m]",
+        assertEquals("    [m1][b]1.[/b] [trn]отказываться [com]([i]от чего-л.[/i])[/com]," +
+                        " прекращать [com]([i]попытки и т. п.[/i])[/com][/trn][/m]\n" +
+                        "    [m2]to [ref]abandon attempts[/ref][/m]",
                 dumper.getObject());
     }
 
