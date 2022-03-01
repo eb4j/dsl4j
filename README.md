@@ -16,33 +16,6 @@ NOTICE: Current version does not support media archive file `...dsl.files.zip` t
 Lingvo DSL format specification is a little ambiguous, and there are many variations of data in the wild.
 Here is a table to show what variations are supported.
 
-### v0.4.5
-
-|    | Encoding | BOM | Line/record terminators  | Note                     |
-| -- | -------- | --- | ------------------------ | ------------------------ |
-| ✓  | UTF-16LE | Yes | CR+LF / empty line       |                          |
-| ❌  | UTF-16LE | Yes | CR+LF / single CR+LF     |                          |
-| ✓  | CP1251   | No  | CR+LF / empty line       | CODEPAGE header required |
-| ✓  | CP1251   | No  | LF / empty line          | CODEPAGE header required |
-| ✓  | CP1252   | No  | CR+LF / empty line       | CODEPAGE header required |
-| ✓  | CP1252   | No  | LF / empty line          | CODEPAGE header required |
-| ✓  | CP1253   | No  | CR+LF / empty line       | CODEPAGE header required |
-| ✓  | CP1253   | No  | LF / empty line          | CODEPAGE header required |
-
-#### Non standard combinations                                                
-
-|    | Encoding | BOM | Line/record terminators  | Note                     |
-| -- | -------- | --- | ------------------------ | ------------------------ |
-| ❌  | UTF-16LE | Yes | LF / single LF           |                          |
-| ✓  | UTF-16LE | Yes | LF / empty line          |                          |
-| ✓  | UTF-16LE | No  | LF / empty line          |                          |
-| ?  | UTF-16LE | No  | LF / single LF           |                          |
-| ?  | UTF-8    | Yes | LF / empty line          |                          |
-| ✓  | UTF-8    | No  | LF / empty line          |                          |
-| ❌  | UTF-8    | Yes | LF / single LF           |                          |
-| ❌  | UTF-8    | No  | LF / single LF           |                          |
-
-
 ### v0.5.0
 
 |    | Encoding | BOM | Line/record terminators  | Note                     |
@@ -50,11 +23,8 @@ Here is a table to show what variations are supported.
 | ✓  | UTF-16LE | Yes | CR+LF / empty line       |                          |
 | ✓  | UTF-16LE | Yes | CR+LF / single CR+LF     |                          |
 | ✓  | CP1251   | No  | CR+LF / empty line       | CODEPAGE header required |
-| ✓  | CP1251   | No  | LF / empty line          | CODEPAGE header required |
 | ✓  | CP1252   | No  | CR+LF / empty line       | CODEPAGE header required |
-| ✓  | CP1252   | No  | LF / empty line          | CODEPAGE header required |
 | ✓  | CP1253   | No  | CR+LF / empty line       | CODEPAGE header required |
-| ✓  | CP1253   | No  | LF / empty line          | CODEPAGE header required |
 
 #### Non standard combinations
 
@@ -68,6 +38,37 @@ Here is a table to show what variations are supported.
 | ✓  | UTF-8    | No  | LF / empty line          |                          |
 | ✓  | UTF-8    | Yes | LF / single LF           |                          |
 | ✓  | UTF-8    | No  | LF / single LF           |                          |
+| ✓  | CP1251   | No  | LF / empty line          | CODEPAGE header required |
+| ✓  | CP1252   | No  | LF / empty line          | CODEPAGE header required |
+| ✓  | CP1253   | No  | LF / empty line          | CODEPAGE header required |
+
+
+### v0.4.5
+
+|    | Encoding | BOM | Line/record terminators  | Note                     |
+| -- | -------- | --- | ------------------------ | ------------------------ |
+| ✓  | UTF-16LE | Yes | CR+LF / empty line       |                          |
+| ❌  | UTF-16LE | Yes | CR+LF / single CR+LF     |                          |
+| ✓  | CP1251   | No  | CR+LF / empty line       | CODEPAGE header required |
+| ✓  | CP1252   | No  | CR+LF / empty line       | CODEPAGE header required |
+| ✓  | CP1253   | No  | CR+LF / empty line       | CODEPAGE header required |
+
+#### Non standard combinations                                                
+
+|    | Encoding | BOM | Line/record terminators  | Note                     |
+| -- | -------- | --- | ------------------------ | ------------------------ |
+| ❌  | UTF-16LE | Yes | LF / single LF           |                          |
+| ✓  | UTF-16LE | Yes | LF / empty line          |                          |
+| ✓  | UTF-16LE | No  | LF / empty line          |                          |
+| ?  | UTF-16LE | No  | LF / single LF           |                          |
+| ?  | UTF-8    | Yes | LF / empty line          |                          |
+| ✓  | UTF-8    | No  | LF / empty line          |                          |
+| ❌  | UTF-8    | Yes | LF / single LF           |                          |
+| ❌  | UTF-8    | No  | LF / single LF           |                          |
+| ✓  | CP1251   | No  | LF / empty line          | CODEPAGE header required |
+| ✓  | CP1252   | No  | LF / empty line          | CODEPAGE header required |
+| ✓  | CP1253   | No  | LF / empty line          | CODEPAGE header required |
+
 
 ### Unsupported DSL syntax
 
