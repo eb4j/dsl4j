@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -227,9 +228,9 @@ final class DslDictionaryLoader {
         Charset charset;
         try (BOMInputStream bis = isDictzip ? new BOMInputStream(new DictZipInputStream(
                 new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r"))),
-                false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE) :
+                false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE) :
                 new BOMInputStream(new RandomAccessInputStream(new RandomAccessFile(path.toFile(), "r")),
-                        false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE)) {
+                        false, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE)) {
             // Detect codepage and charset
             if (!bis.hasBOM()) {
                 byte[] buf = new byte[4];
@@ -244,6 +245,8 @@ final class DslDictionaryLoader {
                 }
             } else if (bis.hasBOM(ByteOrderMark.UTF_16LE)) {
                 charset = StandardCharsets.UTF_16LE;
+            } else if (bis.hasBOM(ByteOrderMark.UTF_16BE)) {
+                throw new UnsupportedEncodingException("Unsupported encoding of UTF-16, Big-endian.");
             } else {
                 charset = StandardCharsets.UTF_8;
             }
