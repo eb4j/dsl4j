@@ -99,6 +99,9 @@ final class DslDictionaryLoader {
             }
             prop = new DslDictionaryProperty(
                     metadata.get("name"), metadata.get("index"), metadata.get("content"), charset, eol);
+            if (!validateProp(prop)) {
+                throw new IOException("Invalid dictionary file: lack mandatory field.");
+            }
             buildIndexFile(path, indexPath, entries, prop);
         }
         DictionaryData<DslEntry> data = new DictionaryDataBuilder<DslEntry>().build(entries);
@@ -107,6 +110,10 @@ final class DslDictionaryLoader {
         } else {
             return new DslFileDictionary(path, data, prop);
         }
+    }
+
+    private static boolean validateProp(DslDictionaryProperty prop) {
+        return prop.getDictionaryName() != null || prop.getContentLanguage() != null || prop.getIndexLanguage() != null;
     }
 
     private static DslIndex getIndexFromFileAndValidate(final Path path, final Path indexPath,
