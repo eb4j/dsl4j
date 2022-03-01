@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DslProprietaryTest {
 
-    private static final String SMIRNITSKY = "/content/Ru-En-Smirnitsky.dsl.dz";
+    private static final String SMIRNITSKY = "/smirnitsky/Ru-En-Smirnitsky.dsl.dz";
 
     @Test
     @EnabledIf("targetFileExist")
@@ -121,4 +122,28 @@ public class DslProprietaryTest {
     }
 
     private static final String APRESYAN2 = "/En-Ru_Apresyan/En-Ru_Apresyan.dsl.dz";
+
+    private static final String MUELLER = "/mueller/Mueller (En-Ru)_new.dsl.dz";
+
+    /**
+     * Test dsl file which encoding is UTF-16BE, expect throwing UnsupportedEncodingException.
+     * @throws URISyntaxException
+     * @throws IOException
+     */
+    @Test
+    @EnabledIf("muellerExist")
+    void loadDictionaryMueller() throws URISyntaxException, IOException {
+        Path dictPath = Paths.get(DslProprietaryTest.class.getResource(MUELLER).toURI());
+        boolean result = false;
+        try {
+            DslDictionary.loadDictionary(dictPath, null);
+        } catch (UnsupportedEncodingException ignored) {
+            result = true;
+        }
+        assertTrue(result);
+    }
+
+    static boolean muellerExist() {
+        return DslProprietaryTest.class.getResource(MUELLER) != null;
+    }
 }
