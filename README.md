@@ -33,7 +33,7 @@ Here is a table to show what variations are supported.
 | ✓  | UTF-16LE | Yes | LF / empty line          |                          |
 | ✓  | UTF-16LE | Yes | LF / single LF           |                          |
 | ✓  | UTF-16LE | No  | LF / empty line          |                          |
-| ?  | UTF-16LE | No  | LF / single LF           |                          |
+|    | UTF-16LE | No  | LF / single LF           |                          |
 | ✓  | UTF-8    | Yes | LF / empty line          |                          |
 | ✓  | UTF-8    | No  | LF / empty line          |                          |
 | ✓  | UTF-8    | Yes | LF / single LF           |                          |
@@ -41,6 +41,8 @@ Here is a table to show what variations are supported.
 | ✓  | CP1251   | No  | LF / empty line          | CODEPAGE header required |
 | ✓  | CP1252   | No  | LF / empty line          | CODEPAGE header required |
 | ✓  | CP1253   | No  | LF / empty line          | CODEPAGE header required |
+| ❌ | UTF-16BE | Yes | CR+LF / single CR+LF     |                          |
+| ❌ | UTF-16BE | Yes | CR+LF / empty line       |                          |
 
 
 ### v0.4.5
@@ -60,8 +62,8 @@ Here is a table to show what variations are supported.
 | ❌  | UTF-16LE | Yes | LF / single LF           |                          |
 | ✓  | UTF-16LE | Yes | LF / empty line          |                          |
 | ✓  | UTF-16LE | No  | LF / empty line          |                          |
-| ?  | UTF-16LE | No  | LF / single LF           |                          |
-| ?  | UTF-8    | Yes | LF / empty line          |                          |
+|    | UTF-16LE | No  | LF / single LF           |                          |
+|    | UTF-8    | Yes | LF / empty line          |                          |
 | ✓  | UTF-8    | No  | LF / empty line          |                          |
 | ❌  | UTF-8    | Yes | LF / single LF           |                          |
 | ❌  | UTF-8    | No  | LF / single LF           |                          |
