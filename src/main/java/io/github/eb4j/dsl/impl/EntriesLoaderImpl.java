@@ -350,22 +350,31 @@ public class EntriesLoaderImpl implements AutoCloseable {
             stream = rais;
         }
         long current = position();
-        boolean isUTF16 = StandardCharsets.UTF_16LE.equals(charset);
+        boolean isBE = StandardCharsets.UTF_16BE.equals(charset);
+        boolean isUTF16 = StandardCharsets.UTF_16LE.equals(charset) || isBE;
+        byte prev = 0;
         while ((b = stream.read()) != -1) {
             if ((byte) b != 0x0a) {
+                prev = (byte) b;
                 continue;
             }
             if (!isUTF16) {
                 // LF found when UTF-8 and ANSI charsets
                 return position() - current;
             }
-            // check second byte
+            if (isBE) {
+                if ( prev == 0) {
+                    // found LF in UTF-16BE
+                    return position() - current;
+                } else {
+                    continue;
+                }
+            }
+            // check second byte of Little-endian
             if ((b = stream.read()) == -1) {
-                // eof detected after 0x0a found in UTF-16 case. data seems broken
                 return -1;
             }
             if (b != 0x00) {
-                // it is other than LF, just lower byte is 0x0a
                 continue;
             }
             // Found LF in UTF-16LE

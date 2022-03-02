@@ -126,7 +126,7 @@ public class DslProprietaryTest {
     private static final String MUELLER = "/mueller/Mueller (En-Ru)_new.dsl.dz";
 
     /**
-     * Test dsl file which encoding is UTF-16BE, expect throwing UnsupportedEncodingException.
+     * Test dsl file which encoding is UTF-16BE.
      * @throws URISyntaxException
      * @throws IOException
      */
@@ -134,13 +134,15 @@ public class DslProprietaryTest {
     @EnabledIf("muellerExist")
     void loadDictionaryMueller() throws URISyntaxException, IOException {
         Path dictPath = Paths.get(DslProprietaryTest.class.getResource(MUELLER).toURI());
-        boolean result = false;
-        try {
-            DslDictionary.loadDictionary(dictPath, null);
-        } catch (UnsupportedEncodingException ignored) {
-            result = true;
-        }
-        assertTrue(result);
+        DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, null);
+        assertEquals("\u0410\u043D\u0433\u043B\u043E-\u0440\u0443\u0441\u0441\u043A\u0438\u0439 " +
+                "\u0441\u043B\u043E\u0432\u0430\u0440\u044C \u041C\u044E\u043B\u043B\u0435\u0440\u0430",
+                dictionary.getDictionaryName());
+        assertEquals("English", dictionary.getIndexLanguage());
+        assertEquals("Russian", dictionary.getContentLanguage());
+        DumpDslVisitor dumper = new DumpDslVisitor();
+        Map.Entry<String, String> entry = dictionary.lookupPredictive("hello").getEntries(dumper).get(0);
+        assertEquals("hello", entry.getKey());
     }
 
     static boolean muellerExist() {
