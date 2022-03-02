@@ -246,7 +246,7 @@ final class DslDictionaryLoader {
             } else if (bis.hasBOM(ByteOrderMark.UTF_16LE)) {
                 charset = StandardCharsets.UTF_16LE;
             } else if (bis.hasBOM(ByteOrderMark.UTF_16BE)) {
-                throw new UnsupportedEncodingException("Unsupported encoding of UTF-16, Big-endian.");
+                charset = StandardCharsets.UTF_16BE;
             } else {
                 charset = StandardCharsets.UTF_8;
             }
