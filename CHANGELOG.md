@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.1]
+
+### Fixed
+* Bump dictzip@0.12.2(#72)
+  * Fux out of bound error(#69)
+
+### Changed
+* Raise UnsupportedEncodingException for UTF16-BE files(#69,#73)
+* Check mandatory property after reading header(#70)
+
 ## [0.5.0]
 
 ### Changed
@@ -94,7 +104,8 @@ All notable changes to this project will be documented in this file.
 ## 0.1.0
 * First internal release
 
-[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/eb4j/dsl4j/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/eb4j/dsl4j/compare/v0.4.5...v0.5.0
 [0.4.5]: https://github.com/eb4j/dsl4j/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/eb4j/dsl4j/compare/v0.4.3...v0.4.4
