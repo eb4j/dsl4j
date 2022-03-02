@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.2]
+
+### Added
+* Support dictionary encoded with UTF-16BE(Big Endian)(#73)
+
 ## [0.5.1]
 
 ### Fixed
@@ -104,7 +109,8 @@ All notable changes to this project will be documented in this file.
 ## 0.1.0
 * First internal release
 
-[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.5.1...HEAD
+[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/eb4j/dsl4j/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/eb4j/dsl4j/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/eb4j/dsl4j/compare/v0.4.5...v0.5.0
 [0.4.5]: https://github.com/eb4j/dsl4j/compare/v0.4.4...v0.4.5
