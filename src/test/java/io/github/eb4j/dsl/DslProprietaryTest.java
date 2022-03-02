@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DslProprietaryTest {
 
-    private static final String SMIRNITSKY = "/smirnitsky/Ru-En-Smirnitsky.dsl.dz";
+    private static final String SMIRNITSKY = "/content/Ru-En-Smirnitsky.dsl.dz";
 
     @Test
     @EnabledIf("targetFileExist")
@@ -53,7 +52,7 @@ public class DslProprietaryTest {
         return DslProprietaryTest.class.getResource(SMIRNITSKY) != null;
     }
 
-    private static final String WORDNET = "/WordNet_3.0/En-En-WordNet3_gl_1_0.dsl.dz";
+    private static final String WORDNET = "/content/En-En-WordNet3_gl_1_0.dsl.dz";
 
     /**
      * Test against WordNet dictionary.
@@ -92,7 +91,7 @@ public class DslProprietaryTest {
     @Test
     @EnabledIf("apresyanExist")
     void loadDictionaryApresyan() throws URISyntaxException, IOException {
-        Path dictPath = Paths.get(DslProprietaryTest.class.getResource(APRESYAN2).toURI());
+        Path dictPath = Paths.get(DslProprietaryTest.class.getResource(APRESYAN).toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);
         assertEquals("Apresyan (En-Ru)", dictionary.getDictionaryName());
@@ -121,9 +120,7 @@ public class DslProprietaryTest {
         return DslProprietaryTest.class.getResource(APRESYAN) != null;
     }
 
-    private static final String APRESYAN2 = "/En-Ru_Apresyan/En-Ru_Apresyan.dsl.dz";
-
-    private static final String MUELLER = "/mueller/Mueller (En-Ru)_new.dsl.dz";
+    private static final String MUELLER = "/content/Mueller (En-Ru)_new.dsl.dz";
 
     /**
      * Test dsl file which encoding is UTF-16BE.
