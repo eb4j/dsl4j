@@ -1,5 +1,9 @@
 # DSL4j library
 
+
+
+[![SWUbanner](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
+
 Lingvo DSL is an one of popular dictionary formats.
 DSL4j is a parser library of Lingvo DSL dictionary file for Java.
 
