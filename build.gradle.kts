@@ -34,7 +34,7 @@ dependencies {
     implementation("commons-io:commons-io:2.11.0")
     implementation("io.github.dictzip:dictzip:0.12.2")
     implementation("com.google.protobuf:protobuf-java:$protobufVersion")
-    testImplementation("org.codehaus.groovy:groovy-all:3.0.9")
+    testImplementation("org.codehaus.groovy:groovy-all:3.0.10")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
 }
