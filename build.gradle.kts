@@ -26,7 +26,7 @@ repositories {
     mavenCentral()
 }
 
-val protobufVersion = "3.19.4"
+val protobufVersion = "3.20.0"
 
 dependencies {
     implementation("org.jetbrains:annotations:23.0.0")
