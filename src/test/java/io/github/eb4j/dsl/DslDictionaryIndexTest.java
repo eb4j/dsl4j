@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DslDictionaryIndexTest {
 
-    private static final URL resource = DslDictionaryIndexTest.class.getResource("/utf16le_bom_crlf_el.dsl");
+    private static final URL RESOURCE = DslDictionaryIndexTest.class.getResource("/utf16le_bom_crlf_el.dsl");
 
     /**
      * Clean up created index cache file.
@@ -27,7 +27,7 @@ public class DslDictionaryIndexTest {
      */
     @AfterClass
     public static void cleanIndex() throws IOException, URISyntaxException {
-        Path dictPath = Paths.get(resource.toURI());
+        Path dictPath = Paths.get(RESOURCE.toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         Files.deleteIfExists(indexPath);
     }
@@ -40,7 +40,7 @@ public class DslDictionaryIndexTest {
     @Test
     @Order(1)
     public void saveDictionaryIndex() throws URISyntaxException, IOException {
-        Path dictPath = Paths.get(resource.toURI());
+        Path dictPath = Paths.get(RESOURCE.toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);
         assertEquals("Test (En-Ru)", dictionary.getDictionaryName());
@@ -77,7 +77,7 @@ public class DslDictionaryIndexTest {
     @Test
     @Order(2)
     public void loadDictionaryIndex() throws URISyntaxException, IOException {
-        Path dictPath = Paths.get(resource.toURI());
+        Path dictPath = Paths.get(RESOURCE.toURI());
         Path indexPath = Paths.get(dictPath + ".idx");
         Assumptions.assumeTrue(Files.exists(indexPath) && indexPath.toFile().canRead());
         DslDictionary dictionary = DslDictionary.loadDictionary(dictPath, indexPath);

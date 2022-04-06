@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class DslDictionaryTest {
 
     protected static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private final URL RESOURCE = this.getClass().getResource("/utf16le_bom_crlf_el.dsl");
+    private static final URL RESOURCE = DslDictionaryTest.class.getResource("/utf16le_bom_crlf_el.dsl");
 
     @Test
     void loadDictionarySingle() throws URISyntaxException, IOException {
@@ -312,6 +312,41 @@ class DslDictionaryTest {
         DumpDslVisitor filter = new DumpDslVisitor();
         Map.Entry entry = res.getEntries(filter).get(0);
         assertEquals("[m][trn]this is media [s]image.jpg[/s]  image and [video]video.ogv[/video][/trn][/m]",
+                entry.getValue());
+    }
+
+    @Test
+    void langNameHtml() throws URISyntaxException, IOException {
+        URL target = this.getClass().getResource("/lang_name.dsl");
+        DslDictionary dictionary = DslDictionary.loadDictionary(new File(target.toURI()));
+        DslResult res = dictionary.lookup("clear");
+        HtmlDslVisitor visitor = new HtmlDslVisitor();
+        Map.Entry entry = res.getEntries(visitor).get(0);
+        assertEquals("<strong>1.</strong> [klıə] <span style='font-style: italic'>" +
+                        "<span style=\"color: green\">a</span></span>" +
+                        " <p style=\"text-indent: 60px\">1. ясный, светлый </p>\n" +
+                        "<p style=\"text-indent: 90px\"><span class=\"details\">" +
+                        "<span class=\"lang_en\">~ day</span> - ясный день </span></p>\n" +
+                        "<p style=\"text-indent: 90px\"><span class=\"details\">" +
+                        "<span class=\"lang_en\">~ sky</span> - чистое /ясное, безоблачное/ небо </span></p>\n" +
+                        "<p style=\"text-indent: 60px\">2. 1) чистый, прозрачный </p>\n" +
+                        "<p style=\"text-indent: 90px\"><span class=\"details\">" +
+                        "<span class=\"lang_en\">~ water of the lake</span> - чистая /прозрачная/ вода озера </span>" +
+                        "</p>\n" +
+                        "<p style=\"text-indent: 90px\"><span class=\"details\">" +
+                        "<span class=\"lang_en\">~ glass</span> - прозрачное стекло </span></p>\n" +
+                        "<p style=\"text-indent: 60px\">2) зеркальный " +
+                        "(<span style='font-style: italic'>о поверхности</span>) </p>\n" +
+                        "<p style=\"text-indent: 60px\">3. отчётливый, ясный </p>\n" +
+                        "<p style=\"text-indent: 90px\"><span class=\"details\">" +
+                        "<span class=\"lang_en\">~ outline</span> - ясное /отчётливое/ очертание </span></p>\n" +
+                        "<p style=\"text-indent: 90px\"><span class=\"details\">" +
+                        "<span class=\"lang_en\">~ sight</span> - хорошее зрение </span></p>\n" +
+                        "<p style=\"text-indent: 90px\"><span class=\"details\">" +
+                        "<span class=\"lang_en\">~ reflection in the water</span> - ясное отражение в воде </span>" +
+                        "</p>\n" +
+                        "<p style=\"text-indent: 90px\"><span class=\"details\">" +
+                        "<span class=\"lang_en\">~ view</span> - хорошая видимость </span></p>",
                 entry.getValue());
     }
 }
