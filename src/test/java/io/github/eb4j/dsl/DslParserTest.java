@@ -168,7 +168,7 @@ public class DslParserTest {
         DslArticle article = parser.DslArticle();
         HtmlDslVisitor visitor = new HtmlDslVisitor();
         article.accept(visitor);
-        assertEquals("<!-- <details>abc</details> -->", visitor.getObject());
+        assertEquals("<span class=\"details\">abc</span>", visitor.getObject());
     }
 
 }

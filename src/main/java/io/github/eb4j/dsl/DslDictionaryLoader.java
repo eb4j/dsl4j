@@ -38,7 +38,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -113,7 +112,7 @@ final class DslDictionaryLoader {
         }
     }
 
-    private static boolean validateProp(DslDictionaryProperty prop) {
+    private static boolean validateProp(final DslDictionaryProperty prop) {
         return prop.getDictionaryName() != null || prop.getContentLanguage() != null || prop.getIndexLanguage() != null;
     }
 

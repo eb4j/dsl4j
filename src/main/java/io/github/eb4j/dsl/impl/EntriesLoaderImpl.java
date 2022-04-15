@@ -363,7 +363,7 @@ public class EntriesLoaderImpl implements AutoCloseable {
                 return position() - current;
             }
             if (isBE) {
-                if ( prev == 0) {
+                if (prev == 0) {
                     // found LF in UTF-16BE
                     return position() - current;
                 } else {
