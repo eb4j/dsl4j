@@ -3,6 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [0.5.3]
+
+### Fixed
+* HtmlDslVisitor: detection of lang tag with name attribute(#82)
+
+### Changed
+* Bump versions
+  * actions/checkout@v3(#75)
+  * groovy@3.0.10(#76)
+  * spotless@6.4.2(#83)
+  * gradle/protobuf@3.20.0(#81)
+
 ## [0.5.2]
 
 ### Added
@@ -109,7 +121,8 @@ All notable changes to this project will be documented in this file.
 ## 0.1.0
 * First internal release
 
-[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/eb4j/dsl4j/compare/v0.5.3...HEAD
+[0.5.3]: https://github.com/eb4j/dsl4j/compare/v0.5.2...v0.5.3
 [0.5.2]: https://github.com/eb4j/dsl4j/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/eb4j/dsl4j/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/eb4j/dsl4j/compare/v0.4.5...v0.5.0
